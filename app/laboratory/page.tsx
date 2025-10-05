@@ -10,3 +10,8 @@ export default function HomePage() {
         </NavBar>
     );
 }
+
+/*
+1. Faltaria agregar el selector de templates y/o el selector de proyectos previos
+2. Depende lo que elija pinta en el flowchart.
+*/

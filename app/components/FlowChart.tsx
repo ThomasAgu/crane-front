@@ -58,7 +58,7 @@ const FlowChart = () => {
   return (
     <div className="flex w-full h-full">
       {/* Lienzo */}
-      <div style={{ width: "40vw", height: "100vh" }}>
+      <div style={{marginLeft: "70px", width: "95vw", height: "100vh" }}>
         <ReactFlow
           nodes={nodes}
           nodeTypes={nodeTypes}

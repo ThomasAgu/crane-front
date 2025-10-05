@@ -5,9 +5,23 @@ import Image from "next/image";
 import double_expand from "../../../public/double_expand.svg"
 import double_collapse from "../../../public/double_collapse.svg"
 
+
+import SimulationEditor from "./simulation/SimulationEditor";
+import ConfurationEditor from "./configuration/ConfigurationEditor";
+
 type EditorState = "Edicion" | "Simulacion" | "Configuracion";
 
-const EditorBase = () => {
+interface EditorBaseProps {
+  selectedNode: any;
+  onUpdateNode: (id: string, data: any) => void;
+  Editor: React.FC<any>;
+}
+
+const EditorBase: React.FC<EditorBaseProps> = ({
+  selectedNode,
+  onUpdateNode,
+  Editor,
+}) => {
     const [active, setActive] = useState(false);
     const [actualEditor, setActualEditor] = useState('Edicion');
     const editorStates: EditorState[] = ["Edicion", "Simulacion", "Configuracion"];
@@ -31,7 +45,7 @@ const EditorBase = () => {
                         height={30} // Añadir height es buena práctica con Next/Image
                     />
                 </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className='flex items-center justify-start ms-2'>
                 {active &&
                     <div style={{ display: 'flex', gap: '5px' }}>
                     {editorStates.map((state) => (
@@ -53,8 +67,21 @@ const EditorBase = () => {
                     ))}
                 </div>
                 }
-                
             </div>
+            {active && (
+        <div className="p-2">
+          {actualEditor === "Edicion" && selectedNode && (
+            <Editor
+              data={selectedNode.data}
+              onChange={(newData: any) =>
+                onUpdateNode(selectedNode.id, newData)
+              }
+            />
+          )}
+          {actualEditor === "Simulacion" && <SimulationEditor />}
+          {actualEditor === "Configuracion" && <ConfurationEditor />}
+            </div>
+            )}
         </div>
     )
 }

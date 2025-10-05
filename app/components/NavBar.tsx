@@ -25,7 +25,7 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
     <div className="flex">
       <nav
         className={`
-          sticky flex flex-col p-4 gap-4 navBar transition-all duration-300
+          sticky flex flex-col p-4 gap-4 navBar
           ${expanded ? "w-50 items-start" : "w-20 items-start"}
         `}
       >

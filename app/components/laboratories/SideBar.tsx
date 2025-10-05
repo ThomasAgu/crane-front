@@ -12,7 +12,10 @@ const editorMap: Record<string, React.FC<any>> = {
   volume: VolumeEditor
 };
 
-export default function Sidebar({ selectedNode, onUpdateNode }: { 
+export default function Sidebar({ 
+  selectedNode, 
+  onUpdateNode 
+}: { 
   selectedNode: any, 
   onUpdateNode: (id: string, data: any) => void 
 }) {
@@ -22,10 +25,10 @@ export default function Sidebar({ selectedNode, onUpdateNode }: {
 
   return (
     <div className="bg-white">
-      <EditorBase/>
-      <Editor 
-        data={selectedNode?.data || ''} 
-        onChange={(newData: any) => onUpdateNode(selectedNode.id, newData)} 
+      <EditorBase
+        selectedNode={selectedNode}
+        onUpdateNode={onUpdateNode}
+        Editor={Editor}
       />
     </div>
   );

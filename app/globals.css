@@ -127,6 +127,12 @@
 
 .navBar {
   background-color: var(--primary-blue);
+  position: absolute;
+  left: 0;
+  top: 0; 
+  height: 100vh; /* Ejemplo de altura */
+  transition: all ease 0.3s; /* Transición suave para el desplazamiento */
+  z-index: 999;
 }
 
 .navBar:hover {
