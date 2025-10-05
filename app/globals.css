@@ -1,8 +1,159 @@
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --light-grey: #D4D4D4;
+  --primary-blue: #3259E6;
+  --light-blue-grey: #4961BA;
+  --greyer-blue: #505E91;
+  --greyest-blue: #495066;
+  --darker: #34363B;
+  --darkest: #262933;
+  --white: #FFFFFF;
+  --error: #E6362E
+}
+
+@layer utilities {
+  .bg-primary {
+    background-color: var(--primary-blue);
+  }
+  .text-primary {
+    color: var(--primary-blue);
+  }
+
+  .text-darkest {
+    color: var(--darkest)
+  }
+
+  .logo-text-crane {
+    color: var(--darkest);
+    font-size: 32px;
+    font-family: var(--font-montserrat), sans-serif;
+    font-weight: lighter;
+  }
+
+  .logo-text-crane-white {
+     color: var(--white);
+      font-size: 26px;
+      font-family: var(--font-montserrat), sans-serif;
+      font-weight: lighter;
+  }
+
+
+  .btn-primary {
+    margin-top: 10px;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    font-size: 20px;
+    font-weight: bold;
+    width: 100%;
+    border-radius: 4px;
+    height: 40px;
+    transition: all ease 0.1s;
+  }
+
+  .btn-primary:hover {
+    cursor: pointer;
+  }
+
+  .btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid var(--light-grey);
+    color: var(--darkest); 
+    transition: all ease 0.1s;
+  }
+
+.btn-google:hover {
+  cursor: pointer;
+  border-color: var(--darker);
+  box-shadow: 1px 1px 2px var(--darker);
+}
+
+.auth-form-label {
+  color: var(--darkest);
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.auth-form-input {
+  color: var(--darker);
+  border: 1px solid var(--light-grey);
+  font-size: 16px;
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+  height: 40px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: all ease 0.1s;
+  padding-left: 12%;
+}
+
+.auth-form-input::placeholder {
+  color: var(--light-grey);
+}
+
+.auth-form-input:focus{
+  border-color: var(--darker);
+}
+
+.auth-form-input-wrapper{    
+  position: relative;
+}
+
+.auth-form-input-icon {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+}
+
+.required-mark{
+  color: var(--error);
+}
+
+.auth-semilogo{
+  height: 100vh;
+}
+
+.navBar {
+  background-color: var(--primary-blue);
+}
+
+.navBar:hover {
+  cursor: pointer;
+}
+
+/* Estilo base para anclar el sidebar a la derecha */
+#sidebar {
+    position: absolute;
+    right: 0;
+    top: 0; 
+    height: 100vh; /* Ejemplo de altura */
+    transition: all ease 0.3s; /* Transición suave para el desplazamiento */
+}
+
+/* Estado INACTIVO (Colapsado) */
+.sidebar-inactive {
+    width: 30px;
+}
+
+/* Estado ACTIVO (Expandido) */
+.sidebar-active {
+    width: 400px;
+    /* Definimos el ancho expandido, por ejemplo, 400px.
+       Como right: 0, el sidebar tendrá un ancho de 400px
+       y su lado izquierdo estará en (Viewport_Width - 400px). */
+}
 }
 
 @theme inline {
@@ -10,11 +161,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --primary-blue: var(--primary)
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: var(--darker);
     --foreground: #ededed;
   }
 }
