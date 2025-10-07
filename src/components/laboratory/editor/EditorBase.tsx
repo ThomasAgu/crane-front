@@ -6,8 +6,8 @@ import double_expand from "../../../public/double_expand.svg"
 import double_collapse from "../../../public/double_collapse.svg"
 
 
-import SimulationEditor from "./simulation/SimulationEditor";
-import ConfurationEditor from "./configuration/ConfigurationEditor";
+import SimulationEditor from "./SimulationEditor";
+import ConfurationEditor from "./ConfigurationEditor";
 
 type EditorState = "Edicion" | "Simulacion" | "Configuracion";
 

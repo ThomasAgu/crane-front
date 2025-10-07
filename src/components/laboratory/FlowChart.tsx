@@ -20,8 +20,8 @@ import { App } from "./nodes/App";
 import { Service } from "./nodes/Service";
 import { Network } from "./nodes/Network";
 import { Volume } from "./nodes/Volume";
-import Sidebar from "./laboratories/SideBar";
-import ContextMenu from "./laboratories/ContextMenu";
+import Sidebar from "./editor/SideBar";
+import ContextMenu from "./ContextMenu";
 
 const nodeTypes = { app: App, service: Service, network: Network, volume: Volume };
 

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import AppEditor from "./editors/AppEditor";
-import ServiceEditor from "./editors/ServiceEditor";
-import NetworkEditor from "./editors/NetworkEditor";
-import VolumeEditor from "./editors/VolumeEditor";
-import EditorBase from "./editors/EditorBase";
+import AppEditor from "./AppEditor";
+import ServiceEditor from "./ServiceEditor";
+import NetworkEditor from "./NetworkEditor";
+import VolumeEditor from "./VolumeEditor";
+import EditorBase from "./EditorBase";
 
 const editorMap: Record<string, React.FC<any>> = {
   app: AppEditor,

@@ -3,15 +3,15 @@
 import { ReactNode, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import logotinywhite from "../public/logoTinyWhite.svg";
-import gear from "../public/gear.svg";
-import labs from "../public/labs.svg";
-import home from "../public/home.svg";
-import store from "../public/store.svg";
-import gear_active from "../public/gear_active.svg";
-import labs_active from "../public/labs_active.svg";
-import home_active from "../public/home_active.svg";
-import store_active from "../public/store_active.svg";
+import logotinywhite from "../../public/logoTinyWhite.svg";
+import gear from "../../public/gear.svg";
+import labs from "../../public/labs.svg";
+import home from "../../public/home.svg";
+import store from "../../public/store.svg";
+import gear_active from "../../public/gear_active.svg";
+import labs_active from "../../public/labs_active.svg";
+import home_active from "../../public/home_active.svg";
+import store_active from "../../public/store_active.svg";
 import NavItem from './NavItem';
 
 interface PrivateLayoutProps {

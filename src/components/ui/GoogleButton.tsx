@@ -1,4 +1,4 @@
-import google from '../public/google.svg';
+import google from '../../public/google.svg';
 import Image from "next/image";
 
 type GoogleButtonProps = {

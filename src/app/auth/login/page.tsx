@@ -1,6 +1,6 @@
-import GoogleButton from "../GoogleButton";
-import LoginForm from "./LoginForm";
-import AuthLayout from "../AuthLayout";
+import GoogleButton from "../../../components/ui/GoogleButton";
+import LoginForm from "../../../components/forms/LoginForm";
+import AuthLayout from "../../../components/layout/AuthLayout";
 
 export default function LoginPage() {
   return (

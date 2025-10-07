@@ -1,6 +1,6 @@
-import GoogleButton from "../GoogleButton";
-import SingUpForm from "./SingUpForm";
-import AuthLayout from "../AuthLayout";
+import GoogleButton from "../../../components/ui/GoogleButton";
+import SingUpForm from "../../../components/forms/SingUpForm";
+import AuthLayout from "../../../components/layout/AuthLayout";
 
 export default function LoginPage() {
   return (

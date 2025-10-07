@@ -1,5 +1,5 @@
-import NavBar from '../components/NavBar';
-import FlowChart from '../components/FlowChart';
+import NavBar from '../../components/layout/NavBar';
+import FlowChart from '../../components/laboratory/FlowChart';
 
 export default function HomePage() {
     return (

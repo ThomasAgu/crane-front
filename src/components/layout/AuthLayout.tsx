@@ -1,6 +1,6 @@
 import Image from "next/image";
-import logo from "../public/logo.svg";
-import logotiny from "../public/logotiny.svg";
+import logo from "../../public/logo.svg";
+import logotiny from "../../public/logotiny.svg";
 
 type AuthLayoutProps = {
   title: string;
