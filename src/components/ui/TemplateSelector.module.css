@@ -1,0 +1,27 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* opacidad */
+  z-index: 1000;
+}
+
+.popup {
+    background-color: white;
+    width: 40vw;
+    height: 80vh;
+    position: absolute;
+    left: 30%;
+    top: 10%;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}

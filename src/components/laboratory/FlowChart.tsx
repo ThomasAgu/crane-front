@@ -1,6 +1,6 @@
 "use client";
-
 import React, { useState, useCallback } from "react";
+import { reactFlowService, TemplateType } from "../../app/services/ReactFlowService";
 import ReactFlow, {
   addEdge,
   applyNodeChanges,
@@ -26,14 +26,14 @@ import ContextMenu from "./ContextMenu";
 const nodeTypes = { app: App, service: Service, network: Network, volume: Volume };
 
 const FlowChart = () => {
-  const [nodes, setNodes] = useState<Node[]>([
-    { id: "1", type: "app", position: { x: 0, y: 0 }, data: { name: "Mi App", description: "Descripción de app" } },
-    { id: "2", type: "service", position: { x: 300, y: 0 }, data: { name: "Auth Service", image: "v12.4.0", labels: ["Servicio", "Primero"], ports: "8080:43" } },
-    { id: "3", type: "network", position: { x: 600, y: 0 }, data: { address: "192.168.5.0", name: "Red Interna" } },
-    { id: "4", type: "volume", position: { x: 900, y: 0 }, data: { name: "Volumen X", amount: "5", type: "MB", containerPath: "home/sb1/abcData", localPath:"cd/data/app/info" } },
-  ]);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
 
-  const [edges, setEdges] = useState<Edge[]>([{ id: "e1-2", source: "1", target: "2" }]);
+ const loadTemplate = (template: TemplateType) => {
+    const { nodes, edges } = reactFlowService.getTemplateGraph(template);
+    setNodes(nodes);
+    setEdges(edges);
+  };
 
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);

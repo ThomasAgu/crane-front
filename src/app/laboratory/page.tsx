@@ -1,11 +1,17 @@
+'use client';
 import NavBar from '../../components/layout/NavBar';
 import FlowChart from '../../components/laboratory/FlowChart';
+import TemplateSelector from '@/src/components/ui/TemplateSelector';
+import { useState } from 'react';
 
 export default function HomePage() {
+    const [popUp, setPopUp] = useState(true);
+
     return (
         <NavBar>
             <main className="flex min-h-screen">
-                <FlowChart />
+                {popUp && <TemplateSelector setPopUp={setPopUp}/>}
+                <FlowChart/>
             </main>
         </NavBar>
     );
