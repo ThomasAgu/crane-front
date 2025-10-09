@@ -4,17 +4,13 @@ import { Database, Boxes, Layers, Square } from "lucide-react";
 
 interface TemplateSelectorProps {
     setPopUp: Function
+    setSelectedTemplate: Function
 }
 
-const TemplateSelector: React.FC<TemplateSelectorProps> = ({setPopUp}) => {
+const TemplateSelector: React.FC<TemplateSelectorProps> = ({setPopUp, setSelectedTemplate}) => {
 
     const handleTemplateSelect = (templateToLoad: string) => {
-        // Aquí puedes agregar lógica como:
-        // 1. Cargar la plantilla en el estado global/contexto del FlowChart.
-        // 2. Enviar un evento de analíticas.
-        console.log(`Plantilla seleccionada: ${templateToLoad}`);
-        
-        // Cierra el popUp inmediatamente
+        setSelectedTemplate(templateToLoad)
         setPopUp(false); 
     };
 
@@ -54,7 +50,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({setPopUp}) => {
                             services={2}
                             rules={4}
                             icon={<Boxes size={80} />}
-                            onClick={() => handleTemplateSelect('api')} 
+                            onClick={() => handleTemplateSelect('simple-api')} 
                         />
                         </div>
                 </div>

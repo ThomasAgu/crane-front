@@ -6,12 +6,21 @@ import { useState } from 'react';
 
 export default function HomePage() {
     const [popUp, setPopUp] = useState(true);
+    const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+    
 
     return (
         <NavBar>
             <main className="flex min-h-screen">
-                {popUp && <TemplateSelector setPopUp={setPopUp}/>}
-                <FlowChart/>
+                {popUp && 
+                    <TemplateSelector 
+                        setPopUp={setPopUp} 
+                        setSelectedTemplate={setSelectedTemplate}
+                    />
+                }
+                <FlowChart
+                    selectedTemplate={selectedTemplate}
+                />
             </main>
         </NavBar>
     );

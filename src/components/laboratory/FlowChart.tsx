@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { reactFlowService, TemplateType } from "../../app/services/ReactFlowService";
 import ReactFlow, {
   addEdge,
@@ -25,16 +25,21 @@ import ContextMenu from "./ContextMenu";
 
 const nodeTypes = { app: App, service: Service, network: Network, volume: Volume };
 
-const FlowChart = () => {
+interface FlowChartInterface {
+  selectedTemplate: string | null
+} 
+
+const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
+  useEffect(() => {
+    if (selectedTemplate) {
+      const { nodes, edges } = reactFlowService.getTemplateGraph(selectedTemplate as TemplateType);
+      setNodes(nodes);
+      setEdges(edges);
+    }
+  }, [selectedTemplate]);
+
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-
- const loadTemplate = (template: TemplateType) => {
-    const { nodes, edges } = reactFlowService.getTemplateGraph(template);
-    setNodes(nodes);
-    setEdges(edges);
-  };
-
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
