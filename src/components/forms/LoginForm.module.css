@@ -1,0 +1,4 @@
+.errorMessage {
+    color: var(--error);
+    text-align: start;
+}

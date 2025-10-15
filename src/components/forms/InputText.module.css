@@ -1,0 +1,66 @@
+.label {
+  color: var(--darkest);
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.input {
+  color: var(--darker);
+  border: 1px solid var(--light-grey);
+  font-size: 16px;
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+  height: 40px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: all ease 0.1s;
+  padding-left: 12%;
+}
+
+.invalidInput {
+    color: var(--darker);
+    font-size: 16px;
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    height: 40px;
+    margin-bottom: 10px;
+    outline: none;
+    transition: all ease 0.1s;
+    padding-left: 12%;
+    border: 1px solid var(--error);
+}
+
+.errorInline {
+    font-size: 14px;
+    margin-top: -10px;
+    color: var(--error);
+}
+
+.input::placeholder {
+  color: var(--light-grey);
+}
+
+.input:focus{
+  border-color: var(--darker);
+}
+
+.inputWrapper{    
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+}
+
+.requiredMark{
+  color: var(--error);
+}
+
+.semilogo{
+  height: 100vh;
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
+import { useRouter } from 'next/navigation'; 
 import Image from 'next/image';
 import Link from 'next/link';
 import logotinywhite from "../../public/logoTinyWhite.svg";
@@ -12,6 +13,9 @@ import gear_active from "../../public/gear_active.svg";
 import labs_active from "../../public/labs_active.svg";
 import home_active from "../../public/home_active.svg";
 import store_active from "../../public/store_active.svg";
+import users from "../../public/users.svg";
+import users_active from "../../public/users_active.svg";
+
 import NavItem from './NavItem';
 
 interface PrivateLayoutProps {
@@ -20,6 +24,12 @@ interface PrivateLayoutProps {
 
 const PrivateLayout = ({ children }: PrivateLayoutProps) => {
   const [expanded, setExpanded] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    router.push("/auth/login");
+  };
 
   return (
     <div className="flex">
@@ -40,9 +50,11 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
         <NavItem href="/laboratory" icon={labs} iconActive={labs_active} alt="Laboratorio" expanded={expanded} />
         <NavItem href="/store" icon={store} iconActive={store_active} alt="Repositorio" expanded={expanded} />
         <NavItem href="/configure" icon={gear} iconActive={gear_active} alt="Configuracion" expanded={expanded} />
+        <NavItem href="/users" icon={users} iconActive={users_active} alt="Usuarios" expanded={expanded}/>
 
         <Link href="/auth/login" className="mt-auto w-full">
           <button
+            onClick={handleLogout}
             className={`
               text-white bg-red-500 px-2 py-1 rounded hover:bg-red-600 transition-all duration-200
               ${expanded ? "w-full" : "mx-auto"}
@@ -57,5 +69,6 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
     </div>
   );
 };
+
 
 export default PrivateLayout;
