@@ -14,7 +14,9 @@
   --darker: #34363B;
   --darkest: #262933;
   --white: #FFFFFF;
-  --error: #E6362E
+  --error: #E6362E;
+  --success: #02E58F;
+  --error: #E6362E;
 }
 
 @layer utilities {

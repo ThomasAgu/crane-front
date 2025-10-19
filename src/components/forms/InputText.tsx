@@ -9,8 +9,8 @@ interface props {
     placeholder?: string;
     value: string;
     setValue: (v: string) => void;
-    imagesrc: string;
-    imagealt: string;
+    imagesrc?: string;
+    imagealt?: string;
     liveValidators?: Validator[];
     submitValidators?: Validator[];
     showErrors?: boolean;
@@ -77,13 +77,13 @@ const InputText: React.FC<props> = ({
         <main>
             <label className={styles.label}>{label} <span className={styles.requiredMark}>*</span></label>
             <div className={styles.inputWrapper}>
-           <Image
+            {(imagesrc && imagealt)&& <Image
                 src={imagesrc}
                 alt={imagealt}
                 width={30}
                 height={30}
                 className={styles.inputIcon}
-            />
+            />}
             <input
               type={type}
               placeholder={placeholder}

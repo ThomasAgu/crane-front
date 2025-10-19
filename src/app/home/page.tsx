@@ -1,43 +1,46 @@
 'use client'
-import { useEffect } from 'react';
-import NavBar from '../../components/layout/NavBar';
+import { useEffect, useState } from 'react'
+import NavBar from '../../components/layout/NavBar'
+import Dashboard from '../../components/ui/Dashboard'
+import { getApps } from '@/src/lib/api/AppService'
+import { AppDto } from '@/src/lib/dto/AppDto'
+import styles from './home.module.css' 
+import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
-    useEffect(() => {
-        const fetchApps = async () => {
-            const stored = localStorage.getItem("access_token");
-            if (!stored) return console.error("No hay token en localStorage");
-            
-            debugger
-            try {
-                const res = await fetch("http://127.0.0.1:8000/api/v1/roles/", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${stored}`,
-                    },
-                });
+  const [apps, setApps] = useState<AppDto[]>([])
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+  
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await getApps()
+        setApps(data)
+      } catch (err) {
+        console.error('Error cargando las apps:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    throw new Error(`Error ${res.status}: ${errorText}`);
-                }
+  const handleClick = () => {
+    router.push(`/apps/create`)
+  }
 
-                const data = await res.json();
-                console.log("✅ Apps:", data);
-            } catch (err) {
-                console.error("❌ Error:", err);
-            }
-        };
-
-        fetchApps();
-    }, []);
-
-    return (
-        <NavBar>
-            <main className="flex min-h-screen">
-                Hello from home
-            </main>
-        </NavBar>
-    );
+  return (
+    <NavBar>
+      <main className={styles.mainContent}>
+        <h1 className="text-3xl font-bold mb-6">Dashboard</h1> 
+        <button onClick={handleClick} className="btn-primary" >Crear nuevo app</button>
+        {loading ? (
+          <p>Cargando aplicaciones...</p>
+        ) : (
+          <Dashboard apps={apps} />
+        )}
+      </main>
+    </NavBar>
+  )
 }
