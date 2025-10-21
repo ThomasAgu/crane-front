@@ -2,15 +2,25 @@
   display: flex;
   flex-direction: column;
   color: var(--darker);
-  border-bottom: 1px solid var(--darker);
+  border-bottom: 1px solid lightgrey;
   padding-bottom: 6px;
+}
+
+.title{
+  font-size: 1.6rem;
+  color: var(--darker);
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%; /* o un valor fijo, ej: 200px */
 }
 
 .state {
   border-radius: 12px;
   padding: 2px 10px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 1rem;
   color: white;
   text-align: center;
   box-shadow: 1px 1px 5px var(--darker);
@@ -23,3 +33,73 @@
 .inactive {
   background-color: var(--error);
 }
+
+.actionButtons{
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  position: relative;
+  gap: 8px;
+}
+
+.actionButtons button {
+  border-radius: 12px;
+  background-color: none;
+  border: 2px solid;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  transition: 0.2s all ease;
+}
+
+.actionButtons button:hover {
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  color: var(--white);
+
+}
+
+.pauseButton {
+  color: var(--greyest-blue);
+}
+
+.pauseButton:hover {
+  background-color: var(--greyest-blue);
+}
+
+.playButton {
+  color: var(--primary-blue);
+}
+
+.playButton:hover {
+  background-color: var(--primary-blue);
+}
+
+.restartButton {
+  color: var(--light-blue-grey);
+}
+
+.restartButton:hover {
+  background-color: var(--light-blue-grey);
+}
+
+.scaleButton {
+  color: var(--warning);
+}
+
+.scaleButton:hover {
+  background-color:  var(--warning);
+}
+
+.deleteButton {
+  color: var(--error);
+  position: absolute;
+  right: 0;
+}
+
+.deleteButton:hover {
+  background-color: var(--error);
+}
+
+/*   `flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white transition
+ */

@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { AppDto } from '@/src/lib/dto/AppDto'
 import styles from './DashboardItem.module.css'
-import { startApp, stopApp } from '@/src/lib/api/AppService'
-import { Play, Pause, Plus, Minus } from 'lucide-react'
+import { restartApp, startApp, stopApp } from '@/src/lib/api/AppService'
+import { Play, Pause, Plus, Minus, RefreshCcw, Trash, Layers2 } from 'lucide-react'
 
 interface DashboardItemProps {
   app: AppDto
@@ -14,10 +14,12 @@ interface DashboardItemProps {
 export default function DashboardItem({ app }: DashboardItemProps) {
   const router = useRouter()
   const [active, setActive] = useState(app.status != 'Stopped');
-  const canScaleUp = (app.current_scale ?? 0) < (app.max_scale ?? 0)
-  const canScaleDown = (app.current_scale ?? 0) > (app.min_scale ?? 0)
+  
+  const handleClickItem = () => {
+    router.push(`/home/${app.id}/`)
+  }
 
-  //ME falta saber en que estado esta
+
   const handleStartApp = async () => {
     try {
       const data = await startApp(String(app.id));
@@ -36,14 +38,24 @@ export default function DashboardItem({ app }: DashboardItemProps) {
     }
   }
 
+  const handleRestartApp = async () => {
+    try {
+      setActive(false)
+      const data = await restartApp(String(app.id));
+      setActive(true);
+    } catch (err: any) {
+      window.alert('huno un error al arrancar el servicio');      
+    }
+  }
+
   return (
-    <div
+    <div onClick={handleClickItem}
       className="cursor-pointer bg-white rounded-2xl p-5 shadow-sm border border-gray-200 
-                 hover:shadow-md transition-all hover:border-blue-400 flex flex-col justify-between"
+                 hover:shadow-md transition-all hover:border-blue-400 flex flex-col justify-start gap-2 h-90 w-80"
     >
-      <div className={`${styles.header} mb-3`}>
+      <div className={`${styles.header}`}>
         <div className="flex justify-between w-full items-center">
-          <h2 className="text-lg font-semibold text-gray-800">{app.name}</h2>
+          <h2 className={styles.title}>{app.name}</h2>
           <div
             className={`${styles.state} ${
               active ? styles.active : styles.inactive
@@ -54,6 +66,24 @@ export default function DashboardItem({ app }: DashboardItemProps) {
         </div>
       </div>
 
+      <div className={styles.actionButtons}>
+          {active ? (
+            <>
+              <button onClick={handleStopApp} className={styles.pauseButton}><Pause size={30} /></button>
+              <button onClick={handleRestartApp} className={styles.restartButton} ><RefreshCcw size={30}/> </button>
+              <button onClick={handleRestartApp} className={styles.scaleButton} ><Layers2 size={30}/> </button>
+            </>
+          ) : (
+            <>
+              <button onClick={handleStartApp} className={styles.playButton}><Play size={30} /> </button>
+            </>
+          )}
+
+          <button onClick={handleStopApp} className={styles.deleteButton}><Trash size={30} /></button>
+        </div>
+
+
+      {/* Cobtar servicios reglas redes etc  */}
       <div className="flex flex-col gap-1 mb-4 text-sm text-gray-600">
         <p>Escala actual: {app.current_scale ?? 'N/A'}</p>
         <p>
@@ -62,42 +92,6 @@ export default function DashboardItem({ app }: DashboardItemProps) {
             ? new Date(app.created_at).toLocaleDateString()
             : 'Desconocido'}
         </p>
-      </div>
-
-      <div className="flex justify-between items-center">
-        <button
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white 
-                     ${active ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}
-                     transition`}
-        >
-          {active ? (
-            <>
-              <button onClick={handleStopApp}><Pause size={16} /> Pausar</button>
-            </>
-          ) : (
-            <>
-              <button onClick={handleStartApp}><Play size={16} /> Pausar</button>
-            </>
-          )}
-        </button>
-
-        {/* Escalar controles */}
-        <div className="flex items-center gap-2">
-          <button
-            className={`p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition 
-                       ${!canScaleDown ? 'opacity-40 cursor-not-allowed' : ''}`}
-            disabled={!canScaleDown}
-          >
-            <Minus size={16} />
-          </button>
-          <button
-            className={`p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition 
-                       ${!canScaleUp ? 'opacity-40 cursor-not-allowed' : ''}`}
-            disabled={!canScaleUp}
-          >
-            <Plus size={16} />
-          </button>
-        </div>
       </div>
     </div>
   )

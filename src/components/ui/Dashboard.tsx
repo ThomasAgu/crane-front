@@ -14,7 +14,7 @@ export default function Dashboard({ apps }: DashboardProps) {
 
   debugger
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl pt-4">
       {apps.map((app) => (
         <DashboardItem key={app.id ?? Math.random()} app={app} />
       ))}

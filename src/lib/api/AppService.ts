@@ -30,6 +30,64 @@ export async function getApp(id: string): Promise<AppDto> {
     return response.json();
 }
 
+
+export async function restartApp(id: string): Promise<string> {
+  const token = getToken()
+
+  const response = await fetch(`${API_URL}/apps/${id}/restart`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Error al resetear la aplicación: ${errorText}`)
+  }
+
+  return response.json()
+}
+
+export async function getLogs(id: string): Promise<string> {
+  const token = getToken()
+
+  const response = await fetch(`${API_URL}/apps/${id}/logs`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Error al traer los logs de la aplicación: ${errorText}`)
+  }
+
+  return response.json()
+}
+
+export async function getStats(id: string): Promise<string> {
+  const token = getToken()
+
+  const response = await fetch(`${API_URL}/apps/${id}/stats`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Error al traer las stats de la aplicación: ${errorText}`)
+  }
+
+  return response.json()
+}
+
 export async function createApp(appData: CreateAppDto): Promise<AppDto> {
   const token = getToken()
 
@@ -87,3 +145,23 @@ export async function stopApp(id: string): Promise<string> {
 
   return response.json()
 }
+
+export async function scaleApp(id: string): Promise<string> {
+  const token = getToken()
+
+  const response = await fetch(`${API_URL}/apps/${id}/scale`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Error al escalar la aplicación: ${errorText}`)
+  }
+
+  return response.json()
+}
+

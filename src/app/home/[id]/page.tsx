@@ -30,7 +30,7 @@ export default function AppDetailPage() {
 
   return (
     <NavBar>
-      <main className="min-h-screen p-6 bg-gray-50">
+      <main className="min-h-screen w-screen p-6 bg-gray-50">
         {loading ? (
           <p>Cargando detalles...</p>
         ) : app ? (

@@ -17,6 +17,7 @@
   --error: #E6362E;
   --success: #02E58F;
   --error: #E6362E;
+  --warning: orange;
 }
 
 @layer utilities {
