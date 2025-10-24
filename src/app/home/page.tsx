@@ -8,8 +8,8 @@ import styles from './home.module.css'
 import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
-  const [apps, setApps] = useState<AppDto[]>([])
-  const [loading, setLoading] = useState(true)
+  const [apps, setApps] = useState<AppDto[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter()
   
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function HomePage() {
       } catch (err) {
         console.error('Error cargando las apps:', err)
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
     fetchData()
@@ -38,7 +38,7 @@ export default function HomePage() {
         {loading ? (
           <p>Cargando aplicaciones...</p>
         ) : (
-          <Dashboard apps={apps} />
+          <Dashboard apps={apps}/>
         )}
       </main>
     </NavBar>

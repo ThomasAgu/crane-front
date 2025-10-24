@@ -165,3 +165,20 @@ export async function scaleApp(id: string): Promise<string> {
   return response.json()
 }
 
+export async function deleteApp(id: string): Promise<string> {
+  const token = getToken();
+  const response = await fetch(`${API_URL}/apps/${id}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`Error al borrar la aplicación: ${errorText}`)
+    }
+
+    return response.json()
+}

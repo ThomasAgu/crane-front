@@ -1,27 +1,58 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { AppDto } from '@/src/lib/dto/AppDto'
 import styles from './DashboardItem.module.css'
-import { restartApp, startApp, stopApp } from '@/src/lib/api/AppService'
+import { restartApp, startApp, stopApp, deleteApp, getLogs, getStats, scaleApp } from '@/src/lib/api/AppService'
 import { Play, Pause, Plus, Minus, RefreshCcw, Trash, Layers2 } from 'lucide-react'
-
+import DeleteModal from './DeleteModal'
 interface DashboardItemProps {
-  app: AppDto
+  app: AppDto;
 }
 
 export default function DashboardItem({ app }: DashboardItemProps) {
-  const router = useRouter()
-  const [active, setActive] = useState(app.status != 'Stopped');
   
+  const router = useRouter()
+
+  const [active, setActive] = useState(app.status != 'Stopped');
+  const [deleteModal, setDeleteModal] = useState(false);
+
   const handleClickItem = () => {
     router.push(`/home/${app.id}/`)
   }
 
-
-  const handleStartApp = async () => {
+  const handleScaleApp = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
+      const data = await scaleApp(String(app.id));  
+      console.log('App escalada');
+      router.refresh();
+    } catch (err) {
+      console.error('No se pudo escalar la app por', err);
+    }
+  }
+
+  const handleDeleteApp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleteModal(true);
+  }
+
+  const handleConfirmDelete = async (e: React.MouseEvent) => {
+    try {
+      e.stopPropagation();
+      const data = await deleteApp(String(app.id));
+      console.log('App borrada:', app.id)
+      setDeleteModal(false)
+      router.refresh()
+    } catch (err) {
+      console.error('Error eliminando app', err)
+    }
+  }
+
+  const handleStartApp = async (e: React.MouseEvent) => {
+    try {
+      e.stopPropagation();
       const data = await startApp(String(app.id));
       setActive(true);
     } catch (err: any) {
@@ -29,8 +60,9 @@ export default function DashboardItem({ app }: DashboardItemProps) {
     }
   }
 
-  const handleStopApp = async () => {
+  const handleStopApp = async (e: React.MouseEvent) => {
     try {
+      e.stopPropagation();
       const data = await stopApp(String(app.id));
       setActive(false)
     } catch (err: any) {
@@ -38,8 +70,9 @@ export default function DashboardItem({ app }: DashboardItemProps) {
     }
   }
 
-  const handleRestartApp = async () => {
+  const handleRestartApp = async (e: React.MouseEvent) => {
     try {
+      e.stopPropagation();
       setActive(false)
       const data = await restartApp(String(app.id));
       setActive(true);
@@ -71,7 +104,7 @@ export default function DashboardItem({ app }: DashboardItemProps) {
             <>
               <button onClick={handleStopApp} className={styles.pauseButton}><Pause size={30} /></button>
               <button onClick={handleRestartApp} className={styles.restartButton} ><RefreshCcw size={30}/> </button>
-              <button onClick={handleRestartApp} className={styles.scaleButton} ><Layers2 size={30}/> </button>
+              <button onClick={handleScaleApp} className={styles.scaleButton} ><Layers2 size={30}/> </button>
             </>
           ) : (
             <>
@@ -79,7 +112,7 @@ export default function DashboardItem({ app }: DashboardItemProps) {
             </>
           )}
 
-          <button onClick={handleStopApp} className={styles.deleteButton}><Trash size={30} /></button>
+          <button onClick={handleDeleteApp} className={styles.deleteButton}><Trash size={30} /></button>
         </div>
 
 
@@ -93,6 +126,14 @@ export default function DashboardItem({ app }: DashboardItemProps) {
             : 'Desconocido'}
         </p>
       </div>
+      {deleteModal && (
+        <DeleteModal
+          itemName={app.name}
+          itemType="aplicaciones"
+          deleteFunction={handleConfirmDelete}
+          setActive={setDeleteModal}
+        />
+      )}
     </div>
   )
 }

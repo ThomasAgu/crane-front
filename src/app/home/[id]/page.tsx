@@ -3,23 +3,29 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import NavBar from '../../../components/layout/NavBar'
-import { getApp } from '@/src/lib/api/AppService' 
+import { getApp, getLogs, getStats } from '@/src/lib/api/AppService' 
 import type { AppDto } from '@/src/lib/dto/AppDto'
 
 export default function AppDetailPage() {
   const params = useParams<{ id: string }>()
   const id = params.id
-
+  
+  const [logs, setLogs] = useState("");
+  const [stats, setStats] = useState("");
   const [app, setApp] = useState<AppDto | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getApp(id)
-        setApp(data)
+        const data = await getApp(id);
+        const logs = await getLogs(String(id));
+        const stats = await getStats(String(id));
+        setLogs(logs);
+        setStats(JSON.stringify(stats));
+        setApp(data);
       } catch (err) {
-        console.error(`Error al obtener la aplicación ${id}:`, err)
+        console.error(`Error al obtener los datos de la app ${id}:`, err)
       } finally {
         setLoading(false)
       }
@@ -27,6 +33,8 @@ export default function AppDetailPage() {
 
     if (id) fetchData()
   }, [id])
+
+
 
   return (
     <NavBar>
@@ -43,6 +51,8 @@ export default function AppDetailPage() {
               <li><strong>Escala máxima:</strong> {app.max_scale ?? 'N/A'}</li>
               <li><strong>Creado:</strong> {app.created_at ? new Date(app.created_at).toLocaleString() : 'Desconocido'}</li>
               <li><strong>Actualizado:</strong> {app.updated_at ? new Date(app.updated_at).toLocaleString() : 'N/A'}</li>
+              <li><strong>Los logs:</strong> {logs}</li>
+              <li><strong>Stats:</strong> {stats}</li>
             </ul>
           </div>
         ) : (
