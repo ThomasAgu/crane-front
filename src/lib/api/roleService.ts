@@ -1,91 +1,30 @@
+import apiRequest from "./baseService";
 import { RolesDto } from "../dto/RolesDto";
-import { getToken } from "@/src/app/services/JWTService";
-import { API_URL } from "./baseService";
 
-export async function getRoles(): Promise<RolesDto[]> {
-  const token = getToken();
+//GET
+export const getRoles = () =>
+  apiRequest<RolesDto[]>("/roles");
 
-  const response = await fetch(`${API_URL}/roles`, {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  });
+export const getRole = (id: string) =>
+  apiRequest<void>(`/roles/${id}`);
 
-  if (!response.ok) throw new Error("No se pudieron obtener los roles");
-  return response.json();
-}
+export const getUserRoles = (userID: number) =>
+  apiRequest<RolesDto[]>(`/roles/user/${userID}`);
 
-export async function createRole(name: string): Promise<void> {
-  const token = getToken();
+//POST
+export const createRole = (name: string) =>
+  apiRequest<void>("/roles", "POST", { name });
 
-  const response = await fetch(`${API_URL}/roles`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({ name }),
-  });
+export const appendRoleToUser = (userID: number, roleID: number) =>
+  apiRequest<void>(`/roles/${roleID}/user/${userID}`, "POST", { userID, roleID });
 
-  if (!response.ok) throw new Error("No se pudo crear el rol");
-}
+//DELETE
+export const deleteRole = (roleId: number, userId: number) =>
+  apiRequest<void>(`/roles/${roleId}/user/${userId}`, "DELETE");
 
-export async function deleteRole(roleId: number): Promise<void> {
-  const token = getToken();
+export const removeRoleToUser = (userID: number, roleID: number) =>
+  apiRequest<void>(`/roles/${roleID}/user/${userID}`, "DELETE", { userID, roleID });
 
-  const response = await fetch(`${API_URL}/roles/${roleId}`, {
-    method: "DELETE",
-    headers: {
-      "Authorization": `Bearer ${token}`
-    },
-  });
-
-  if (!response.ok) throw new Error("No se pudo eliminar el rol");
-}
-
-export async function getRolesForUser(userID: number): Promise<RolesDto[]> {
-  const token = getToken();
-
-  const response = await fetch(`${API_URL}/roles/user/${userID}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  });
-
-  if (!response.ok) throw new Error("No se pudieron obtener los roles");
-  return response.json();
-}
-
-export async function appendRoleToUser(userID: number, roleID: number) {
-  const token = getToken();
-
-  const response = await fetch(`${API_URL}/roles/${roleID}/user/${userID}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({ userID, roleID }),
-  });
-
-  if (!response.ok) throw new Error("No se pudo agregar el rol al usuario");
-}
-
-export async function removeRoleToUser(userID: number, roleID: number) {
-  const token = getToken();
-
-  const response = await fetch(`${API_URL}/roles/${roleID}/user/${userID}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({ userID, roleID }),
-  });
-
-  if (!response.ok) throw new Error("No se pudo remover el rol al usuario");
-}
-
-
+//PUT
+export const updateRole = (roleID: number) =>
+  apiRequest<void>(`/roles/${roleID}`, "PUT");

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import NavBar from '../../../components/layout/NavBar'
-import { getApp, getLogs, getStats } from '@/src/lib/api/AppService' 
+import { getApp, getLogs, getStats } from '@/src/lib/api/appService' 
 import type { AppDto } from '@/src/lib/dto/AppDto'
 
 export default function AppDetailPage() {

@@ -4,7 +4,7 @@ import InputText from './InputText'
 import ServiceForm from './ServiceForm'
 import { AppDto, CreateAppDto } from '@/src/lib/dto/AppDto'
 import { ServiceDto } from '@/src/lib/dto/ServiceDto'
-import { createApp } from '@/src/lib/api/AppService'
+import { createApp } from '@/src/lib/api/appService'
 import { requiredValidator } from '@/src/lib/validators/RequiredValidator' 
 
 export default function AppForm() {

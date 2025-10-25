@@ -4,14 +4,15 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import type { AppDto } from '@/src/lib/dto/AppDto'
 import styles from './DashboardItem.module.css'
-import { restartApp, startApp, stopApp, deleteApp, getLogs, getStats, scaleApp } from '@/src/lib/api/AppService'
+import { restartApp, startApp, stopApp, deleteApp, getLogs, getStats, scaleApp } from '@/src/lib/api/appService'
 import { Play, Pause, Plus, Minus, RefreshCcw, Trash, Layers2 } from 'lucide-react'
 import DeleteModal from './DeleteModal'
 interface DashboardItemProps {
   app: AppDto;
+  onUpdate: CallableFunction
 }
 
-export default function DashboardItem({ app }: DashboardItemProps) {
+export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   
   const router = useRouter()
 
@@ -25,9 +26,9 @@ export default function DashboardItem({ app }: DashboardItemProps) {
   const handleScaleApp = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const data = await scaleApp(String(app.id));  
+      await scaleApp(String(app.id));  
       console.log('App escalada');
-      router.refresh();
+      onUpdate();
     } catch (err) {
       console.error('No se pudo escalar la app por', err);
     }
@@ -41,7 +42,7 @@ export default function DashboardItem({ app }: DashboardItemProps) {
   const handleConfirmDelete = async (e: React.MouseEvent) => {
     try {
       e.stopPropagation();
-      const data = await deleteApp(String(app.id));
+      await deleteApp(String(app.id));
       console.log('App borrada:', app.id)
       setDeleteModal(false)
       router.refresh()
@@ -53,7 +54,7 @@ export default function DashboardItem({ app }: DashboardItemProps) {
   const handleStartApp = async (e: React.MouseEvent) => {
     try {
       e.stopPropagation();
-      const data = await startApp(String(app.id));
+      await startApp(String(app.id));
       setActive(true);
     } catch (err: any) {
       window.alert('huno un error al arrancar el servicio');
@@ -63,7 +64,7 @@ export default function DashboardItem({ app }: DashboardItemProps) {
   const handleStopApp = async (e: React.MouseEvent) => {
     try {
       e.stopPropagation();
-      const data = await stopApp(String(app.id));
+      await stopApp(String(app.id));
       setActive(false)
     } catch (err: any) {
       window.alert('huno un error al arrancar el servicio');      
@@ -74,7 +75,7 @@ export default function DashboardItem({ app }: DashboardItemProps) {
     try {
       e.stopPropagation();
       setActive(false)
-      const data = await restartApp(String(app.id));
+      await restartApp(String(app.id));
       setActive(true);
     } catch (err: any) {
       window.alert('huno un error al arrancar el servicio');      

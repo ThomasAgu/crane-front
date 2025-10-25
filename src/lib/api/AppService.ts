@@ -1,184 +1,40 @@
-import { getToken } from "@/src/app/services/JWTService";
+import apiRequest from "./baseService";
 import { AppDto, CreateAppDto } from "../dto/AppDto";
-import { API_URL } from "./baseService";
 
-export async function getApps(): Promise<AppDto[]> {
-    const token = getToken();
+//GET
+export const getApps = () => apiRequest<AppDto[]>("/apps");
 
-    const response = await fetch (`${API_URL}/apps`, {
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-    });
+export const getApp = (id: string) => apiRequest<AppDto>(`/apps/${id}`);
 
-    if (!response.ok) throw new Error("Hubo un error al cargar las aplicaicones");
-    return response.json();
-}
+//POST
+export const createApp = (data: CreateAppDto) =>
+  apiRequest<AppDto>("/apps", "POST", data);
 
-export async function getApp(id: string): Promise<AppDto> {
-    const token = getToken();
+export const restartApp = (id: string) =>
+  apiRequest<string>(`/apps/${id}/restart`, "POST");
 
-    const response = await fetch (`${API_URL}/apps/${id}`, {
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-    });
-    
-    if (!response.ok) throw new Error(`Hubo un error al trarer la aplicacion ${id}`);
-    return response.json();
-}
+export const startApp = (id: string) =>
+  apiRequest<string>(`/apps/${id}/start`, "POST");
 
+export const stopApp = (id: string) =>
+  apiRequest<string>(`/apps/${id}/stop`, "POST");
 
-export async function restartApp(id: string): Promise<string> {
-  const token = getToken()
+export const scaleApp = (id: string) =>
+  apiRequest<string>(`/apps/${id}/scale`, "POST");
 
-  const response = await fetch(`${API_URL}/apps/${id}/restart`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  })
+export const getLogs = (id: string) =>
+  apiRequest<string>(`/apps/${id}/logs`, "POST");
 
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Error al resetear la aplicación: ${errorText}`)
-  }
+export const getStats = (id: string) =>
+  apiRequest<string>(`/apps/${id}/stats`, "POST");
 
-  return response.json()
-}
+export const refreshApps = () =>
+  apiRequest<string>(`/apps/refresh`, "POST");
 
-export async function getLogs(id: string): Promise<string> {
-  const token = getToken()
+//DELETE
+export const deleteApp = (id: string) =>
+  apiRequest<string>(`/apps/${id}`, "DELETE");
 
-  const response = await fetch(`${API_URL}/apps/${id}/logs`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Error al traer los logs de la aplicación: ${errorText}`)
-  }
-
-  return response.json()
-}
-
-export async function getStats(id: string): Promise<string> {
-  const token = getToken()
-
-  const response = await fetch(`${API_URL}/apps/${id}/stats`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Error al traer las stats de la aplicación: ${errorText}`)
-  }
-
-  return response.json()
-}
-
-export async function createApp(appData: CreateAppDto): Promise<AppDto> {
-  const token = getToken()
-
-  const response = await fetch(`${API_URL}/apps`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify(appData),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Error al crear la aplicación: ${errorText}`)
-  }
-
-  return response.json()
-}
-
-export async function startApp(id: string): Promise<string> {
-  const token = getToken()
-
-  const response = await fetch(`${API_URL}/apps/${id}/start`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Error al crear la aplicación: ${errorText}`)
-  }
-
-  return response.json()
-}
-
-export async function stopApp(id: string): Promise<string> {
-  const token = getToken()
-
-  const response = await fetch(`${API_URL}/apps/${id}/stop`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Error al crear la aplicación: ${errorText}`)
-  }
-
-  return response.json()
-}
-
-export async function scaleApp(id: string): Promise<string> {
-  const token = getToken()
-
-  const response = await fetch(`${API_URL}/apps/${id}/scale`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Error al escalar la aplicación: ${errorText}`)
-  }
-
-  return response.json()
-}
-
-export async function deleteApp(id: string): Promise<string> {
-  const token = getToken();
-  const response = await fetch(`${API_URL}/apps/${id}`, {
-      method: 'DELETE',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(`Error al borrar la aplicación: ${errorText}`)
-    }
-
-    return response.json()
-}
+//PATCH
+export const updateApp = (data: AppDto) =>
+  apiRequest<AppDto>(`/apps/${data.id}`, "PATCH", data);

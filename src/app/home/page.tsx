@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import NavBar from '../../components/layout/NavBar'
 import Dashboard from '../../components/ui/Dashboard'
-import { getApps } from '@/src/lib/api/AppService'
+import { getApps } from '@/src/lib/api/appService'
 import { AppDto } from '@/src/lib/dto/AppDto'
 import styles from './home.module.css' 
 import { useRouter } from 'next/navigation'
@@ -16,6 +16,7 @@ export default function HomePage() {
     async function fetchData() {
       try {
         const data = await getApps()
+        debugger
         setApps(data)
       } catch (err) {
         console.error('Error cargando las apps:', err)
@@ -30,6 +31,11 @@ export default function HomePage() {
     router.push(`/apps/create`)
   }
 
+  const handleUpdate = async () => {
+    const data = await getApps();
+    setApps(data);
+  } ;
+
   return (
     <NavBar>
       <main className={styles.mainContent}>
@@ -38,7 +44,7 @@ export default function HomePage() {
         {loading ? (
           <p>Cargando aplicaciones...</p>
         ) : (
-          <Dashboard apps={apps}/>
+          <Dashboard apps={apps} onUpdate={handleUpdate}/>
         )}
       </main>
     </NavBar>
