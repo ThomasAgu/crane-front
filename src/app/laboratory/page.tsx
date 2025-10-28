@@ -27,6 +27,5 @@ export default function HomePage() {
 }
 
 /*
-1. Faltaria agregar el selector de templates y/o el selector de proyectos previos
-2. Depende lo que elija pinta en el flowchart.
+1. Faltaria agregar el selector de proyectos previos
 */

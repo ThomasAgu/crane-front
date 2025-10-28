@@ -38,25 +38,50 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
     }
   }, [selectedTemplate]);
 
+  useEffect(() => {
+    const onDocClick = (ev: MouseEvent) => {
+      if (ev.button === 0) setContextMenu(null);
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, []);
+
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number, nodeId?: string } | null>(null);
 
   const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((ns) => applyNodeChanges(changes, ns)), []);
   const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((es) => applyEdgeChanges(changes, es)), []);
   const onConnect = useCallback((params: Connection) => setEdges((es) => addEdge(params, es)), []);
 
   const onNodeClick = (_: any, node: Node) => setSelectedNode(node);
-  const onPaneContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault();
-    setContextMenu({ x: event.clientX, y: event.clientY });
+
+  const onPanelContextMenu = (e: React.MouseEvent) => { 
+    e.preventDefault();
+    setContextMenu((prev) => (prev ? null : { x: e.clientX, y: e.clientY }));
   };
 
-  const addNode = (type: string, x: number, y: number) => {
+   const onNodeContextMenu = (e: React.MouseEvent, node: Node) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, nodeId: node.id });
+  };
+
+  const addNode = (type: string, x: number, y: number, connectedTo: string) => {
     const id = `${+new Date()}`;
     const newNode: Node = { id, type, position: { x, y }, data: { label: `${type} nuevo` } };
     setNodes((nds) => [...nds, newNode]);
+    // If connectedTo is provided, create an edge
+    if (connectedTo) {
+      const newEdge: Edge = { id: `e${connectedTo}-${id}`, source: connectedTo, target: id };
+      setEdges((eds) => [...eds, newEdge]);
+    }
+    setContextMenu(null);
+  };
+
+  const onDeleteNode = (id: string) => {
+    setNodes((nds) => nds.filter((n) => n.id !== id));
+    setEdges((es) => es.filter((e) => e.source !== id && e.target !== id));
     setContextMenu(null);
   };
 
@@ -72,7 +97,8 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
-          onPaneContextMenu={onPaneContextMenu}
+          onPaneContextMenu={onPanelContextMenu}
+          onNodeContextMenu={onNodeContextMenu}
           fitView
         >
           <Background />
@@ -80,7 +106,13 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
           <MiniMap />
         </ReactFlow>
         
-        <ContextMenu position={contextMenu} addNode={addNode} />
+        <ContextMenu 
+          position={contextMenu} 
+          addNode={addNode} 
+          nodes={nodes}
+          onDeleteNode={onDeleteNode}
+        />
+
       </div>
 
     <Sidebar 
