@@ -1,4 +1,5 @@
 // components/ContextMenu.tsx
+import React, { useEffect, useState } from "react";
 import { EditorService } from "@/src/app/services/EditorService";
 
 interface ContextMenuProps {
@@ -12,37 +13,58 @@ export default function ContextMenu({ position, addNode, nodes, onDeleteNode }: 
   if (!position) return null;
   const canAddApp = !EditorService.isAppNodeCreated(nodes);
   const isNodeTarget = Boolean(position.nodeId);
+  const targetNode = isNodeTarget ? nodes.find((n) => n.id === position.nodeId) : null;
+  
+  const allowedTypesForTarget = isNodeTarget && targetNode
+    ? EditorService.getAllowedAddTypesForTarget(nodes, targetNode)
+    : null;
+
+  const canShowType = (type: string) => {
+    if (!isNodeTarget) return true;
+    return allowedTypesForTarget ? allowedTypesForTarget.includes(type) : false;
+  };
 
   return (
     <div
       className="absolute bg-white shadow-md rounded p-2 z-50"
       style={{ top: position.y, left: position.x }}
     >
-      <button
-        className={`block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest ${canAddApp ? '' : 'opacity-50 cursor-not-allowed'}`}
-        onClick={() => addNode("app", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
-        disabled={!canAddApp}
-      >
-        ➕ Agregar App
-      </button>
-      <button
-        className="block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest"
-        onClick={() => addNode("service", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
-      >
-        ➕ Agregar Servicio
-      </button>
-      <button
-        className="block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest"
-        onClick={() => addNode("network", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
-      >
-        ➕ Agregar Red
-      </button>
-      <button
-        className="block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest"
-        onClick={() => addNode("volume", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
-      >
-        ➕ Agregar Volumen
-      </button>
+      {canShowType("app") && (
+        <button
+          className={`block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest ${canAddApp ? '' : 'opacity-50 cursor-not-allowed'}`}
+          onClick={() => addNode("app", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
+          disabled={!canAddApp}
+        >
+          ➕ Agregar App
+        </button>
+      )}
+
+      {canShowType("service") && (
+        <button
+          className="block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest"
+          onClick={() => addNode("service", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
+        >
+          ➕ Agregar Servicio
+        </button>
+      )}
+
+      {canShowType("network") && (
+        <button
+          className="block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest"
+          onClick={() => addNode("network", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
+        >
+          ➕ Agregar Red
+        </button>
+      )}
+
+      {canShowType("volume") && (
+        <button
+          className="block w-full text-left px-2 py-1 hover:bg-gray-200 text-darkest"
+          onClick={() => addNode("volume", position.x, position.y, isNodeTarget ? position.nodeId! : '')}
+        >
+          ➕ Agregar Volumen
+        </button>
+      )}
 
       {isNodeTarget && (
         <button

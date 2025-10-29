@@ -67,11 +67,17 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
     setContextMenu({ x: e.clientX, y: e.clientY, nodeId: node.id });
   };
 
+  const onNodeDrag = useCallback((e: React.MouseEvent, node: Node) => {
+    setContextMenu((prev) =>
+      prev && prev.nodeId === node.id ? { x: e.clientX, y: e.clientY, nodeId: node.id } : prev
+    )
+  }, []);
+
   const addNode = (type: string, x: number, y: number, connectedTo: string) => {
     const id = `${+new Date()}`;
     const newNode: Node = { id, type, position: { x, y }, data: { label: `${type} nuevo` } };
     setNodes((nds) => [...nds, newNode]);
-    // If connectedTo is provided, create an edge
+    
     if (connectedTo) {
       const newEdge: Edge = { id: `e${connectedTo}-${id}`, source: connectedTo, target: id };
       setEdges((eds) => [...eds, newEdge]);
@@ -99,6 +105,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
           onNodeClick={onNodeClick}
           onPaneContextMenu={onPanelContextMenu}
           onNodeContextMenu={onNodeContextMenu}
+          onNodeDrag={onNodeDrag}
           fitView
         >
           <Background />
@@ -106,7 +113,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
           <MiniMap />
         </ReactFlow>
         
-        <ContextMenu 
+        <ContextMenu
           position={contextMenu} 
           addNode={addNode} 
           nodes={nodes}
