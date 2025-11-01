@@ -124,6 +124,8 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
 
     <Sidebar 
       selectedNode={selectedNode} 
+      nodes={nodes}
+      edges={edges}
       onUpdateNode={(id, newData) => {
         setNodes((nodes) =>
           nodes.map((node) =>

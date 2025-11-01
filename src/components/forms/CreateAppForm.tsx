@@ -40,7 +40,6 @@ export default function AppForm() {
       max_scale: maxScale,
     }
     
-    debugger
     try {
       setLoading(true)
       await createApp(appData)

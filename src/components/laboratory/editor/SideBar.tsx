@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import AppEditor from "./AppEditor";
 import ServiceEditor from "./ServiceEditor";
 import NetworkEditor from "./NetworkEditor";
@@ -9,19 +9,21 @@ const editorMap: Record<string, React.FC<any>> = {
   app: AppEditor,
   service: ServiceEditor,
   network: NetworkEditor,
-  volume: VolumeEditor
+  volume: VolumeEditor,
 };
 
-export default function Sidebar({ 
-  selectedNode, 
-  onUpdateNode 
-}: { 
-  selectedNode: any, 
-  onUpdateNode: (id: string, data: any) => void 
+export default function Sidebar({
+  selectedNode,
+  onUpdateNode,
+  nodes = [],
+  edges = [],
+}: {
+  selectedNode: any;
+  onUpdateNode: (id: string, data: any) => void;
+  nodes?: any[];
+  edges?: any[];
 }) {
-  
-
-  const Editor = editorMap[selectedNode?.type || 'app'];
+  const Editor = editorMap[selectedNode?.type || "app"];
 
   return (
     <div className="bg-white">
@@ -29,17 +31,9 @@ export default function Sidebar({
         selectedNode={selectedNode}
         onUpdateNode={onUpdateNode}
         Editor={Editor}
+        nodes={nodes}
+        edges={edges}
       />
     </div>
   );
 }
-
-/* 
-<div className="p-4 border-l w-full bg-white">
-      <EditorBase/>
-      <Editor 
-        data={selectedNode.data} 
-        onChange={(newData: any) => onUpdateNode(selectedNode.id, newData)} 
-      />
-    </div>
-*/

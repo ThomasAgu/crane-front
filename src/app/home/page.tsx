@@ -16,7 +16,6 @@ export default function HomePage() {
     async function fetchData() {
       try {
         const data = await getApps()
-        debugger
         setApps(data)
       } catch (err) {
         console.error('Error cargando las apps:', err)

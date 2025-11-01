@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Image from "next/image";
 
@@ -15,16 +15,26 @@ interface EditorBaseProps {
   selectedNode: any;
   onUpdateNode: (id: string, data: any) => void;
   Editor: React.FC<any>;
+  nodes? : any[]
+  edges? : any[]
 }
 
 const EditorBase: React.FC<EditorBaseProps> = ({
   selectedNode,
   onUpdateNode,
   Editor,
+  nodes = [],
+  edges = [],
 }) => {
     const [active, setActive] = useState(false);
     const [actualEditor, setActualEditor] = useState('Edicion');
     const editorStates: EditorState[] = ["Edicion", "Simulacion", "Configuracion"];
+
+    useEffect(() => {
+        if (selectedNode) {
+            setActive(true);
+        }
+    }, [selectedNode]);
 
     return (
         <div className={active ? 'sidebar-active bg-white' : 'sidebar-inactive bg-white'} id="sidebar">
@@ -73,6 +83,9 @@ const EditorBase: React.FC<EditorBaseProps> = ({
           {actualEditor === "Edicion" && selectedNode && (
             <Editor
               data={selectedNode.data}
+              nodes={nodes}
+              edges={edges}
+              selectedNode={selectedNode}
               onChange={(newData: any) =>
                 onUpdateNode(selectedNode.id, newData)
               }

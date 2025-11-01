@@ -1,4 +1,6 @@
+import { get } from "http";
 import { rules } from "../../lib/helper/EditorRules";
+import { Edge } from "reactflow";
 
 function isAppNodeCreated(nodes: any[]): boolean {
   return nodes.some((node) => node.type === "app");
@@ -39,8 +41,62 @@ function getAllowedAddTypesForTarget(nodes: any[], targetNode: any): string[] {
   return allowed;
 }
 
+function getNetworkNamesBySelectedNode(selectedNode: any, edges: Edge[], nodes: any[]): string[] {
+  if (!selectedNode) return [];
+  //1. Get edges connected to the selected node
+  const connectedEdges = edges.filter((edge: Edge) => edge.source === selectedNode.id || edge.target === selectedNode.id);
+  //2  From edges connected Get nodes where id is in edge and type is network
+  const networkIds = connectedEdges.map((edge: Edge) => {
+    const networkNodeId = edge.source === selectedNode.id ? edge.target : edge.source;
+    return networkNodeId;
+  });
+  //3  Return names of networks
+  const networkNames = nodes
+    .filter((node) => networkIds.includes(node.id) && node.type === "network")
+    .map((networkNode) => networkNode.data || networkNode.id);
+
+  return networkNames;
+}
+
+function getVolumeNamesBySelectedNode(selectedNode: any, edges: Edge[], nodes: any[]): string[] {
+  if (!selectedNode) return [];
+  //1. Get edges connected to the selected node
+ const connectedEdges = edges.filter((edge: Edge) => edge.source === selectedNode.id || edge.target === selectedNode.id);
+  //2  From edges connected Get nodes where id is in edge and type is volume
+  const volumeIds = connectedEdges.map((edge: Edge) => {
+  const volumeNodeId = edge.source === selectedNode.id ? edge.target : edge.source;
+    return volumeNodeId;
+  });
+  //3  Return names of volumes
+  const volumeNames = nodes
+    .filter((node) => volumeIds.includes(node.id) && node.type === "volume")
+    .map((volumeNode) => volumeNode.data || volumeNode.id);
+  
+  return volumeNames;
+}
+
+function getServicesConnectedToApp(selectedNode: any, edges: Edge[], nodes: any[]): string[] {
+  if (!selectedNode) return [];
+  //1. Get edges connected to the selected node
+  const connectedEdges = edges.filter((edge: Edge) => edge.source === selectedNode.id || edge.target === selectedNode.id);
+  //2  From edges connected Get nodes where id is in edge and type is service
+  const serviceIds = connectedEdges.map((edge: Edge) => {
+    const serviceNodeId = edge.source === selectedNode.id ? edge.target : edge.source;
+    return serviceNodeId;
+  });
+  //3  Return names of services
+  const serviceNames = nodes
+    .filter((node) => serviceIds.includes(node.id) && node.type === "service")
+    .map((serviceNode) => serviceNode.data || serviceNode.id);
+  
+  return serviceNames;
+}
+
 export const EditorService = {
   isAppNodeCreated,
   isNodeValid,
-  getAllowedAddTypesForTarget
+  getAllowedAddTypesForTarget,
+  getNetworkNamesBySelectedNode,
+  getVolumeNamesBySelectedNode,
+  getServicesConnectedToApp
 };

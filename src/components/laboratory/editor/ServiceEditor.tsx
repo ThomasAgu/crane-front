@@ -1,60 +1,117 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import InputText from "../../forms/InputText";
+import { EditorService } from "../../../app/services/EditorService";
+import DockerImageSelector from "./DockerHubSelector";
 
-export default function ServiceEditor({ data, onChange }: { 
+export default function ServiceEditor({ data, nodes, edges, selectedNode, onChange }: { 
   data: any, 
+  nodes: any[],
+  edges: any[],
+  selectedNode: any,
   onChange: (d: any) => void 
 }) {
   const [form, setForm] = useState(data);
+  const [connectedNetworks, setConnectedNetworks] = useState<string[]>([]);
+  const [connectedVolumes, setConnectedVolumes] = useState<string[]>([]);
 
+  //Despues esto no lo vamos a necesitar como parametro
   const update = (key: string, value: any) => {
     const updated = { ...form, [key]: value };
     setForm(updated);
     onChange(updated);
   };
 
+  useEffect(() => {
+    const networks = EditorService.getNetworkNamesBySelectedNode(selectedNode, edges, nodes);
+    const volumes = EditorService.getVolumeNamesBySelectedNode(selectedNode, edges, nodes);
+    setConnectedVolumes(volumes);
+    setConnectedNetworks(networks);  
+  }, [nodes, edges]);
+
+
   return (
     <div className="text-darkest">
       <h2 className="text-lg font-bold mb-4">Servicio</h2>
 
-      <label className="block text-sm font-medium">Nombre</label>
-      <input 
-        className="w-full border p-2 rounded mb-3"
+      <InputText 
+        label="Nombre"
+        type="text"
+        placeholder="Nombre del serviceio"
         value={form.name || ""}
-        onChange={(e) => update("name", e.target.value)}
+        setValue={(val) => update("name", val)}
+        setShowError={() => {}}
       />
-
-      <label className="block text-sm font-medium">Labels</label>
-      <input 
-        className="w-full border p-2 rounded mb-3"
+      
+      <InputText 
+        label="Labels"
+        type="text"
+        placeholder="Servicio, Docker"
         value={(form.labels || []).join(", ")}
-        onChange={(e) => update("labels", e.target.value.split(",").map(s => s.trim()))}
-        placeholder="ej: Servicio, Primero"
+        setValue={(val) => update("labels", val.split(",").map((s) => s.trim()))}
+        setShowError={() => {}}
       />
 
-      <label className="block text-sm font-medium">Imagen</label>
-      <input 
-        className="w-full border p-2 rounded mb-3"
+      <DockerImageSelector
         value={form.image || ""}
-        onChange={(e) => update("image", e.target.value)}
-        placeholder="Seleccionar imagen de docker"
+        onChange={(val) => update("image", val)}
       />
 
-      <label className="block text-sm font-medium">Puertos</label>
-      <input 
-        className="w-full border p-2 rounded mb-3"
-        value={form.ports || ""}
-        onChange={(e) => update("ports", e.target.value)}
+      <InputText 
+        label="Puertos"
+        type="text"
         placeholder="8000:1024"
+        value={(form.ports || "")}
+        setValue={(val) => update("ports", val)}
+        setShowError={() => {}}
       />
 
-      <h3 className="font-medium mt-4">Redes</h3>
-      <div className="border p-2 rounded text-sm text-gray-500">
-        Aún no hay redes definidas
+      <h3 className="font-semibold mt-6 text-gray-800">Redes</h3>
+      <div className="border rounded-lg p-3 bg-gray-50">
+        {connectedNetworks.length > 0 ? (
+          <ul className="space-y-2">
+            {connectedNetworks.map((network: any) => (
+              <li
+                key={network.name}
+                className="flex items-center justify-between bg-white shadow-sm border rounded-md px-3 py-2 hover:bg-gray-100 transition-colors"
+              >
+                <div>
+                  <p className="font-medium text-gray-700">{network.name}</p>
+                  {network.address && (
+                    <p className="text-xs text-gray-500">📡 {network.address}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-400 text-sm italic">No hay redes conectadas</p>
+        )}
       </div>
 
-      <h3 className="font-medium mt-4">Volúmenes</h3>
-      <div className="border p-2 rounded text-sm text-gray-500">
-        Aún no hay volúmenes definidos
+      <h3 className="font-semibold mt-6 text-gray-800">Volúmenes</h3>
+      <div className="border rounded-lg p-3 bg-gray-50">
+        {connectedVolumes.length > 0 ? (
+          <ul className="space-y-2">
+            {connectedVolumes.map((volume: any) => (
+              <li
+                key={volume.name}
+                className="bg-white shadow-sm border rounded-md px-3 py-2 hover:bg-gray-100 transition-colors"
+              >
+                <p className="font-medium text-gray-700">{volume.label || volume.name}</p>
+                <p className="text-xs text-gray-500">
+                  💾 Tamaño: {volume.size} GB
+                </p>
+                {(volume.containerPath || volume.localPath) && (
+                  <p className="text-xs text-gray-500 truncate">
+                    📁 {volume.containerPath || volume.localPath}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-400 text-sm italic">No hay volúmenes conectados</p>
+        )}
       </div>
 
       <h3 className="font-medium mt-4">Reglas</h3>

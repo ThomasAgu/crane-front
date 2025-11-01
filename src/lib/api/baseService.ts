@@ -28,7 +28,7 @@ async function apiRequest<T>(
     const errorText = await response.text();
     throw new Error(`Error en ${endpoint}: ${errorText}`);
   }
-  debugger
+  
   return response.json();
 }
 
