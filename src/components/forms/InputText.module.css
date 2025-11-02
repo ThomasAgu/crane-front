@@ -19,6 +19,20 @@
   padding-left: 5px;
 }
 
+.inputWithIcon {
+  color: var(--darker);
+  border: 1px solid var(--light-grey);
+  font-size: 16px;
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+  height: 40px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: all ease 0.1s;
+  padding-left: 40px;
+}
+
 .invalidInput {
     color: var(--darker);
     font-size: 16px;
@@ -45,6 +59,14 @@
 
 .input:focus{
   border-color: var(--darker);
+}
+
+
+.errorMessage {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: -7px;
+    margin-left: 0.25rem;
 }
 
 .inputWrapper{    

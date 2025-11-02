@@ -15,7 +15,8 @@ interface props {
     submitValidators?: Validator[];
     showErrors?: boolean;
     errorInline?: string;
-    setShowError: Function
+    setShowError: Function,
+    onValidityChange?: (isValid: boolean) => void;
 }
 
 const InputText: React.FC<props> = ({
@@ -29,10 +30,19 @@ const InputText: React.FC<props> = ({
     liveValidators = [],
     submitValidators = [],
     showErrors = false,
-    setShowError
-
+    setShowError,
+    onValidityChange
 }) => {
     const [error, setError] = useState<string | null>(null);
+
+    const isValid = (): boolean => {
+    for (const validator of [...liveValidators, ...submitValidators]) {
+      if (!validator.isValid(value)) {
+        return false;
+        }
+    }
+        return true;
+    };
     
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,15 +50,21 @@ const InputText: React.FC<props> = ({
         setValue(val);
 
         for (const validator of liveValidators) {
-        if (!validator.isValid(val)) {
-            setError(validator.message);
-            return;
+            if (!validator.isValid(val)) {
+                setError(validator.message);
+                return;
+                }
             }
-        }
-        
         setShowError(false);
         setError(null);
     };
+
+    useEffect(() => {
+    if (onValidityChange) {
+      onValidityChange(isValid());
+    }
+  }, [value]);
+
 
 
   useEffect(() => {
@@ -87,7 +103,7 @@ const InputText: React.FC<props> = ({
             <input
               type={type}
               placeholder={placeholder}
-              className={styles.input}
+              className={imagesrc ? styles.inputWithIcon : styles.input}
               value={value}
               onChange={handleChange}
             />
