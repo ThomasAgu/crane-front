@@ -34,8 +34,10 @@ class LoginForm {
 
 export default function LoginFormComponent() {
   const router = useRouter();
+  
   const [formObj] = useState(() => new LoginForm());
   const [state, setState] = useState<LoginData>(formObj.data);
+  
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
@@ -91,7 +93,7 @@ export default function LoginFormComponent() {
         showErrors={showErrors}
         imagealt="Correo o nombre de usuario"
         setShowError={setShowErrors}
-        onValidityChange={(valid) => updateValidity('email', valid)} // 👈 NUEVO
+        onValidityChange={(valid) => updateValidity('email', valid)}
       />
 
       <InputText

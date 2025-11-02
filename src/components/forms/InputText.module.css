@@ -86,3 +86,8 @@
 .semilogo{
   height: 100vh;
 }
+
+.errorInput {
+    border: 2px solid red; /* Change border color to red */
+    background-color: #ffe6e6; /* Light red background */
+}

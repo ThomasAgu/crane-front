@@ -1,6 +1,7 @@
 import Image from "next/image";
 import logo from "../../public/logo.svg";
 import logotiny from "../../public/logotiny.svg";
+import styles from "./AuthLayout.module.css"
 
 type AuthLayoutProps = {
   title: string;
@@ -25,13 +26,11 @@ export default function AuthLayout({ title, children }: AuthLayoutProps) {
         </div>
 
         {/* Columna derecha */}
-        <div className="hidden lg:flex w-1/2 bg-primary items-start justify-start">
-          <div className="semilogo-wrapper">
+        <div className={styles.rightColumn}>
+          <div className={styles.logoContainer}>
             <Image
               src={logo}
               alt="Logo grande"
-              width={1200}
-              className="auth-semilogo"
             />
           </div>
         </div>

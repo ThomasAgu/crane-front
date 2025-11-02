@@ -36,15 +36,14 @@ const InputText: React.FC<props> = ({
     const [error, setError] = useState<string | null>(null);
 
     const isValid = (): boolean => {
-    for (const validator of [...liveValidators, ...submitValidators]) {
-      if (!validator.isValid(value)) {
-        return false;
+        for (const validator of [...liveValidators, ...submitValidators]) {
+            if (!validator.isValid(value)) {
+                return false;
+            }
         }
-    }
         return true;
     };
-    
-    
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setValue(val);
@@ -53,62 +52,50 @@ const InputText: React.FC<props> = ({
             if (!validator.isValid(val)) {
                 setError(validator.message);
                 return;
-                }
             }
+        }
         setShowError(false);
         setError(null);
     };
 
     useEffect(() => {
-    if (onValidityChange) {
-      onValidityChange(isValid());
-    }
-  }, [value]);
-
-
-
-  useEffect(() => {
-    if (showErrors && submitValidators.length > 0) {
-      for (const validator of submitValidators) {
-        if (!validator.isValid(value)) {      
-            setError(validator.message);
-            return;
+        if (onValidityChange) {
+            onValidityChange(isValid());
         }
-      }
-      setError(null);
-    }
-  }, [showErrors]);
+    }, [value]);
 
-    const areAllValidatorsValid = (): boolean => {
-        for (const validator of [...liveValidators, ...submitValidators]) {
-            if (!validator.isValid(value)) {
-                return false;
+    useEffect(() => {
+        if (showErrors && submitValidators.length > 0) {
+            for (const validator of submitValidators) {
+                if (!validator.isValid(value)) {
+                    setError(validator.message);
+                    return;
+                }
             }
+            setError(null);
         }
-    return true;
-  };
-
+    }, [showErrors]);
 
     return (
         <main>
             <label className={styles.label}>{label} <span className={styles.requiredMark}>*</span></label>
             <div className={styles.inputWrapper}>
-            {(imagesrc && imagealt)&& <Image
-                src={imagesrc}
-                alt={imagealt}
-                width={30}
-                height={30}
-                className={styles.inputIcon}
-            />}
-            <input
-              type={type}
-              placeholder={placeholder}
-              className={imagesrc ? styles.inputWithIcon : styles.input}
-              value={value}
-              onChange={handleChange}
-            />
-            {error && <p className={styles.errorInline}>{error}</p>}
-          </div>
+                {(imagesrc && imagealt) && <Image
+                    src={imagesrc}
+                    alt={imagealt}
+                    width={30}
+                    height={30}
+                    className={styles.inputIcon}
+                />}
+                <input
+                    type={type}
+                    placeholder={placeholder}
+                    className={`${imagesrc ? styles.inputWithIcon : styles.input} ${error ? styles.errorInput : ''}`}
+                    value={value}
+                    onChange={handleChange}
+                />
+                {error && <p className={styles.errorInline}>{error}</p>}
+            </div>
         </main>
     )
 }
