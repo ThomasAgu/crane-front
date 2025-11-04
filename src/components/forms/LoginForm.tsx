@@ -107,7 +107,7 @@ export default function LoginFormComponent() {
         showErrors={showErrors}
         imagealt="Contraseña"
         setShowError={setShowErrors}
-        onValidityChange={(valid) => updateValidity('password', valid)} // 👈 NUEVO
+        onValidityChange={(valid) => updateValidity('password', valid)} 
       />
 
       {error && <div className={styles.errorMessage}>{error}</div>}

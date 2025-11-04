@@ -91,3 +91,9 @@
     border: 2px solid red; /* Change border color to red */
     background-color: #ffe6e6; /* Light red background */
 }
+
+.disabledInput {
+  color: var(--greyest-blue);
+  background-color: var(--light-grey);
+  cursor: not-allowed;
+}

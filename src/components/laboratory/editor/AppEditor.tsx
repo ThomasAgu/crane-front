@@ -1,4 +1,4 @@
-import { EditorService } from "@/src/app/services/EditorService";
+import { editorService } from "@/src/app/services/EditorService";
 import React, { useState, useEffect } from "react";
 import InputText from "../../forms/InputText";
 
@@ -43,8 +43,7 @@ export default function AppEditor({ data, nodes, edges, selectedNode, onChange }
   };
 
   useEffect(() => {
-      const services = EditorService.getServicesConnectedToApp(selectedNode, edges, nodes);
-      debugger
+      const services = editorService.getServicesConnectedToApp(selectedNode);
       setConnectedServices(services);  
     }, [nodes, edges]);
 
@@ -110,9 +109,9 @@ export default function AppEditor({ data, nodes, edges, selectedNode, onChange }
       <div className="border rounded-lg p-3 bg-gray-50">
         {connectedServices.length > 0 ? (
           <ul className="space-y-2">
-            {connectedServices.map((service: any) => (
+            {connectedServices.map((service: any, index) => (
               <li
-                key={service.name}
+                key={index}
                 className="flex items-center justify-between bg-white shadow-sm border rounded-md px-3 py-2 hover:bg-gray-100 transition-colors"
               >
                 <div>

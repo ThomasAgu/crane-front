@@ -22,6 +22,7 @@ import { Network } from "./nodes/Network";
 import { Volume } from "./nodes/Volume";
 import Sidebar from "./editor/SideBar";
 import ContextMenu from "./ContextMenu";
+import { editorService } from "../../app/services/EditorService";
 
 const nodeTypes = { app: App, service: Service, network: Network, volume: Volume };
 
@@ -35,6 +36,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
       const { nodes, edges } = reactFlowService.getTemplateGraph(selectedTemplate as TemplateType);
       setNodes(nodes);
       setEdges(edges);
+      editorService.updateState(nodes, edges);
     }
   }, [selectedTemplate]);
 
@@ -51,8 +53,23 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number, nodeId?: string } | null>(null);
 
-  const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((ns) => applyNodeChanges(changes, ns)), []);
-  const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((es) => applyEdgeChanges(changes, es)), []);
+  const onNodesChange = useCallback((changes: NodeChange[]) => {
+    setNodes((ns) => {
+      const updatedNodes = applyNodeChanges(changes, ns);
+      editorService.setNodes(updatedNodes);
+      onEdgesChange([]); // Re-evaluate edges on node change
+      return updatedNodes;
+    });
+  }, []);
+
+  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+    setEdges((es) => {
+      const updatedEdges = applyEdgeChanges(changes, es); 
+      editorService.setEdges(updatedEdges);
+      return updatedEdges;
+    });
+  }, []);
+
   const onConnect = useCallback((params: Connection) => setEdges((es) => addEdge(params, es)), []);
 
   const onNodeClick = (_: any, node: Node) => setSelectedNode(node);
@@ -75,7 +92,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
 
   const addNode = (type: string, x: number, y: number, connectedTo: string) => {
     const id = `${+new Date()}`;
-    const newNode: Node = { id, type, position: { x, y }, data: { label: `${type} nuevo` } };
+    const newNode: Node = { id, type, position: { x, y }, data: { name: editorService.getNodeNewNamesByType(type), label: `${type} nuevo` } };
     setNodes((nds) => [...nds, newNode]);
     
     if (connectedTo) {

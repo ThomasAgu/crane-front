@@ -1,102 +1,126 @@
-import { get } from "http";
+import { Node, Edge } from "reactflow";
 import { rules } from "../../lib/helper/EditorRules";
-import { Edge } from "reactflow";
 
-function isAppNodeCreated(nodes: any[]): boolean {
-  return nodes.some((node) => node.type === "app");
-}
+class EditorStateService {
+  private nodes: Node[] = [];
+  private edges: Edge[] = [];
 
-
-// Validates if the current node's connections adhere to the defined rules.
-function isNodeValid(nodes: any[], currentNode: any): boolean {
-  const nodeType = currentNode.type;
-  return rules.some((rule) => {
-    if (rule.type === nodeType) {
-      const connectedNodes = nodes.filter((node) =>
-        currentNode.edges?.some((edge: any) => edge.source === node.id || edge.target === node.id)
-      );
-      return connectedNodes.every((connectedNode) =>
-        rule.possibleConnectionTypes.includes(connectedNode.type)
-      );
-    }
-  });
-}
-
-// Returns the list of node types that can be added connected to the given target node.
-// Filters out "app" if an app already exists in the graph.
-function getAllowedAddTypesForTarget(nodes: any[], targetNode: any): string[] {
-  if (!targetNode) return [];
-
-  const rule = rules.find((r) => r.type === targetNode.type);
-  if (!rule || !Array.isArray(rule.possibleConnectionTypes)) return [];
-
-  const allowed = [...rule.possibleConnectionTypes];
-
-  // globally disallow adding another 'app' if one exists
-  if (isAppNodeCreated(nodes)) {
-    const idx = allowed.indexOf("app");
-    if (idx !== -1) allowed.splice(idx, 1);
+  setNodes(nodes: Node[]) {
+    this.nodes = nodes;
   }
 
-  return allowed;
-}
+  getNodes() {
+    return this.nodes;
+  }
 
-function getNetworkNamesBySelectedNode(selectedNode: any, edges: Edge[], nodes: any[]): string[] {
-  if (!selectedNode) return [];
-  //1. Get edges connected to the selected node
-  const connectedEdges = edges.filter((edge: Edge) => edge.source === selectedNode.id || edge.target === selectedNode.id);
-  //2  From edges connected Get nodes where id is in edge and type is network
-  const networkIds = connectedEdges.map((edge: Edge) => {
-    const networkNodeId = edge.source === selectedNode.id ? edge.target : edge.source;
-    return networkNodeId;
-  });
-  //3  Return names of networks
-  const networkNames = nodes
-    .filter((node) => networkIds.includes(node.id) && node.type === "network")
-    .map((networkNode) => networkNode.data || networkNode.id);
+  getEdges() {
+    return this.edges;
+  }
 
-  return networkNames;
-}
+  setEdges(edges: Edge[]) {
+    this.edges = edges;
+  }
 
-function getVolumeNamesBySelectedNode(selectedNode: any, edges: Edge[], nodes: any[]): string[] {
-  if (!selectedNode) return [];
-  //1. Get edges connected to the selected node
- const connectedEdges = edges.filter((edge: Edge) => edge.source === selectedNode.id || edge.target === selectedNode.id);
-  //2  From edges connected Get nodes where id is in edge and type is volume
-  const volumeIds = connectedEdges.map((edge: Edge) => {
-  const volumeNodeId = edge.source === selectedNode.id ? edge.target : edge.source;
-    return volumeNodeId;
-  });
-  //3  Return names of volumes
-  const volumeNames = nodes
-    .filter((node) => volumeIds.includes(node.id) && node.type === "volume")
-    .map((volumeNode) => volumeNode.data || volumeNode.id);
+  updateState(nodes: Node[], edges: Edge[]) {
+    this.nodes = nodes;
+    this.edges = edges;
+  }
+
+  isAppNodeCreated(): boolean {
+    return this.nodes.some((node) => node.type === "app");
+  }
+
+  getNodeNewNamesByType(type: string): string {
+  const existingNodes = this.getNodes().filter(node => node.type === type);
+  const existingNames = existingNodes.map((node, index) =>  node.data?.name || `network ${index + 1}`);
+  let counter = 1;
+  let newName = `${type} ${counter}`;
   
-  return volumeNames;
-}
-
-function getServicesConnectedToApp(selectedNode: any, edges: Edge[], nodes: any[]): string[] {
-  if (!selectedNode) return [];
-  //1. Get edges connected to the selected node
-  const connectedEdges = edges.filter((edge: Edge) => edge.source === selectedNode.id || edge.target === selectedNode.id);
-  //2  From edges connected Get nodes where id is in edge and type is service
-  const serviceIds = connectedEdges.map((edge: Edge) => {
-    const serviceNodeId = edge.source === selectedNode.id ? edge.target : edge.source;
-    return serviceNodeId;
-  });
-  //3  Return names of services
-  const serviceNames = nodes
-    .filter((node) => serviceIds.includes(node.id) && node.type === "service")
-    .map((serviceNode) => serviceNode.data || serviceNode.id);
+  while (existingNames.includes(newName)) {
+    counter++;
+    newName = `${type} ${counter}`;
+  }
   
-  return serviceNames;
+  return newName;
+}
+  isNodeValid(currentNode: Node): boolean {
+    const nodeType = currentNode.type;
+    return rules.some((rule) => {
+      if (rule.type === nodeType) {
+        const connectedNodes = this.nodes.filter((node) =>
+          this.edges.some((edge) => edge.source === node.id || edge.target === node.id)
+        );
+        return connectedNodes.every((connectedNode: any) =>
+          rule.possibleConnectionTypes.includes(connectedNode.type)
+        );
+      }
+    });
+  }
+
+  getAllowedAddTypesForTarget(targetNode: Node): string[] {
+    if (!targetNode) return [];
+
+    const rule = rules.find((r) => r.type === targetNode.type);
+    if (!rule || !Array.isArray(rule.possibleConnectionTypes)) return [];
+
+    const allowed = [...rule.possibleConnectionTypes];
+
+    if (this.isAppNodeCreated()) {
+      const idx = allowed.indexOf("app");
+      if (idx !== -1) allowed.splice(idx, 1);
+    }
+
+    return allowed;
+  }
+
+  getNetworkDataBySelectedNode(selectedNode: Node): string[] {
+    if (!selectedNode) return [];
+
+    
+    const connectedEdges = this.edges.filter((edge) => 
+      edge.source === selectedNode.id || edge.target === selectedNode.id
+    );
+
+    const networkIds = connectedEdges.map((edge) => 
+      edge.source === selectedNode.id ? edge.target : edge.source
+    );
+    debugger
+    return this.nodes
+      .filter((node) => networkIds.includes(node.id) && node.type === "network")
+      .map((networkNode) => networkNode.data);
+  }
+
+  getVolumeNamesBySelectedNode(selectedNode: Node): string[] {
+    if (!selectedNode) return [];
+    
+    const connectedEdges = this.getEdges().filter((edge) => 
+      edge.source === selectedNode.id || edge.target === selectedNode.id
+    );
+
+    const volumeIds = connectedEdges.map((edge) => 
+      edge.source === selectedNode.id ? edge.target : edge.source
+    );
+
+    return this.nodes
+      .filter((node) => volumeIds.includes(node.id) && node.type === "volume")
+      .map((volumeNode) => volumeNode.data?.name || volumeNode.id);
+  }
+
+  getServicesConnectedToApp(selectedNode: Node): string[] {
+    if (!selectedNode) return [];
+    
+    const connectedEdges = this.edges.filter((edge) => 
+      edge.source === selectedNode.id || edge.target === selectedNode.id
+    );
+
+    const serviceIds = connectedEdges.map((edge) => 
+      edge.source === selectedNode.id ? edge.target : edge.source
+    );
+
+    return this.nodes
+      .filter((node) => serviceIds.includes(node.id) && node.type === "service")
+      .map((serviceNode) => serviceNode.data?.name || serviceNode.id);
+  }
 }
 
-export const EditorService = {
-  isAppNodeCreated,
-  isNodeValid,
-  getAllowedAddTypesForTarget,
-  getNetworkNamesBySelectedNode,
-  getVolumeNamesBySelectedNode,
-  getServicesConnectedToApp
-};
+export const editorService = new EditorStateService();

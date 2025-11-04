@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import InputText from "./InputText";
 import { ipv4Validator, maskValidator } from "../../lib/validators/Ipv4Validator";
 import { requiredValidator } from "@/src/lib/validators/RequiredValidator";
+import {editorService} from "@/src/app/services/EditorService";
 
 export type NetworkData = {
   name?: string;
@@ -18,7 +19,7 @@ export class NetworkForm {
 
   constructor(initial: NetworkData = {}) {
     this.data = {
-      name: initial.name || "",
+      name: initial.name || editorService.getNodeNewNamesByType('network'),
       driver: initial.driver || "default",
       address: initial.address || "",
       mask: typeof initial.mask === "number" ? initial.mask : 24,
@@ -52,6 +53,13 @@ export default function NetworkEditorForm({
   const [formObj] = useState(() => new NetworkForm(data));
   const [state, setState] = useState<NetworkData>(formObj.data);
   const [showErrors, setShowErrors] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const driverInfo = {
+    default: "Provee conexion local para los contenedores",
+    bridge: "Conecta conetenedores en el mismo Docker daemon host",
+    overlay: "Conecta multiples Docker daemons juntos y permite que los contenedores se comuniquen",
+  };
 
   useEffect(() => {
     // sync when parent sends new data
@@ -86,56 +94,97 @@ export default function NetworkEditorForm({
         setShowError={setShowErrors}
       />
 
-      <label className="block text-sm font-medium">Driver</label>
-      <select
-        className="w-full border p-2 rounded mb-3"
-        value={state.driver || "default"}
-        onChange={(e) => update("driver", e.target.value)}
-      >
-        <option value="default">Default</option>
-        <option value="bridge">Bridge</option>
-        <option value="overlay">Overlay</option>
-      </select>
-
-      <div className="flex mb-3">
-        <InputText
-          label="Dirección (IPv4)"
-          type="text"
-          placeholder="192.168.5.0"
-          value={state.address || ""}
-          setValue={(v: string) => update("address", v)}
-          liveValidators={[ipv4Validator]}
-          showErrors={showErrors}
-          imagealt="address"
-          setShowError={setShowErrors}
-        />
-
-        <div style={{ width: 90, marginLeft: 8 }}>
-          <InputText
-            label="Mask"
-            type="number"
-            placeholder="24"
-            value={String(state.mask ?? 24)}
-            setValue={(v: string) => update("mask", Number(v))}
-            liveValidators={[maskValidator]}
-            showErrors={showErrors}
-            imagealt="mask"
-            setShowError={setShowErrors}
-          />
+      <div className="relative mb-3">
+        <label className="block font-bold">Driver</label>
+        <div className="flex items-center">
+          <select
+            className="w-full border p-2 rounded"
+            value={state.driver || "default"}
+            onChange={(e) => update("driver", e.target.value)}
+          >
+            <option value="default">Default</option>
+            <option value="bridge">Bridge</option>
+            <option value="overlay">Overlay</option>
+          </select>
+          <div className="group relative ml-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="invisible group-hover:visible absolute z-10 w-64 p-2 bg-gray-800 text-white text-sm rounded shadow-lg -right-2 top-6">
+              {driverInfo[state.driver as keyof typeof driverInfo]}
+            </div>
+          </div>
         </div>
       </div>
 
-      <InputText
-        label="Gateway"
-        type="text"
-        placeholder="192.168.5.1"
-        value={state.gateway || ""}
-        setValue={(v: string) => update("gateway", v)}
-        liveValidators={[ipv4Validator]}
-        showErrors={showErrors}
-        imagealt="gateway"
-        setShowError={setShowErrors}
-      />
+      <hr className="my-3" />
+
+    
+        <div className="mb-4">
+        <button
+          type="button"
+          className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+        >
+          <svg
+            className={`h-4 w-4 transform transition-transform ${showAdvanced ? 'rotate-90' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <span className="ml-1">Advanced Configuration</span>
+        </button>
+      </div>
+
+
+
+      {showAdvanced && (
+        <div className="pl-4 border-l-2 border-gray-200">
+          <div className="flex mb-3">
+            <InputText
+              label="Dirección (IPv4)"
+              type="text"
+              placeholder="192.168.5.0"
+              value={state.address || "192.168.5.0"}
+              setValue={(v: string) => update("address", v)}
+              liveValidators={[ipv4Validator]}
+              showErrors={showErrors}
+              imagealt="address"
+              setShowError={setShowErrors}
+              disabled={true}
+            />
+
+            <div style={{ width: 90, marginLeft: 8 }}>
+              <InputText
+                label="Mask"
+                type="number"
+                placeholder="16"
+                value={String(state.mask ?? 16)}
+                setValue={(v: string) => update("mask", Number(v))}
+                liveValidators={[maskValidator]}
+                showErrors={showErrors}
+                imagealt="mask"
+                setShowError={setShowErrors}
+                disabled={true}
+              />
+            </div>
+          </div>
+          <InputText
+            label="Gateway"
+            type="text"
+            placeholder="127.20.0.21"
+            value={state.gateway || "255.255.0.0"}
+            setValue={(v: string) => update("gateway", v)}
+            liveValidators={[ipv4Validator]}
+            showErrors={showErrors}
+            imagealt="gateway"
+            setShowError={setShowErrors}
+            disabled={true}
+          />
+        </div>
+      )}
     </div>
   );
 }

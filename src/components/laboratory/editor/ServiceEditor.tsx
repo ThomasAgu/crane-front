@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import InputText from "../../forms/InputText";
-import { EditorService } from "../../../app/services/EditorService";
+import { editorService } from "../../../app/services/EditorService";
 import DockerImageSelector from "./DockerHubSelector";
 
 export default function ServiceEditor({ data, nodes, edges, selectedNode, onChange }: { 
@@ -22,8 +22,8 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
   };
 
   useEffect(() => {
-    const networks = EditorService.getNetworkNamesBySelectedNode(selectedNode, edges, nodes);
-    const volumes = EditorService.getVolumeNamesBySelectedNode(selectedNode, edges, nodes);
+    const networks = editorService.getNetworkDataBySelectedNode(selectedNode);
+    const volumes = editorService.getVolumeNamesBySelectedNode(selectedNode);
     setConnectedVolumes(volumes);
     setConnectedNetworks(networks);  
   }, [nodes, edges]);
@@ -76,9 +76,7 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
               >
                 <div>
                   <p className="font-medium text-gray-700">{network.name}</p>
-                  {network.address && (
-                    <p className="text-xs text-gray-500">📡 {network.address}</p>
-                  )}
+                  <p className="text-xs text-gray-500">📡 {network.address || "192.168.5.0"} </p>
                 </div>
               </li>
             ))}

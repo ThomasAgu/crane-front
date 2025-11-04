@@ -17,6 +17,7 @@ interface props {
     errorInline?: string;
     setShowError: Function,
     onValidityChange?: (isValid: boolean) => void;
+    disabled?: boolean;
 }
 
 const InputText: React.FC<props> = ({
@@ -31,7 +32,8 @@ const InputText: React.FC<props> = ({
     submitValidators = [],
     showErrors = false,
     setShowError,
-    onValidityChange
+    onValidityChange,
+    disabled = false
 }) => {
     const [error, setError] = useState<string | null>(null);
 
@@ -89,8 +91,9 @@ const InputText: React.FC<props> = ({
                 />}
                 <input
                     type={type}
+                    disabled={disabled}
                     placeholder={placeholder}
-                    className={`${imagesrc ? styles.inputWithIcon : styles.input} ${error ? styles.errorInput : ''}`}
+                    className={`${imagesrc ? styles.inputWithIcon : styles.input} ${error ? styles.errorInput : ''} ${disabled ? styles.disabledInput : ''}`}
                     value={value}
                     onChange={handleChange}
                 />

@@ -1,6 +1,6 @@
 // components/ContextMenu.tsx
 import React, { useEffect, useState } from "react";
-import { EditorService } from "@/src/app/services/EditorService";
+import { editorService } from "@/src/app/services/EditorService";
 
 interface ContextMenuProps {
   position: { x: number; y: number; nodeId?: string} | null;
@@ -11,12 +11,12 @@ interface ContextMenuProps {
 
 export default function ContextMenu({ position, addNode, nodes, onDeleteNode }: ContextMenuProps) {
   if (!position) return null;
-  const canAddApp = !EditorService.isAppNodeCreated(nodes);
+  const canAddApp = !editorService.isAppNodeCreated();
   const isNodeTarget = Boolean(position.nodeId);
   const targetNode = isNodeTarget ? nodes.find((n) => n.id === position.nodeId) : null;
   
   const allowedTypesForTarget = isNodeTarget && targetNode
-    ? EditorService.getAllowedAddTypesForTarget(nodes, targetNode)
+    ? editorService.getAllowedAddTypesForTarget(targetNode)
     : null;
 
   const canShowType = (type: string) => {
