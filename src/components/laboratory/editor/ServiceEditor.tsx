@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InputText from "../../forms/InputText";
-import { editorService } from "../../../app/services/EditorService";
+import { editorService } from "@/src/app/services/EditorService";
+import { dockerDefaults } from "@/src/lib/helper/DockerDefaults";
 import DockerImageSelector from "./DockerHubSelector";
 
 export default function ServiceEditor({ data, nodes, edges, selectedNode, onChange }: { 
@@ -14,6 +15,11 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
   const [connectedNetworks, setConnectedNetworks] = useState<string[]>([]);
   const [connectedVolumes, setConnectedVolumes] = useState<string[]>([]);
 
+  // keep local form in sync when parent gives a different node (important when selecting another node of same type)
+  useEffect(() => {
+    setForm(data || {});
+  }, [data]);
+
   //Despues esto no lo vamos a necesitar como parametro
   const update = (key: string, value: any) => {
     const updated = { ...form, [key]: value };
@@ -21,12 +27,29 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
     onChange(updated);
   };
 
+  const onImagePicked = (imageName: string) => {
+    // update ui form
+    update("image", imageName);
+
+    const defaults = dockerDefaults[imageName];
+    if (defaults) {
+      if (defaults.ports) update("ports", defaults.ports);
+      if (defaults.volumes) update("volumes", defaults.volumes);
+      if (defaults.networks) update("networks", defaults.networks);
+    }
+
+    // update editorService internal node data (so service can be used by other helpers)
+    if (selectedNode?.id) {
+      editorService.applyImageDefaultsToNode(selectedNode.id, imageName);
+    }
+  };
+
   useEffect(() => {
     const networks = editorService.getNetworkDataBySelectedNode(selectedNode);
     const volumes = editorService.getVolumeNamesBySelectedNode(selectedNode);
     setConnectedVolumes(volumes);
     setConnectedNetworks(networks);  
-  }, [nodes, edges]);
+  }, [nodes, edges, selectedNode]); // include selectedNode so it refreshes when selection changes
 
 
   return (
@@ -54,13 +77,14 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
       <DockerImageSelector
         value={form.image || ""}
         onChange={(val) => update("image", val)}
+        onPickImage={onImagePicked}
       />
 
       <InputText 
         label="Puertos"
         type="text"
         placeholder="8000:1024"
-        value={(form.ports || "")}
+        value={(form.ports)}
         setValue={(val) => update("ports", val)}
         setShowError={() => {}}
       />
@@ -95,9 +119,9 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
                 key={volume.name}
                 className="bg-white shadow-sm border rounded-md px-3 py-2 hover:bg-gray-100 transition-colors"
               >
-                <p className="font-medium text-gray-700">{volume.label || volume.name}</p>
+                <p className="font-medium text-gray-700">{volume.name}</p>
                 <p className="text-xs text-gray-500">
-                  💾 Tamaño: {volume.size} GB
+                  💾 Tamaño: {volume.size || 20} GB
                 </p>
                 {(volume.containerPath || volume.localPath) && (
                   <p className="text-xs text-gray-500 truncate">

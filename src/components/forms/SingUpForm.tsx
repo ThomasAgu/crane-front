@@ -68,7 +68,6 @@ export default function LoginForm() {
     setError('');
     setShowErrors(true);
     const allValid = Object.values(inputValidity).every(Boolean);
-    debugger
     if (!allValid) {
       console.log('no se envi')
       return;

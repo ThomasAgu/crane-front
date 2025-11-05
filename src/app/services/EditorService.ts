@@ -1,5 +1,6 @@
 import { Node, Edge } from "reactflow";
 import { rules } from "../../lib/helper/EditorRules";
+import { dockerDefaults } from "../../lib/helper/DockerDefaults";
 
 class EditorStateService {
   private nodes: Node[] = [];
@@ -28,6 +29,43 @@ class EditorStateService {
 
   isAppNodeCreated(): boolean {
     return this.nodes.some((node) => node.type === "app");
+  }
+
+  getNodeById(nodeId: string) {
+    return this.nodes.find(n => n.id === nodeId);
+  }
+
+  // merge partial data into node.data and update internal nodes array
+  setNodeData(nodeId: string, partialData: Record<string, any>) {
+    const idx = this.nodes.findIndex(n => n.id === nodeId);
+    if (idx === -1) return;
+    const node = this.nodes[idx];
+    this.nodes[idx] = {
+      ...node,
+      data: {
+        ...(node.data || {}),
+        ...partialData,
+      },
+    };
+  }
+
+  // apply known docker image defaults (ports, volumes, networks) to node data
+  applyImageDefaultsToNode(nodeId: string, imageName: string) {
+    const defaults = dockerDefaults[imageName];
+    if (!defaults) return;
+    const node = this.getNodeById(nodeId);
+    if (!node) return;
+
+    const merged = {
+      ...(node.data || {}),
+      image: imageName,
+      ports: defaults.ports ?? node.data?.ports,
+      volumes: defaults.volumes ?? node.data?.volumes,
+      networks: defaults.networks ?? node.data?.networks,
+    };
+
+    this.setNodeData(nodeId, merged);
+    return { nodes: this.nodes, edges: this.edges };
   }
 
   getNodeNewNamesByType(type: string): string {
@@ -84,7 +122,7 @@ class EditorStateService {
     const networkIds = connectedEdges.map((edge) => 
       edge.source === selectedNode.id ? edge.target : edge.source
     );
-    debugger
+  
     return this.nodes
       .filter((node) => networkIds.includes(node.id) && node.type === "network")
       .map((networkNode) => networkNode.data);
@@ -103,7 +141,7 @@ class EditorStateService {
 
     return this.nodes
       .filter((node) => volumeIds.includes(node.id) && node.type === "volume")
-      .map((volumeNode) => volumeNode.data?.name || volumeNode.id);
+      .map((volumeNode) => volumeNode.data);
   }
 
   getServicesConnectedToApp(selectedNode: Node): string[] {
@@ -119,7 +157,7 @@ class EditorStateService {
 
     return this.nodes
       .filter((node) => serviceIds.includes(node.id) && node.type === "service")
-      .map((serviceNode) => serviceNode.data?.name || serviceNode.id);
+      .map((serviceNode) => serviceNode.data);
   }
 }
 

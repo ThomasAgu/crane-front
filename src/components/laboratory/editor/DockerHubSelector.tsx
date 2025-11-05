@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { searchDockerImages } from "@/src/app/services/DockerHubService";
 
-export default function DockerImageSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+export default function DockerImageSelector({ 
+  value, 
+  onChange,
+  onPickImage
+}: { 
+  value: string; 
+  onChange: (v: string) => void; 
+  onPickImage?: (v: string) => void;
+}) {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);

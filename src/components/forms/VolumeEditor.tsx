@@ -10,15 +10,21 @@ export default function VolumeEditorForm({
   data: any;
   onChange: (d: any) => void;
 }) {
-  const initial = {
+  // Move initial state to a function to ensure fresh state on re-render
+  const getInitialState = () => ({
     name: data?.name || "",
     size: data?.size || 20,
     containerPath: data?.containerPath || data?.mounts?.[0]?.containerPath || "",
     localPath: data?.localPath || data?.mounts?.[0]?.localPath || "",
-  };
+  });
 
-  const [form, setForm] = useState<{ name: string; size: number; containerPath: string; localPath: string }>(initial);
+  const [form, setForm] = useState(getInitialState());
   const [showErrors, setShowErrors] = useState(false);
+
+  // Reset form when data changes (different node selected)
+  useEffect(() => {
+    setForm(getInitialState());
+  }, [data]);
 
   useEffect(() => {
     const payload = {

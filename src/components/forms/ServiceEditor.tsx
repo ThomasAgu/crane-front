@@ -69,27 +69,24 @@ export default function ServiceEditorForm({
   const [state, setState] = useState<ServiceData>(formObj.data);
   const [showErrors, setShowErrors] = useState(false);
   const [imageSuggestions, setImageSuggestions] = useState<string[]>([]);
-  const [imageQuery, setImageQuery] = useState("");
+  const [imageQuery, setImageQuery] = useState(data.image || "");
 
   useEffect(() => {
-    // sync when parent updates
-    formObj.update("name", data?.name || "");
-    formObj.update("labels", data?.labels || []);
-    formObj.update("image", data?.image || "");
-    formObj.update("ports", data?.ports || "");
-    formObj.update("networks", data?.networks || []);
-    formObj.update("volumes", data?.volumes || []);
-    setState({ ...formObj.data });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Force a complete form reset when data changes
+    const newForm = new ServiceForm(data);
+    setState(newForm.data);
+    // Clear image suggestions and reset image query
+    setImageSuggestions([]);
+    setImageQuery(data.image || "");
   }, [data]);
 
   const update = <K extends keyof ServiceData>(key: K, value: ServiceData[K]) => {
-    formObj.update(key, value);
-    setState({ ...formObj.data });
-    onChange(formObj.getPayload());
+    const updated = { ...state, [key]: value };
+    setState(updated);
+    onChange(updated);
   };
 
-  // image search handler (debounce on your side if needed)
+  // Update the image search handler
   const handleImageSearch = async (q: string) => {
     setImageQuery(q);
     if (!q) {
@@ -143,7 +140,7 @@ export default function ServiceEditorForm({
         label="Image (Docker)"
         type="text"
         placeholder="node, nginx, postgres"
-        value={state.image || ""}
+        value={imageQuery} // Changed from state.image to imageQuery
         setShowError={setShowErrors}
         setValue={(v: string) => {
           update("image", v);

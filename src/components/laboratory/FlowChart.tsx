@@ -57,7 +57,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
     setNodes((ns) => {
       const updatedNodes = applyNodeChanges(changes, ns);
       editorService.setNodes(updatedNodes);
-      onEdgesChange([]); // Re-evaluate edges on node change
+      onEdgesChange([]); 
       return updatedNodes;
     });
   }, []);
@@ -72,7 +72,10 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
 
   const onConnect = useCallback((params: Connection) => setEdges((es) => addEdge(params, es)), []);
 
-  const onNodeClick = (_: any, node: Node) => setSelectedNode(node);
+  const onNodeClick = (_: any, node: Node) => {
+    //when node is same type as selceted somehow the editor don't change
+    setSelectedNode(node);
+  }
 
   const onPanelContextMenu = (e: React.MouseEvent) => { 
     e.preventDefault();
@@ -105,9 +108,13 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
   const onDeleteNode = (id: string) => {
     setNodes((nds) => nds.filter((n) => n.id !== id));
     setEdges((es) => es.filter((e) => e.source !== id && e.target !== id));
+    if (selectedNode?.id === id) {
+      setSelectedNode(null);
+    }
     setContextMenu(null);
   };
 
+  
   return (
     <div className="flex w-full h-full">
       {/* Lienzo */}

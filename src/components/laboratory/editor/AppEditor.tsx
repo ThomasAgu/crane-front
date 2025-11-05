@@ -1,6 +1,7 @@
 import { editorService } from "@/src/app/services/EditorService";
 import React, { useState, useEffect } from "react";
 import InputText from "../../forms/InputText";
+import InstanceControls from "./InstanceControls";
 
 export default function AppEditor({ data, nodes, edges, selectedNode, onChange }: { 
   data: any, 
@@ -72,38 +73,20 @@ export default function AppEditor({ data, nodes, edges, selectedNode, onChange }
       <p className="text-xs text-gray-400">{(form.description?.length || 0)}/200</p>
 
       <h3 className="font-semibold text-lg mt-4 mb-3">Instancias</h3>
-      <div className="grid grid-cols-1 gap-3">
-        {[
-          { key: "actuales", label: "Actuales" },
-          { key: "minimas", label: "Mínimas" },
-          { key: "maximas", label: "Máximas" },
-        ].map(({ key, label }) => (
-          <div key={key} className="flex items-center justify-between bg-gray-100 p-3 rounded-xl shadow-sm">
-            <span className="font-medium w-24">{label}</span>
-            <div className="flex items-center gap-3">
-              <button
-                className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-lg rounded-full transition"
-                onClick={() => {
-                  const newValue = Math.max((form[key] || 0) - 1, 0);
-                  handleUpdateWithRules(key, String(newValue));
-                }}
-              >
-                −
-              </button>
-              <span className="text-center w-10 font-semibold text-gray-700">{form[key] || 0}</span>
-              <button
-                className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-lg rounded-full transition"
-                onClick={() => {
-                  const newValue = (form[key] || 0) + 1;
-                  handleUpdateWithRules(key, newValue);
-                }}
-              >
-                +
-              </button>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 gap-2">
+        <InstanceControls
+          actuales={form.actuales ?? 1}
+          minimas={form.minimas ?? 1}
+          maximas={form.maximas ?? 2}
+          onChange={(vals) => {
+            const updated = { ...form, ...vals };
+            setForm(updated);
+            onChange(updated); // prop onChange del AppEditor -> prop del padre
+          }}
+        />
       </div>
+      
+
 
       <h3 className="font-semibold mt-6 text-gray-800">Servicios</h3>
       <div className="border rounded-lg p-3 bg-gray-50">
@@ -115,7 +98,10 @@ export default function AppEditor({ data, nodes, edges, selectedNode, onChange }
                 className="flex items-center justify-between bg-white shadow-sm border rounded-md px-3 py-2 hover:bg-gray-100 transition-colors"
               >
                 <div>
-                  <p className="font-medium text-gray-700">{service.name || service.label}</p>
+                  <p className="font-medium text-gray-700">{service.name}</p>
+                  {service.image && (<p className="text-xs text-gray-500">🐳 {service.image}</p>)}
+                </div>
+                <div className="text-right">
                   {service.ports && (
                     <p className="text-xs text-gray-500">🔌 {service.ports}</p>
                   )}
