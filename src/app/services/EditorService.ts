@@ -52,35 +52,87 @@ class EditorStateService {
   // apply known docker image defaults (ports, volumes, networks) to node data
   applyImageDefaultsToNode(nodeId: string, imageName: string) {
     const defaults = dockerDefaults[imageName];
-    if (!defaults) return;
-    const node = this.getNodeById(nodeId);
-    if (!node) return;
+    if (!defaults) return { nodes: this.nodes, edges: this.edges };
 
-    const merged = {
+    const node = this.getNodeById(nodeId);
+    if (!node) return { nodes: this.nodes, edges: this.edges };
+
+    // Apply ports and image to node data
+    node.data = {
       ...(node.data || {}),
       image: imageName,
       ports: defaults.ports ?? node.data?.ports,
-      volumes: defaults.volumes ?? node.data?.volumes,
-      networks: defaults.networks ?? node.data?.networks,
     };
 
-    this.setNodeData(nodeId, merged);
+    // Helper to find existing node by type + predicate
+    const findNode = (type: string, pred: (n: Node) => boolean) =>
+      this.nodes.find((n) => n.type === type && pred(n));
+
+    // Create helper to add node
+    const createNode = (type: string, data: Record<string, any>, position?: { x: number; y: number }) => {
+      const id = `${type}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const nodeName = data.name || this.getNodeNewNamesByType(type);
+      const newNode: Node = {
+        id,
+        type,
+        data: { ...(data || {}), name: nodeName },
+        position: position || { x: (node.position?.x || 0) + 120, y: (node.position?.y || 0) + (this.nodes.length % 200) },
+      } as any;
+      this.nodes.push(newNode);
+      return newNode;
+    };
+
+    // Ensure volumes exist and connect
+    if (Array.isArray(defaults.volumes)) {
+      defaults.volumes.forEach((vol: string) => {
+        // try to find a volume with same containerPath or name
+        let volNode = findNode("volume", (n) =>
+          (n.data?.containerPath && n.data.containerPath === vol) || (n.data?.name && n.data.name === vol)
+        );
+
+        if (!volNode) {
+          volNode = createNode("volume", { containerPath: vol, localPath: "", size: 20 });
+        }
+
+        // add edge if not exists (service -> volume)
+        const existsEdge = this.edges.some((e) => (e.source === nodeId && e.target === volNode!.id) || (e.source === volNode!.id && e.target === nodeId));
+        if (!existsEdge) {
+          this.edges.push({ id: `e-${Date.now()}-${Math.floor(Math.random() * 1000)}`, source: nodeId, target: volNode.id, type: "default" } as any);
+        }
+      });
+    }
+
+    // Ensure networks exist and connect
+    if (Array.isArray(defaults.networks)) {
+      defaults.networks.forEach((netName: string) => {
+        let netNode = findNode("network", (n) => (n.data?.name && n.data.name === netName) || (n.data?.address && n.data.address === netName));
+        if (!netNode) {
+          netNode = createNode("network", { address: "", mask: 24 });
+        }
+
+        const existsEdge = this.edges.some((e) => (e.source === nodeId && e.target === netNode!.id) || (e.source === netNode!.id && e.target === nodeId));
+        if (!existsEdge) {
+          this.edges.push({ id: `e-${Date.now()}-${Math.floor(Math.random() * 1000)}`, source: nodeId, target: netNode.id, type: "default" } as any);
+        }
+      });
+    }
+
     return { nodes: this.nodes, edges: this.edges };
   }
 
   getNodeNewNamesByType(type: string): string {
-  const existingNodes = this.getNodes().filter(node => node.type === type);
-  const existingNames = existingNodes.map((node, index) =>  node.data?.name || `network ${index + 1}`);
-  let counter = 1;
-  let newName = `${type} ${counter}`;
-  
-  while (existingNames.includes(newName)) {
-    counter++;
-    newName = `${type} ${counter}`;
+    const prefix = type.charAt(0).toUpperCase() + type.slice(1);
+    const existingNodes = this.nodes.filter((n) => n.type === type);
+    const existingNames = existingNodes.map((n) => (n.data?.name ? String(n.data.name) : ""));
+    let counter = 1;
+    let newName = `${prefix} ${counter}`;
+    while (existingNames.includes(newName)) {
+      counter++;
+      newName = `${prefix} ${counter}`;
+    }
+    return newName;
   }
-  
-  return newName;
-}
+
   isNodeValid(currentNode: Node): boolean {
     const nodeType = currentNode.type;
     return rules.some((rule) => {

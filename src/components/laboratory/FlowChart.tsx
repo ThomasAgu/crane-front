@@ -48,6 +48,16 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
     return () => document.removeEventListener("click", onDocClick);
   }, []);
 
+  useEffect(() => {
+    const handler = (e: any) => {
+      const { nodes: newNodes, edges: newEdges } = e.detail || {};
+      if (Array.isArray(newNodes)) setNodes([...newNodes]);
+      if (Array.isArray(newEdges)) setEdges([...newEdges]);
+    };
+    window.addEventListener("editorService:updated", handler);
+    return () => window.removeEventListener("editorService:updated", handler);
+  }, []);
+
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);

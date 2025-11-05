@@ -40,7 +40,9 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
 
     // update editorService internal node data (so service can be used by other helpers)
     if (selectedNode?.id) {
-      editorService.applyImageDefaultsToNode(selectedNode.id, imageName);
+      const res = editorService.applyImageDefaultsToNode(selectedNode.id, imageName);
+      // notify FlowChart (or any listener) to sync nodes/edges
+      window.dispatchEvent(new CustomEvent("editorService:updated", { detail: res }));
     }
   };
 

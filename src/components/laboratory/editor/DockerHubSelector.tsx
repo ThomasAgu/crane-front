@@ -10,17 +10,18 @@ export default function DockerImageSelector({
   onChange: (v: string) => void; 
   onPickImage?: (v: string) => void;
 }) {
-  const [query, setQuery] = useState(value);
+  const [query, setQuery] = useState(value || "");
   const [results, setResults] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (query === value) return;
     if (!query) {
       setResults([]);
+      setIsOpen(false);
       return;
     }
-
     const timeout = setTimeout(async () => {
       setLoading(true);
       const images = await searchDockerImages(query);
@@ -28,9 +29,10 @@ export default function DockerImageSelector({
       setLoading(false);
       setIsOpen(true);
     }, 400);
-
     return () => clearTimeout(timeout);
-  }, [query]);
+  }, [query, value]);
+
+  useEffect(() => setQuery(value || ""), [value]);
 
   return (
     <div className="relative mb-3">
@@ -49,6 +51,7 @@ export default function DockerImageSelector({
               key={img.name}
               onClick={() => {
                 onChange(img.name);
+                if (onPickImage) onPickImage(img.name);
                 setQuery(img.name);
                 setIsOpen(false);
               }}

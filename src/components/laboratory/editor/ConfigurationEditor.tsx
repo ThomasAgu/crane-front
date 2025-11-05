@@ -5,6 +5,10 @@ const ConfurationEditor = () => {
             Opciones de guardado
             Importacion/Exportacion
             Activar el modo desarrollador
+
+            <button> Crear aplicacion </button>
+            <button> Ver MakeFile </button>
+            <button> Copiar MakeFile </button>
         </div>
     )
 }
