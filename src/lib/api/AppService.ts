@@ -7,8 +7,10 @@ export const getApps = () => apiRequest<AppDto[]>("/apps");
 export const getApp = (id: string) => apiRequest<AppDto>(`/apps/${id}`);
 
 //POST
-export const createApp = (data: CreateAppDto) =>
+export const createApp = (data: CreateAppDto) => {
+  debugger
   apiRequest<AppDto>("/apps", "POST", data);
+}
 
 export const restartApp = (id: string) =>
   apiRequest<string>(`/apps/${id}/restart`, "POST");

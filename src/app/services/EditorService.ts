@@ -1,7 +1,7 @@
 import { Node, Edge } from "reactflow";
 import { rules } from "../../lib/helper/EditorRules";
 import { dockerDefaults } from "../../lib/helper/DockerDefaults";
-
+import { CreateAppDto } from "../../lib/dto/AppDto";
 class EditorStateService {
   private nodes: Node[] = [];
   private edges: Edge[] = [];
@@ -61,7 +61,7 @@ class EditorStateService {
     node.data = {
       ...(node.data || {}),
       image: imageName,
-      ports: defaults.ports ?? node.data?.ports,
+      //ports: defaults.ports ?? node.data?.ports,
     };
 
     // Helper to find existing node by type + predicate
@@ -83,7 +83,8 @@ class EditorStateService {
     };
 
     // Ensure volumes exist and connect
-    if (Array.isArray(defaults.volumes)) {
+    
+    /*if (Array.isArray(defaults.volumes)) {
       defaults.volumes.forEach((vol: string) => {
         // try to find a volume with same containerPath or name
         let volNode = findNode("volume", (n) =>
@@ -100,10 +101,10 @@ class EditorStateService {
           this.edges.push({ id: `e-${Date.now()}-${Math.floor(Math.random() * 1000)}`, source: nodeId, target: volNode.id, type: "default" } as any);
         }
       });
-    }
+    }*/
 
     // Ensure networks exist and connect
-    if (Array.isArray(defaults.networks)) {
+    /*if (Array.isArray(defaults.networks)) {
       defaults.networks.forEach((netName: string) => {
         let netNode = findNode("network", (n) => (n.data?.name && n.data.name === netName) || (n.data?.address && n.data.address === netName));
         if (!netNode) {
@@ -115,7 +116,7 @@ class EditorStateService {
           this.edges.push({ id: `e-${Date.now()}-${Math.floor(Math.random() * 1000)}`, source: nodeId, target: netNode.id, type: "default" } as any);
         }
       });
-    }
+    }*/
 
     return { nodes: this.nodes, edges: this.edges };
   }
@@ -210,6 +211,82 @@ class EditorStateService {
     return this.nodes
       .filter((node) => serviceIds.includes(node.id) && node.type === "service")
       .map((serviceNode) => serviceNode.data);
+  }
+
+  // Build a CreateAppDto from current nodes/edges
+  exportAppDto(): CreateAppDto {
+    const appNode = this.nodes.find((n) => n.type === "app");
+    const appName = appNode?.data?.name || "Generated App";
+
+    const services = this.nodes
+      .filter((n) => n.type === "service")
+      .map((svc) => {
+        const connectedEdges = this.edges.filter(
+          (e) => e.source === svc.id || e.target === svc.id
+        );
+        const connectedIds = connectedEdges.map((e) =>
+          e.source === svc.id ? e.target : e.source
+        );
+
+        const volumes = this.nodes
+          .filter((n) => connectedIds.includes(n.id) && n.type === "volume")
+          .map((vNode) => {
+            const containerPath = vNode.data?.containerPath || "/data";
+            const localPath = vNode.data?.localPath || "/";
+            return `${localPath}:${containerPath}`;
+        });
+
+        const networks = this.nodes
+          .filter((n) => connectedIds.includes(n.id) && n.type === "network")
+          .map((net) => net.data?.name || net.data?.address || net.id);
+
+        return {
+          name: svc.data?.image || "",
+          image: svc.data?.image || "",
+          ports: Array.isArray(svc.data?.ports)
+            ? svc.data.ports
+            : typeof svc.data?.ports === "string" && svc.data?.ports.length
+            ? svc.data.ports.split(",").map((p: string) => p.trim())
+            : [],
+          labels: Array.isArray(svc.data?.labels) ? svc.data.labels : [],
+          volumes: volumes,
+          networks,
+        } as any;
+      });
+    debugger
+    const payload: CreateAppDto = {
+      name: appName,
+      services,
+      hosts: appNode?.data?.hosts ?? [''],
+      current_scale: appNode?.data?.actuales ?? 1,
+      min_scale: appNode?.data?.minimas ?? 0,
+      max_scale: appNode?.data?.maximas ?? 2,
+      user_id: appNode?.data?.user_id ?? null,
+    };
+
+    return payload;
+  }
+
+  // Generate a simple Makefile that posts the JSON payload to API (editable)
+  generateMakefileFromApp(appDto: CreateAppDto, apiUrl = "http://localhost:8000/api/apps"): string {
+    const json = JSON.stringify(appDto, null, 2);
+    // Produce a Makefile with a 'deploy' target that posts the JSON using curl
+    return [
+      "# Auto-generated Makefile",
+      "",
+      "APP_JSON := $(PWD)/generated_app.json",
+      "",
+      "write-json:",
+      "\t@cat > $(APP_JSON) <<'JSON'",
+      json.split("\n").map((l) => `\t${l}`).join("\n"),
+      "\tJSON",
+      "",
+      "deploy: write-json",
+      `\t@echo "Deploying $(APP_JSON) to ${apiUrl}"`,
+      `\t@curl -s -X POST -H "Content-Type: application/json" --data-binary @$(APP_JSON) ${apiUrl} | jq . || echo "curl failed"`,
+      "",
+      ".PHONY: write-json deploy",
+    ].join("\n");
   }
 }
 
