@@ -1,64 +1,111 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import NavBar from '../../../components/layout/NavBar'
-import { getApp, getLogs, getStats } from '@/src/lib/api/appService' 
-import type { AppDto } from '@/src/lib/dto/AppDto'
+import React, { FC, useEffect, useState, useCallback } from "react";
+import { useParams } from "next/navigation";
+import type { AppDto } from "@/src/lib/dto/AppDto";
+import type { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
+import { getApp, getLogs, getStats, startApp, stopApp, restartApp, scaleApp } from "@/src/lib/api/appService";
+import AppBase from "./AppBase";
+import StatsPanel from "./StatsPanel";
+import LogsPanel from "./LogsPanel";
 
-export default function AppDetailPage() {
-  const params = useParams<{ id: string }>()
-  const id = params.id
-  
-  const [logs, setLogs] = useState("");
-  const [stats, setStats] = useState("");
-  const [app, setApp] = useState<AppDto | null>(null)
-  const [loading, setLoading] = useState(true)
+type HistItem = {
+  container_id: string;
+  container_name: string;
+  series: number[];
+  latest: ContainerStatsDto;
+};
+
+const MAX_HISTORY = 20;
+
+const AppDetailView: FC = () => {
+  const params = useParams<{ id: string }>();
+  const appId = params?.id ?? "";
+
+  const [app, setApp] = useState<AppDto | null>(null);
+  const [logs, setLogs] = useState<string>("");
+  const [histories, setHistories] = useState<Record<string, HistItem>>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<"services" | "stats" | "logs">("services");
+
+  const fetchApp = useCallback(async () => {
+    const res = await getApp(appId);
+    setApp(res ?? null);
+  }, [appId]);
+
+  const fetchStats = useCallback(async () => {
+    const data = await getStats(appId);
+    if (!Array.isArray(data)) return;
+    setHistories((prev) => {
+      const next = { ...prev };
+      (data as ContainerStatsDto[]).forEach((s) => {
+        const id = s.container_id;
+        const name = s.container_name;
+        const cpu = Number(s.cpu_percentage ?? 0);
+        const prevItem = next[id] ?? { container_id: id, container_name: name, series: [], latest: s };
+        const newSeries = [...(prevItem.series || []), cpu].slice(-MAX_HISTORY);
+        next[id] = { container_id: id, container_name: name, series: newSeries, latest: s };
+      });
+      return next;
+    });
+  }, [appId]);
+
+  const fetchLogs = useCallback(async () => {
+    const l = await getLogs(appId);
+    debugger
+    setLogs(l ?? "");
+  }, [appId]);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getApp(id);
-        const logs = await getLogs(String(id));
-        const stats = await getStats(String(id));
-        setLogs(logs);
-        setStats(JSON.stringify(stats));
-        setApp(data);
-      } catch (err) {
-        console.error(`Error al obtener los datos de la app ${id}:`, err)
-      } finally {
-        setLoading(false)
-      }
+    if (!appId) return;
+    setLoading(true);
+    (async () => {
+      await fetchApp();
+      setLoading(false);
+    })();
+  }, [appId, fetchApp]);
+
+  useEffect(() => {
+    if (activeTab === "stats") {
+      fetchStats();
+      const id = setInterval(fetchStats, 5000);
+      return () => clearInterval(id);
     }
+  }, [activeTab, fetchStats]);
 
-    if (id) fetchData()
-  }, [id])
+  useEffect(() => {
+    if (activeTab === "logs") fetchLogs();
+  }, [activeTab, fetchLogs]);
 
+  const onAppAction = async (action: "start" | "stop" | "restart" | "scaleUp" | "scaleDown") => {
+    try {
+      if (action === "start") await startApp(appId);
+      if (action === "stop") await stopApp(appId);
+      if (action === "restart") await restartApp(appId);
+      if (action === "scaleUp") await scaleApp(appId);
+      await fetchApp();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  if (loading) return <div className="p-4">Loading...</div>;
 
   return (
-    <NavBar>
-      <main className="min-h-screen w-screen p-6 bg-gray-50">
-        {loading ? (
-          <p>Cargando detalles...</p>
-        ) : app ? (
-          <div className="bg-white shadow-md rounded-xl p-6 max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold mb-4">{app.name}</h1>
-            <ul className="space-y-2 text-gray-700">
-              <li><strong>ID:</strong> {app.id}</li>
-              <li><strong>Escala mínima:</strong> {app.min_scale ?? 'N/A'}</li>
-              <li><strong>Escala actual:</strong> {app.current_scale ?? 'N/A'}</li>
-              <li><strong>Escala máxima:</strong> {app.max_scale ?? 'N/A'}</li>
-              <li><strong>Creado:</strong> {app.created_at ? new Date(app.created_at).toLocaleString() : 'Desconocido'}</li>
-              <li><strong>Actualizado:</strong> {app.updated_at ? new Date(app.updated_at).toLocaleString() : 'N/A'}</li>
-              <li><strong>Los logs:</strong> {logs}</li>
-              <li><strong>Stats:</strong> {stats}</li>
-            </ul>
-          </div>
-        ) : (
-          <p>No se encontró la aplicación.</p>
-        )}
-      </main>
-    </NavBar>
-  )
-}
+    <div className="p-4">
+      <div className="flex gap-2 mb-4 border-b">
+        <button className={`px-4 py-2 ${activeTab === "services" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("services")}>Services</button>
+        <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
+        <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
+      </div>
+
+      <AppBase app={app} onAppAction={onAppAction} />
+
+      {activeTab === "stats" && <StatsPanel histories={Object.values(histories)} />}
+
+      {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
+    </div>
+  );
+};
+
+export default AppDetailView;

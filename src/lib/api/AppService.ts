@@ -1,6 +1,6 @@
 import apiRequest from "./baseService";
 import { AppDto, CreateAppDto } from "../dto/AppDto";
-
+import { ContainerStatsDto } from "../dto/ContainerStats";
 //GET
 export const getApps = () => apiRequest<AppDto[]>("/apps");
 
@@ -8,7 +8,6 @@ export const getApp = (id: string) => apiRequest<AppDto>(`/apps/${id}`);
 
 //POST
 export const createApp = (data: CreateAppDto) => {
-  debugger
   apiRequest<AppDto>("/apps", "POST", data);
 }
 
@@ -28,7 +27,7 @@ export const getLogs = (id: string) =>
   apiRequest<string>(`/apps/${id}/logs`, "POST");
 
 export const getStats = (id: string) =>
-  apiRequest<string>(`/apps/${id}/stats`, "POST");
+  apiRequest<ContainerStatsDto>(`/apps/${id}/stats`, "POST");
 
 export const refreshApps = () =>
   apiRequest<string>(`/apps/refresh`, "POST");
