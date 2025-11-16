@@ -6,6 +6,7 @@ import type { AppDto } from "@/src/lib/dto/AppDto";
 import type { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
 import { getApp, getLogs, getStats, startApp, stopApp, restartApp, scaleApp } from "@/src/lib/api/appService";
 import { useSearchParams } from "next/navigation";
+import NavBar from '../../../components/layout/NavBar'
 import AppBase from "./AppBase";
 import StatsPanel from "./StatsPanel";
 import LogsPanel from "./LogsPanel";
@@ -104,19 +105,21 @@ const AppDetailView: FC = () => {
   if (loading) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className={styles.homeDetailPage} >
-      <div className="flex gap-2 mb-4 border-b">
-        <button className={`px-4 py-2 ${activeTab === "services" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("services")}>Services</button>
-        <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
-        <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
+    <NavBar>
+      <div className={styles.homeDetailPage} >
+        <div className="flex gap-2 mb-4 border-b">
+          <button className={`px-4 py-2 ${activeTab === "services" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("services")}>Services</button>
+          <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
+          <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
+        </div>
+
+        <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
+
+        {activeTab === "stats" && <StatsPanel histories={Object.values(histories)} />}
+
+        {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
       </div>
-
-      <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
-
-      {activeTab === "stats" && <StatsPanel histories={Object.values(histories)} />}
-
-      {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
-    </div>
+    </NavBar>
   );
 };
 

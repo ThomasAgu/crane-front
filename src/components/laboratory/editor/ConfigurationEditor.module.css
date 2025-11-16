@@ -1,0 +1,74 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--greyest-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.mainButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--darkest);
+  border: 1px solid var(--darkest);
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.15s;
+  width: 80%;
+}
+
+.mainButton:hover {
+  box-shadow: 1px 1px 2px var(--darker);
+}
+
+.makeFileButtons {
+  display: flex;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.secondaryButton,
+.secondaryButtonBlue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  transition: 0.15s;
+  color: var(--white);
+}
+
+.secondaryButton {
+  background: var(--greyest-blue);
+}
+
+.secondaryButton:hover {
+  background: var(--darker);
+}
+
+.secondaryButtonBlue {
+  background: var(--primary-blue);
+}
+
+.secondaryButtonBlue:hover {
+  background: var(--light-blue-grey);
+}

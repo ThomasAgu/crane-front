@@ -90,7 +90,6 @@ export default function NetworkEditorForm({
         setValue={(v: string) => update("name", v)}
         submitValidators={[requiredValidator]}
         showErrors={showErrors}
-        imagealt="Nombre"
         setShowError={setShowErrors}
       />
 

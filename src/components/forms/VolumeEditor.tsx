@@ -10,7 +10,6 @@ export default function VolumeEditorForm({
   data: any;
   onChange: (d: any) => void;
 }) {
-  // Move initial state to a function to ensure fresh state on re-render
   const getInitialState = () => ({
     name: data?.name || "",
     size: data?.size || 20,
@@ -21,7 +20,6 @@ export default function VolumeEditorForm({
   const [form, setForm] = useState(getInitialState());
   const [showErrors, setShowErrors] = useState(false);
 
-  // Reset form when data changes (different node selected)
   useEffect(() => {
     setForm(getInitialState());
   }, [data]);
@@ -34,7 +32,6 @@ export default function VolumeEditorForm({
       localPath: normalizePath(form.localPath),
     };
     onChange(payload);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
   function normalizePath(p: string) {

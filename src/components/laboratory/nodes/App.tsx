@@ -3,7 +3,9 @@ import { Handle, Position } from "reactflow";
 export const App = ({ data }: any) => {
   return (
     <div className="bg-gray-800 text-white p-4 rounded-xl border border-purple-400 w-72">
-      <h2 className="font-bold text-xl mb-2">{data.name || "Nombre de aplicación"}</h2>
+      <h2 className="font-bold text-xl mb-2">
+        {data.name || "Nombre de aplicación"}
+      </h2>
       <p className="text-sm text-gray-300 mb-3">{data.description}</p>
       <div className="flex justify-between">
         <span className="font-semibold">Instancias</span>
@@ -14,7 +16,8 @@ export const App = ({ data }: any) => {
         </div>
       </div>
       <div className="mt-2">
-        <span className="font-semibold">Reglas</span> <span className="ml-2">0</span>
+        <span className="font-semibold">Reglas</span>{" "}
+        <span className="ml-2">0</span>
       </div>
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />

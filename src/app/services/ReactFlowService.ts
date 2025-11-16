@@ -10,7 +10,10 @@ export class ReactFlowService {
   /**
    * Recibe un tipo de template y devuelve nodos + edges
    * para renderizar en React Flow.
+   * 
    */
+
+  //TODO: Implementar la importacion y exportacion en este servicio
   getTemplateGraph(template: TemplateType): { nodes: Node[]; edges: Edge[] } {
     switch (template) {
       case "microservices":
