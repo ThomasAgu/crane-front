@@ -9,7 +9,7 @@ export interface AppDto {
   current_scale?: number | null
   max_scale?: number | null
   force_stop?: boolean | null
-  created_at?: string | null
+  created_at?: Date | Date
   updated_at?: string | null
   deleted_at?: string | null
   user_id?: number | null

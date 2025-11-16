@@ -5,9 +5,11 @@ import { useParams } from "next/navigation";
 import type { AppDto } from "@/src/lib/dto/AppDto";
 import type { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
 import { getApp, getLogs, getStats, startApp, stopApp, restartApp, scaleApp } from "@/src/lib/api/appService";
+import { useSearchParams } from "next/navigation";
 import AppBase from "./AppBase";
 import StatsPanel from "./StatsPanel";
 import LogsPanel from "./LogsPanel";
+import styles from '../home.module.css'
 
 type HistItem = {
   container_id: string;
@@ -20,8 +22,11 @@ const MAX_HISTORY = 20;
 
 const AppDetailView: FC = () => {
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status") || "unknown";
   const appId = params?.id ?? "";
 
+  const [appStatus, setAppStatus] = useState<String>(status === 'Running' ? "Activo": "Inactivo");
   const [app, setApp] = useState<AppDto | null>(null);
   const [logs, setLogs] = useState<string>("");
   const [histories, setHistories] = useState<Record<string, HistItem>>({});
@@ -52,8 +57,7 @@ const AppDetailView: FC = () => {
 
   const fetchLogs = useCallback(async () => {
     const l = await getLogs(appId);
-    debugger
-    setLogs(l ?? "");
+    setLogs(l);
   }, [appId]);
 
   useEffect(() => {
@@ -74,13 +78,21 @@ const AppDetailView: FC = () => {
   }, [activeTab, fetchStats]);
 
   useEffect(() => {
-    if (activeTab === "logs") fetchLogs();
-  }, [activeTab, fetchLogs]);
+    if (activeTab === "logs") {
+      fetchLogs();
+    }
+  }, [activeTab]);
 
   const onAppAction = async (action: "start" | "stop" | "restart" | "scaleUp" | "scaleDown") => {
     try {
-      if (action === "start") await startApp(appId);
-      if (action === "stop") await stopApp(appId);
+      if (action === "start") {
+        await startApp(appId);
+        setAppStatus("Activo");
+      }
+      if (action === "stop") {
+        await stopApp(appId);
+        setAppStatus("Inactivo");
+      }
       if (action === "restart") await restartApp(appId);
       if (action === "scaleUp") await scaleApp(appId);
       await fetchApp();
@@ -92,14 +104,14 @@ const AppDetailView: FC = () => {
   if (loading) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="p-4">
+    <div className={styles.homeDetailPage} >
       <div className="flex gap-2 mb-4 border-b">
         <button className={`px-4 py-2 ${activeTab === "services" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("services")}>Services</button>
         <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
         <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
       </div>
 
-      <AppBase app={app} onAppAction={onAppAction} />
+      <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
 
       {activeTab === "stats" && <StatsPanel histories={Object.values(histories)} />}
 

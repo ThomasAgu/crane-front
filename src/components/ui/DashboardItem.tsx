@@ -1,136 +1,149 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { AppDto } from '@/src/lib/dto/AppDto'
-import styles from './DashboardItem.module.css'
-import { restartApp, startApp, stopApp, deleteApp, getLogs, getStats, scaleApp } from '@/src/lib/api/appService'
-import { Play, Pause, Plus, Minus, RefreshCcw, Trash, Layers2 } from 'lucide-react'
+import {
+  Play,
+  Pause,
+  RefreshCcw,
+  Trash,
+  Layers2,
+} from 'lucide-react'
+import {
+  restartApp,
+  startApp,
+  stopApp,
+  deleteApp,
+  scaleApp,
+} from '@/src/lib/api/appService'
 import DeleteModal from './DeleteModal'
+
 interface DashboardItemProps {
-  app: AppDto;
+  app: AppDto
   onUpdate: CallableFunction
 }
 
 export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
-  
+  const createdAtText = app?.created_at ? new Date(app.created_at).toLocaleDateString() : "—";
   const router = useRouter()
+  const [active, setActive] = useState(app.status !== 'Stopped')
+  const [deleteModal, setDeleteModal] = useState(false)
 
-  const [active, setActive] = useState(app.status != 'Stopped');
-  const [deleteModal, setDeleteModal] = useState(false);
+  const stopClick = (e: any) => e.stopPropagation()
 
-  const handleClickItem = () => {
-    router.push(`/home/${app.id}/`)
+  const handleStart = async (e: any) => {
+    stopClick(e)
+    await startApp(String(app.id))
+    setActive(true)
+    onUpdate()
   }
 
-  const handleScaleApp = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await scaleApp(String(app.id));  
-      console.log('App escalada');
-      onUpdate();
-    } catch (err) {
-      console.error('No se pudo escalar la app por', err);
-    }
+  const handleStop = async (e: any) => {
+    stopClick(e)
+    await stopApp(String(app.id))
+    setActive(false)
+    onUpdate()
   }
 
-  const handleDeleteApp = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setDeleteModal(true);
+  const handleRestart = async (e: any) => {
+    stopClick(e)
+    await restartApp(String(app.id))
+    setActive(true)
+    onUpdate()
   }
 
-  const handleConfirmDelete = async (e: React.MouseEvent) => {
-    try {
-      e.stopPropagation();
-      await deleteApp(String(app.id));
-      console.log('App borrada:', app.id)
-      setDeleteModal(false)
-      router.refresh()
-    } catch (err) {
-      console.error('Error eliminando app', err)
-    }
+  const handleScale = async (e: any) => {
+    stopClick(e)
+    await scaleApp(String(app.id))
+    onUpdate()
   }
 
-  const handleStartApp = async (e: React.MouseEvent) => {
-    try {
-      e.stopPropagation();
-      await startApp(String(app.id));
-      setActive(true);
-    } catch (err: any) {
-      window.alert('huno un error al arrancar el servicio');
-    }
+  const handleDelete = (e: any) => {
+    stopClick(e)
+    setDeleteModal(true)
   }
 
-  const handleStopApp = async (e: React.MouseEvent) => {
-    try {
-      e.stopPropagation();
-      await stopApp(String(app.id));
-      setActive(false)
-    } catch (err: any) {
-      window.alert('huno un error al arrancar el servicio');      
-    }
-  }
-
-  const handleRestartApp = async (e: React.MouseEvent) => {
-    try {
-      e.stopPropagation();
-      setActive(false)
-      await restartApp(String(app.id));
-      setActive(true);
-    } catch (err: any) {
-      window.alert('huno un error al arrancar el servicio');      
-    }
+  const handleConfirmDelete = async () => {
+    await deleteApp(String(app.id))
+    setDeleteModal(false)
+    onUpdate()
   }
 
   return (
-    <div onClick={handleClickItem}
-      className="cursor-pointer bg-white rounded-2xl p-5 shadow-sm border border-gray-200 
-                 hover:shadow-md transition-all hover:border-blue-400 flex flex-col justify-start gap-2 h-90 w-80"
+    <div
+      onClick={() => router.push(`/home/${app.id}/?status=${app.status}`)}
+      className="
+        bg-white rounded-2xl border border-gray-200 shadow-sm
+        hover:shadow-md hover:border-blue-300
+        transition-all cursor-pointer p-5 flex flex-col gap-4
+      "
     >
-      <div className={`${styles.header}`}>
-        <div className="flex justify-between w-full items-center">
-          <h2 className={styles.title}>{app.name}</h2>
-          <div
-            className={`${styles.state} ${
-              active ? styles.active : styles.inactive
-            }`}
+      <div className="flex items-start justify-between">
+        <h2 className="text-lg font-medium text-gray-800">
+          {app.name}
+        </h2>
+
+        <span
+          className={`
+            px-3 py-0.5 rounded-full text-xs font-semibold 
+            ${active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}
+          `}
+        >
+          {active ? 'Activo' : 'Inactivo'}
+        </span>
+      </div>
+
+      <div className="text-sm text-gray-600 flex flex-col gap-1">
+        <p>Escala actual: {app.current_scale}</p>
+        <p>Creado: {createdAtText}</p>
+      </div>
+
+      <div className="mt-auto flex gap-3 pt-2">
+        {active ? (
+          <>
+            <button
+              onClick={handleStop}
+              className="p-2 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition"
+            >
+              <Pause size={20} />
+            </button>
+
+            <button
+              onClick={handleRestart}
+              className="p-2 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 transition"
+            >
+              <RefreshCcw size={20} />
+            </button>
+
+            <button
+              onClick={handleScale}
+              className="p-2 rounded-lg bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition"
+            >
+              <Layers2 size={20} />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={handleStart}
+            className="p-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
           >
-            {active ? 'Activo' : 'Inactivo'}
-          </div>
-        </div>
+            <Play size={20} />
+          </button>
+        )}
+
+        <button
+          onClick={handleDelete}
+          className="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition ml-auto"
+        >
+          <Trash size={20} />
+        </button>
       </div>
 
-      <div className={styles.actionButtons}>
-          {active ? (
-            <>
-              <button onClick={handleStopApp} className={styles.pauseButton}><Pause size={30} /></button>
-              <button onClick={handleRestartApp} className={styles.restartButton} ><RefreshCcw size={30}/> </button>
-              <button onClick={handleScaleApp} className={styles.scaleButton} ><Layers2 size={30}/> </button>
-            </>
-          ) : (
-            <>
-              <button onClick={handleStartApp} className={styles.playButton}><Play size={30} /> </button>
-            </>
-          )}
-
-          <button onClick={handleDeleteApp} className={styles.deleteButton}><Trash size={30} /></button>
-        </div>
-
-
-      {/* Cobtar servicios reglas redes etc  */}
-      <div className="flex flex-col gap-1 mb-4 text-sm text-gray-600">
-        <p>Escala actual: {app.current_scale ?? 'N/A'}</p>
-        <p>
-          Creado:{' '}
-          {app.created_at
-            ? new Date(app.created_at).toLocaleDateString()
-            : 'Desconocido'}
-        </p>
-      </div>
       {deleteModal && (
         <DeleteModal
           itemName={app.name}
-          itemType="aplicaciones"
+          itemType="aplicación"
           deleteFunction={handleConfirmDelete}
           setActive={setDeleteModal}
         />

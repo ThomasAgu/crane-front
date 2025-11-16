@@ -6,9 +6,11 @@ import { getApps } from '@/src/lib/api/appService'
 import { AppDto } from '@/src/lib/dto/AppDto'
 import styles from './home.module.css' 
 import { useRouter } from 'next/navigation'
+import Loader from '@/src/components/ui/Loader'
 
 export default function HomePage() {
   const [apps, setApps] = useState<AppDto[]>([]);
+  const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter()
   
@@ -38,10 +40,9 @@ export default function HomePage() {
   return (
     <NavBar>
       <main className={styles.mainContent}>
-        <h1 className="text-3xl font-bold mb-6">Dashboard</h1> 
-        <button onClick={handleClick} className="btn-primary" >Crear nuevo app</button>
+        <h1 className="text-3xl font-bold mt-6 text-darkest">Home</h1> 
         {loading ? (
-          <p>Cargando aplicaciones...</p>
+          <div className='mt-6'><Loader loading={loading} width={80} height={80} /></div>
         ) : (
           <Dashboard apps={apps} onUpdate={handleUpdate}/>
         )}
