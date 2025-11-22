@@ -1,0 +1,129 @@
+.mainContent {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+    background-color: var(--white);
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.searchInput {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.filterBar button {
+  padding: 8px 15px;
+  margin-left: 10px;
+  border: 1px solid #0070f3;
+  background-color: transparent;
+  color: #0070f3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.filterBar .activeFilter {
+  background-color: #0070f3;
+  color: white;
+}
+
+.divider {
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+
+.appList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.appItem {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.appName {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.stats p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.footer {
+    height: 70px;
+    width: 100%;
+    border-radius: 0 0 12px 12px;
+    background-color: var(--primary-blue);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 10px 
+}
+
+.rateButton {
+    display: flex;
+    border: 1px solid var(--white);
+    border-radius: 4px;
+    font-size: 19px;
+    color: var(--darker);
+    font-weight: bold;
+    padding: 2px;
+    background-color: var(--white);
+}
+
+.favButton {
+    border: 1px solid var(--white);
+    border-radius: 4px;
+    font-size: 19px;
+    padding: 4px;
+    margin-left: 10px;
+    margin-right: 8px;
+    background-color: var(--white);
+}
+
+
+.downloadButton {
+  display: flex;
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 4px;
+  color: white;
+  margin-right: auto;
+}
+
+.noResults {
+    color: var(--light-grey);
+    font-style: italic;
+    font-size: 20px;
+    text-align: center;
+    grid-column: 1 / -1;
+    justify-self: center; 
+}
+
+@media (min-width: 900px) and (max-width: 1300px) {
+  .appList {
+    grid-template-columns: repeat(2, 400px); /* 4 columnas */
+    gap: 2rem;
+  }
+}

@@ -6,3 +6,101 @@
     justify-content: top;
     align-items: center;
 }
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.searchInput {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.filterBar button {
+  padding: 8px 15px;
+  margin-left: 10px;
+  border: 1px solid #0070f3;
+  background-color: transparent;
+  color: #0070f3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.filterBar .activeFilter {
+  background-color: #0070f3;
+  color: white;
+}
+
+.divider {
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+
+.appList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.appItem {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.appName {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.stats p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.voteButton, .favButton, .downloadButton {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.voteButton {
+  background-color: #f0f0f0;
+}
+
+.favButton {
+  background-color: #ffe0e0;
+  color: #cc0000;
+}
+
+.favButton.isFavorite {
+  background-color: #cc0000;
+  color: white;
+}
+
+.downloadButton {
+  background-color: #4CAF50;
+  color: white;
+}

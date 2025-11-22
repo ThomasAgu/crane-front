@@ -25,3 +25,25 @@ export interface CreateAppDto {
   max_scale?: number | 1
   user_id?: number | null
 }
+
+export interface StoreAppDto {
+  id: number
+  name: string
+  services?: ServiceDto[] | null
+  hosts?: any[] | null
+  min_scale?: number | null
+  current_scale?: number | null
+  max_scale?: number | null
+  created_at?: Date | Date
+  updated_at?: string | null
+  user_id?: number | null
+}
+
+export interface StoreApp {
+  id: number,
+  app: StoreAppDto,
+  votes_up: number,
+  votes_down: number,
+  favourites: number,
+  downloads: number
+}
