@@ -1,13 +1,20 @@
 import styles from './TemplateSelector.module.css'
 import TemplateItem from './TemplateItem';
-import { Database, Boxes, Layers, Square } from "lucide-react";
+import { Database, Boxes, Layers, Square, Columns3Cog } from "lucide-react";
+import { AppDto } from '@/src/lib/dto/AppDto';
+import { Customized } from 'recharts';
 
 interface TemplateSelectorProps {
     setPopUp: Function
     setSelectedTemplate: Function
+    apps: AppDto[]
 }
 
-const TemplateSelector: React.FC<TemplateSelectorProps> = ({setPopUp, setSelectedTemplate}) => {
+const TemplateSelector: React.FC<TemplateSelectorProps> = ({
+    setPopUp, 
+    setSelectedTemplate, 
+    apps
+}) => {
 
     const handleTemplateSelect = (templateToLoad: string) => {
         setSelectedTemplate(templateToLoad)
@@ -18,8 +25,26 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({setPopUp, setSelecte
         <div className={styles.overlay}>
             <div className={styles.popup}>
                 <div className={styles.content}>
-                    <h2 className='text-black text-3xl'> Seleccione una plantilla </h2>
-                    <div className="grid grid-cols-2 gap-4">
+                    <h2 className='text-black text-3xl p-4'> Aplicaciones creadas </h2>
+                    <div className="grid grid-cols-3 gap-4">
+                        {apps.length > 0 
+                            ? apps.map((app: AppDto) => {
+                                return (
+                                    <TemplateItem 
+                                        title={app.name}
+                                        description='Todavia no hay'
+                                        services={app.services?.length || 0} 
+                                        rules={0}
+                                        icon={<Columns3Cog size={80} />}
+                                        onClick={() => handleTemplateSelect('simple-api')}
+                                    />
+                                )}
+                            )
+                            : <></>
+                        }
+                    </div>
+                    <h2 className='text-black text-3xl p-4'> Plantillas </h2>
+                    <div className="grid grid-cols-3 gap-4">
                         <TemplateItem
                             title="Aplicación en blanco"
                             description="Un modelo que te desafía a arrancar desde cero"
@@ -52,7 +77,8 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({setPopUp, setSelecte
                             icon={<Boxes size={80} />}
                             onClick={() => handleTemplateSelect('simple-api')} 
                         />
-                        </div>
+                    </div>
+                    
                 </div>
                 
             </div>

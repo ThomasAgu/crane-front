@@ -42,8 +42,10 @@ export interface StoreAppDto {
 export interface StoreApp {
   id: number,
   app: StoreAppDto,
+  description: string,
   votes_up: number,
   votes_down: number,
   favourites: number,
+  isFavorite: boolean,
   downloads: number
 }

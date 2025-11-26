@@ -2,12 +2,28 @@
 import NavBar from '../../components/layout/NavBar';
 import FlowChart from '../../components/laboratory/FlowChart';
 import TemplateSelector from '@/src/components/ui/TemplateSelector';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getApps } from '@/src/lib/api/appService';
+import { AppDto } from '@/src/lib/dto/AppDto';
 
 export default function HomePage() {
     const [popUp, setPopUp] = useState(true);
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+    const [apps, setApps] = useState<AppDto[]>([]);
     
+   useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await getApps();
+        setApps(data);
+      } catch (err) {
+        console.error("Error cargando las apps:", err);
+      }
+    }
+    fetchData();
+  }, []);
+    
+
 
     return (
         <NavBar>
@@ -16,6 +32,7 @@ export default function HomePage() {
                     <TemplateSelector 
                         setPopUp={setPopUp} 
                         setSelectedTemplate={setSelectedTemplate}
+                        apps={apps}
                     />
                 }
                 <FlowChart

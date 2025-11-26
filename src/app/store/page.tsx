@@ -1,14 +1,23 @@
-// pages/store.tsx
 "use client"
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import NavBar from '../../components/layout/NavBar';
 import AppItem from './StoreItem';
 import StoreService from '../services/StoreSercice';
 import { StoreApp, FilterType } from '../../lib/helper/StoreItems'
+import DockerImageFilter from '@/src/components/ui/DockerImageFilter';
 import styles from './store.module.css';
 import Loader
  from '@/src/components/ui/Loader';
-const FilterBar: React.FC<{ currentFilter: FilterType, onFilterChange: (f: FilterType) => void }> = ({ currentFilter, onFilterChange }) => {
+import { Search } from 'lucide-react';
+
+const FilterBar: React.FC<{ 
+  currentFilter: FilterType, 
+  onFilterChange: (f: FilterType) => void, 
+  onDockerFilterClick: () => void;
+  isDockerFilterActive: boolean;
+  activeFilterCount: number;
+}
+  > = ({ currentFilter, onFilterChange, onDockerFilterClick, isDockerFilterActive, activeFilterCount }) => {
   
   const filters: { label: string, value: FilterType, ascendand: boolean }[] = [
     { label: 'Mejor Valoradas', value: 'best_rated', ascendand: true},
@@ -26,6 +35,13 @@ const FilterBar: React.FC<{ currentFilter: FilterType, onFilterChange: (f: Filte
           {filter.label}
         </button>
       ))}
+<button 
+        onClick={onDockerFilterClick} 
+        className={`${styles.dockerImagesButton} ${isDockerFilterActive ? styles.activeDockerFilter : ''}`}
+      > 
+        Filtrar por imagen de docker 
+        {activeFilterCount > 0 && ` (${activeFilterCount})`}
+      </button>
     </div>
   );
 };
@@ -35,6 +51,9 @@ export default function Store() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('best_rated');
   const [loading, setLoading] = useState(true);
+
+  const [selectedDockerImages, setSelectedDockerImages] = useState<string[]>([]);
+  const [isDockerFilterOpen, setIsDockerFilterOpen] = useState(false);
 
   useEffect(() => {
     const fetchApps = async () => {
@@ -50,6 +69,18 @@ export default function Store() {
     fetchApps();
   }, []);
 
+  const allDockerImages = useMemo(() => {
+    const images = new Set<string>();
+    storeItems.forEach(item => {
+      item.app.services?.forEach(service => {
+        if (service.image) {
+          images.add(service.image);
+        }
+      });
+    });
+    return Array.from(images).sort();
+  }, [storeItems]);
+
   const displayedItems = useMemo(() => {
     let filtered = [...storeItems];
 
@@ -57,6 +88,15 @@ export default function Store() {
       filtered = filtered.filter(item =>
         item.app.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+    
+    if (selectedDockerImages.length > 0) {
+        filtered = filtered.filter(item => {
+            const appImages = item.app.services?.map(s => s.image) || [];
+            return selectedDockerImages.every(selectedImage => 
+                appImages.includes(selectedImage)
+            );
+        });
     }
 
     switch (filterType) {
@@ -72,7 +112,7 @@ export default function Store() {
     }
 
     return filtered;
-  }, [storeItems, searchTerm, filterType]);
+  }, [storeItems, searchTerm, filterType, selectedDockerImages]); 
 
   
   const handleVote = useCallback(async (appId: number, type: 'up' | 'down') => {
@@ -98,15 +138,37 @@ export default function Store() {
         <i> "No reinventes la rueda"</i> 
         <hr />
         <div className={styles.controls}>
-          <input
-            type="text"
-            placeholder="Buscar aplicación por nombre..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
-          />
-          <div> Multiselector de imagenes de docker anachi </div>
-          <FilterBar currentFilter={filterType} onFilterChange={setFilterType} />
+          <div className={styles.searchInputContainer}> 
+            <span className={styles.searchIcon} aria-hidden="true">
+              <Search size={20} />  
+            </span>
+            <input
+              type="text"
+              placeholder="Buscar aplicación por nombre..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+
+       <div className={styles.dockerFilterWrapper}>
+            <FilterBar 
+              currentFilter={filterType} 
+              onFilterChange={setFilterType}
+              onDockerFilterClick={() => setIsDockerFilterOpen(prev => !prev)} // Nueva prop para el botón
+              isDockerFilterActive={selectedDockerImages.length > 0} 
+              activeFilterCount={selectedDockerImages.length}
+            />
+            
+            {isDockerFilterOpen && (
+              <DockerImageFilter
+                allImages={allDockerImages}
+                selectedImages={selectedDockerImages}
+                onSelectionChange={setSelectedDockerImages}
+                onClose={() => setIsDockerFilterOpen(false)}
+              />
+            )}
+          </div> 
         </div>
         
         <hr className={styles.divider} />

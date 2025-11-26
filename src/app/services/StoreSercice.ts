@@ -1,22 +1,13 @@
-// services/StoreService.ts
 import { StoreApp, initialStoreItems } from '../../lib/helper/StoreItems' 
 
-// ** SIMULACIÓN DE DATOS EN MEMORIA **
 let storeItemsData: StoreApp[] = initialStoreItems;
 
 const StoreService = {
-  /**
-   * Simula la obtención de la lista completa de aplicaciones.
-   */
   getApps: async (): Promise<StoreApp[]> => {
-    // Simular un retraso de red
     await new Promise(resolve => setTimeout(resolve, 300));
     return storeItemsData;
   },
 
-  /**
-   * Actualiza el voto de una aplicación.
-   */
   updateVote: async (appId: number, type: 'up' | 'down'): Promise<StoreApp[]> => {
     const appIndex = storeItemsData.findIndex(item => item.id === appId);
 
@@ -30,7 +21,6 @@ const StoreService = {
         newApp.votes_down += 1;
       }
 
-      // Actualizar el estado global simulado
       storeItemsData = [
         ...storeItemsData.slice(0, appIndex),
         newApp,
@@ -38,12 +28,9 @@ const StoreService = {
       ];
     }
 
-    return storeItemsData; // Devuelve la lista actualizada para refrescar el estado de React
+    return storeItemsData; 
   },
 
-  /**
-   * Alterna el estado de favorito de una aplicación.
-   */
   toggleFavorite: async (appId: number): Promise<StoreApp[]> => {
     const appIndex = storeItemsData.findIndex(item => item.id === appId);
     debugger
@@ -65,9 +52,6 @@ const StoreService = {
     return storeItemsData;
   },
 
-  /**
-   * Simula la descarga de una aplicación.
-   */
   registerDownload: async (appId: number): Promise<StoreApp[]> => {
     const appIndex = storeItemsData.findIndex(item => item.id === appId);
 
@@ -84,7 +68,6 @@ const StoreService = {
         ...storeItemsData.slice(appIndex + 1),
       ];
       
-      // En una app real, aquí se iniciaría la descarga
       console.log(`Descargando aplicación con ID: ${appId}`);
     }
     
