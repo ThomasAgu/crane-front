@@ -1,9 +1,11 @@
 import { Node, Edge } from "reactflow";
+import { AppDto } from "@/src/lib/dto/AppDto";
 
 export type TemplateType =
   | "blank"
   | "microservices"
   | "database"
+  | "custom"
   | "simple-api";
 
 export class ReactFlowService {
@@ -16,6 +18,8 @@ export class ReactFlowService {
   //TODO: Implementar la importacion y exportacion en este servicio
   getTemplateGraph(template: TemplateType): { nodes: Node[]; edges: Edge[] } {
     switch (template) {
+      case "custom":
+        return { nodes: [], edges: [] };
       case "microservices":
         return {
           nodes: [
@@ -103,6 +107,97 @@ export class ReactFlowService {
       default:
         return { nodes: [], edges: [] };
     }
+  }
+  
+  getGraphForApp(appDto: AppDto): { nodes: Node[]; edges: Edge[] } {
+       const nodes: Node[] = [];
+        const edges: Edge[] = [];
+
+        // Add the main App node
+        nodes.push({
+          id: `app-${appDto.id}`,
+          type: "app",
+          position: { x: 0, y: 0 },
+          data: {
+            name: appDto.name,
+            description: "Aplicación personalizada",
+            actuales: appDto.current_scale,
+          },
+        });
+
+        // Add Service nodes
+        appDto.services?.forEach((service, index) => {
+          const serviceId = `service-${index}`;
+          nodes.push({
+            id: serviceId,
+            type: "service",
+            position: { x: 300, y: index * 150 },
+            data: {
+              name: service.name,
+              image: service.image,
+              ports: service.ports?.join(", ") || "N/A",
+              labels: service.labels || [],
+            },
+          });
+
+          // Connect App node to Service node
+          edges.push({
+            id: `edge-app-${serviceId}`,
+            source: `app-${appDto.id}`,
+            target: serviceId,
+          });
+        });
+
+        // Add Network nodes (if any)
+        appDto.hosts?.forEach((host, index) => {
+          const networkId = `network-${index}`;
+          nodes.push({
+            id: networkId,
+            type: "network",
+            position: { x: 600, y: index * 150 },
+            data: {
+              name: `Red ${index + 1}`,
+              address: host.address || "192.168.0.1",
+            },
+          });
+
+          // Connect Service nodes to Network node
+          appDto.services?.forEach((_, serviceIndex) => {
+            edges.push({
+              id: `edge-service-${serviceIndex}-network-${index}`,
+              source: `service-${serviceIndex}`,
+              target: networkId,
+            });
+          });
+        });
+
+        // Add Volume nodes (if any)
+        appDto.services?.forEach((service, serviceIndex) => {
+          service.volumes?.forEach((volume, volumeIndex) => {
+            const volumeId = `volume-${serviceIndex}-${volumeIndex}`;
+            nodes.push({
+              id: volumeId,
+              type: "volume",
+              position: { x: 900, y: serviceIndex * 150 + volumeIndex * 50 },
+              data: {
+                name: `Volumen ${volumeIndex + 1}`,
+                containerPath: volume,
+                localPath: `/data/${volumeIndex}`,
+                size: 20,
+              },
+            });
+
+            // Connect Service node to Volume node
+            edges.push({
+              id: `edge-service-${serviceIndex}-volume-${volumeIndex}`,
+              source: `service-${serviceIndex}`,
+              target: volumeId,
+            });
+          });
+        });
+
+        return { nodes, edges };
+    
   }
 }
 

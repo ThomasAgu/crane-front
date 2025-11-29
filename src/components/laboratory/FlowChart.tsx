@@ -23,14 +23,16 @@ import { Volume } from "./nodes/Volume";
 import Sidebar from "./editor/SideBar";
 import ContextMenu from "./ContextMenu";
 import { editorService } from "../../app/services/EditorService";
+import { AppDto } from "@/src/lib/dto/AppDto";
 
 const nodeTypes = { app: App, service: Service, network: Network, volume: Volume };
 
 interface FlowChartInterface {
-  selectedTemplate: string | null
+  selectedTemplate: string | null,
+  selectedApp?: AppDto | null
 } 
 
-const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
+const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}) => {
   useEffect(() => {
     if (selectedTemplate) {
       const { nodes, edges } = reactFlowService.getTemplateGraph(selectedTemplate as TemplateType);
@@ -38,7 +40,14 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate}) => {
       setEdges(edges);
       editorService.updateState(nodes, edges);
     }
-  }, [selectedTemplate]);
+
+    if (selectedApp) {
+      const { nodes, edges } = reactFlowService.getGraphForApp(selectedApp);
+      setNodes(nodes);
+      setEdges(edges);
+      editorService.updateState(nodes, edges);
+    }
+  }, [selectedTemplate, selectedApp]);
 
   useEffect(() => {
     const onDocClick = (ev: MouseEvent) => {

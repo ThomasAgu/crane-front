@@ -9,6 +9,7 @@ import { AppDto } from '@/src/lib/dto/AppDto';
 export default function HomePage() {
     const [popUp, setPopUp] = useState(true);
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+    const [selectedApp, setSelectedApp] = useState<AppDto | null>(null);
     const [apps, setApps] = useState<AppDto[]>([]);
     
    useEffect(() => {
@@ -32,11 +33,13 @@ export default function HomePage() {
                     <TemplateSelector 
                         setPopUp={setPopUp} 
                         setSelectedTemplate={setSelectedTemplate}
+                        setSelectedApp={setSelectedApp}
                         apps={apps}
                     />
                 }
                 <FlowChart
                     selectedTemplate={selectedTemplate}
+                    selectedApp={selectedApp}
                 />
             </main>
         </NavBar>

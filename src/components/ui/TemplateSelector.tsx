@@ -2,21 +2,25 @@ import styles from './TemplateSelector.module.css'
 import TemplateItem from './TemplateItem';
 import { Database, Boxes, Layers, Square, Columns3Cog } from "lucide-react";
 import { AppDto } from '@/src/lib/dto/AppDto';
-import { Customized } from 'recharts';
 
 interface TemplateSelectorProps {
     setPopUp: Function
     setSelectedTemplate: Function
+    setSelectedApp: Function
     apps: AppDto[]
 }
 
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     setPopUp, 
     setSelectedTemplate, 
+    setSelectedApp,
     apps
 }) => {
 
-    const handleTemplateSelect = (templateToLoad: string) => {
+    const handleTemplateSelect = (templateToLoad: string, app?: AppDto) => {
+        if (app) {
+            setSelectedApp(app);
+        }
         setSelectedTemplate(templateToLoad)
         setPopUp(false); 
     };
@@ -36,7 +40,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                                         services={app.services?.length || 0} 
                                         rules={0}
                                         icon={<Columns3Cog size={80} />}
-                                        onClick={() => handleTemplateSelect('simple-api')}
+                                        onClick={() => handleTemplateSelect('custom', app)}
                                     />
                                 )}
                             )
