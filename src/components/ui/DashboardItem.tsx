@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { AppDto } from '@/src/lib/dto/AppDto'
+import { useAlert, AlertSnackbar } from './AlertSnackbar'
 import {
   Play,
   Pause,
@@ -18,6 +19,8 @@ import {
   scaleApp,
 } from '@/src/lib/api/appService'
 import DeleteModal from './DeleteModal'
+import Loader from './Loader'
+import style from './DashboardItem.module.css'
 
 interface DashboardItemProps {
   app: AppDto
@@ -26,42 +29,73 @@ interface DashboardItemProps {
 
 export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const createdAtText = app?.created_at ? new Date(app.created_at).toLocaleDateString() : "—";
-  const router = useRouter()
-  const [active, setActive] = useState(app.status !== 'Stopped')
-  const [deleteModal, setDeleteModal] = useState(false)
+  const router = useRouter();
+  const [active, setActive] = useState(app.status !== 'Stopped');
+  const [loading, setLoading] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
+  const { alertState, showAlert, handleCloseAlert } = useAlert();
+  
   const stopClick = (e: any) => e.stopPropagation()
 
   const handleStart = async (e: any) => {
     stopClick(e)
+    setLoading(true)
     await startApp(String(app.id))
     setActive(true)
     onUpdate()
+    showAlert(
+      "La aplicación ha sido iniciada.",
+      "success",
+      "Aplicación Iniciada"
+    );
+    setLoading(false)
   }
 
   const handleStop = async (e: any) => {
     stopClick(e)
+    setLoading(true);
     await stopApp(String(app.id))
     setActive(false)
     onUpdate()
+    showAlert(
+      "La aplicación ha sido detenida.",
+      "success",
+      "Aplicación Detenida"
+    );
+    setLoading(false);
   }
 
   const handleRestart = async (e: any) => {
     stopClick(e)
+    setLoading(true);
     await restartApp(String(app.id))
     setActive(true)
-    onUpdate()
+    onUpdate();
+    showAlert(
+      "La aplicación ha sido reiniciada.",
+      "success",
+      "Aplicación Reiniciada"
+    );
+    setLoading(false);
   }
 
   const handleScale = async (e: any) => {
     stopClick(e)
+    setLoading(true)
     await scaleApp(String(app.id))
     onUpdate()
+    showAlert(
+      "La aplicación ha sido escalada.",
+      "success",
+      "Aplicación Escalada"
+    );
+    setLoading(false)
   }
 
   const handleDelete = (e: any) => {
     stopClick(e)
-    setDeleteModal(true)
+    setDeleteModal(true);
   }
 
   const handleConfirmDelete = async () => {
@@ -77,6 +111,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         bg-white rounded-2xl border border-gray-200 shadow-sm
         hover:shadow-md hover:border-blue-300
         transition-all cursor-pointer p-5 flex flex-col gap-4
+        relative
       "
     >
       <div className="flex items-start justify-between">
@@ -139,7 +174,20 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
           <Trash size={20} />
         </button>
       </div>
+      
+      <div>
 
+      </div>
+      {loading && (
+        <>
+            <div className={style.customLoader}>
+                <Loader loading={loading} width={20} height={20}/>
+            </div>
+
+            <div className={style.loadingOverlay} /> 
+        </>
+      )}
+ 
       {deleteModal && (
         <DeleteModal
           itemName={app.name}
@@ -148,6 +196,11 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
           setActive={setDeleteModal}
         />
       )}
+
+      <AlertSnackbar
+        alertState={alertState}
+        handleCloseAlert={handleCloseAlert}
+      />
     </div>
   )
 }

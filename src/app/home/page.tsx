@@ -5,6 +5,7 @@ import { AppDto } from "@/src/lib/dto/AppDto";
 import NavBar from "../../components/layout/NavBar";
 import Dashboard from "../../components/ui/Dashboard";
 import styles from "./home.module.css";
+import EmptyHomeDashboard from "@/src/components/ui/EmptyHomeDashboard";
 import Loader from "@/src/components/ui/Loader";
 
 export default function HomePage() {
@@ -31,9 +32,16 @@ export default function HomePage() {
   };
 
   return (
-    <NavBar>
       <main className={styles.mainContent}>
-        <h1 className="text-3xl font-bold mt-6 text-darkest">Home</h1>
+        <NavBar>
+        {apps.length === 0 && !loading ?
+          <div className={styles.noAppsContainer}>
+            <h1 className="text-3xl font-bold mt-6 text-darkest">Inicio</h1>
+            <EmptyHomeDashboard />
+          </div>
+        :
+        <>
+        <h1 className="text-3xl font-bold mt-6 text-darkest">Aplicaciones</h1>
         {loading ? (
           <div className="mt-6">
             <Loader loading={loading} width={80} height={80} />
@@ -41,7 +49,9 @@ export default function HomePage() {
         ) : (
           <Dashboard apps={apps} onUpdate={handleUpdate} />
         )}
+        </>
+      }
+        </NavBar>
       </main>
-    </NavBar>
   );
 }

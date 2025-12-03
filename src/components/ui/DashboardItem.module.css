@@ -40,6 +40,7 @@
   justify-content: flex-start;
   position: relative;
   gap: 8px;
+  z-index: 40;
 }
 
 .actionButtons button {
@@ -101,5 +102,24 @@
   background-color: var(--error);
 }
 
-/*   `flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-white transition
- */
+.customLoader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centra el div */
+  background-color: rgba(255, 255, 255, 0.705);
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 10; 
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); 
+  z-index: 9; 
+  border-radius: inherit; 
+}

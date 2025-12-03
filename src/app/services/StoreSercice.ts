@@ -33,7 +33,6 @@ const StoreService = {
 
   toggleFavorite: async (appId: number): Promise<StoreApp[]> => {
     const appIndex = storeItemsData.findIndex(item => item.id === appId);
-    debugger
     if (appIndex !== -1) {
       const currentApp = storeItemsData[appIndex];
       const newApp = { 

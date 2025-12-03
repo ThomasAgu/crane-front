@@ -2,7 +2,7 @@
 import React from 'react';
 import { StoreApp } from '@/src/lib/dto/AppDto';
 import styles from './store.module.css'
-import { ArrowUp, ArrowDown, Copy, Star, Download } from 'lucide-react';
+import { ArrowUp, ArrowDown, Star, Download } from 'lucide-react';
 import Tag from '@/src/components/ui/Tag';
 
 interface AppItemProps {

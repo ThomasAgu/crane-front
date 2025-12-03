@@ -86,7 +86,8 @@
   position: absolute;
   left: 0;
   top: 0; 
-  height: 100vh; /* Ejemplo de altura */
+  height: 100%;
+  min-height: 100vh;
   transition: all ease 0.3s; /* Transición suave para el desplazamiento */
   z-index: 999;
 }
@@ -95,26 +96,21 @@
   cursor: pointer;
 }
 
-/* Estilo base para anclar el sidebar a la derecha */
 #sidebar {
     position: absolute;
     right: 0;
     top: 0; 
-    height: 100vh; /* Ejemplo de altura */
+    min-height: 100vh;
+    height: 100%;
     transition: all ease 0.3s; /* Transición suave para el desplazamiento */
 }
 
-/* Estado INACTIVO (Colapsado) */
 .sidebar-inactive {
     width: 30px;
 }
 
-/* Estado ACTIVO (Expandido) */
 .sidebar-active {
     width: 400px;
-    /* Definimos el ancho expandido, por ejemplo, 400px.
-       Como right: 0, el sidebar tendrá un ancho de 400px
-       y su lado izquierdo estará en (Viewport_Width - 400px). */
 }
 }
 
@@ -134,6 +130,7 @@
 }
 
 body {
+  height: 100%;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
