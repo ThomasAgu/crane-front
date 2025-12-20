@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getApps } from "@/src/lib/api/appService";
 import { AppDto } from "@/src/lib/dto/AppDto";
+import { AppService } from "@/src/lib/api/appService";
 import NavBar from "../../components/layout/NavBar";
 import Dashboard from "../../components/ui/Dashboard";
 import styles from "./home.module.css";
@@ -15,7 +15,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getApps();
+        const data = await AppService.getAll();
         setApps(data);
       } catch (err) {
         console.error("Error cargando las apps:", err);
@@ -27,7 +27,7 @@ export default function HomePage() {
   }, []);
 
   const handleUpdate = async () => {
-    const data = await getApps();
+    const data = await AppService.getAll();
     setApps(data);
   };
 

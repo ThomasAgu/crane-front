@@ -4,7 +4,7 @@ import React, { FC, useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import type { AppDto } from "@/src/lib/dto/AppDto";
 import type { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
-import { getApp, getLogs, getStats, startApp, stopApp, restartApp, scaleApp } from "@/src/lib/api/appService";
+import { AppService } from "@/src/lib/api/appService";
 import { useSearchParams } from "next/navigation";
 import NavBar from '../../../components/layout/NavBar'
 import AppBase from "./AppBase";
@@ -35,12 +35,12 @@ const AppDetailView: FC = () => {
   const [activeTab, setActiveTab] = useState<"services" | "stats" | "logs">("services");
 
   const fetchApp = useCallback(async () => {
-    const res = await getApp(appId);
+    const res = await AppService.get(appId);
     setApp(res ?? null);
   }, [appId]);
 
   const fetchStats = useCallback(async () => {
-    const data = await getStats(appId);
+    const data = await AppService.getStats(appId);
     if (!Array.isArray(data)) return;
     setHistories((prev) => {
       const next = { ...prev };
@@ -57,7 +57,7 @@ const AppDetailView: FC = () => {
   }, [appId]);
 
   const fetchLogs = useCallback(async () => {
-    const l = await getLogs(appId);
+    const l = await AppService.getLogs(appId);
     setLogs(l);
   }, [appId]);
 
@@ -87,15 +87,15 @@ const AppDetailView: FC = () => {
   const onAppAction = async (action: "start" | "stop" | "restart" | "scaleUp" | "scaleDown") => {
     try {
       if (action === "start") {
-        await startApp(appId);
+        await AppService.start(appId);
         setAppStatus("Activo");
       }
       if (action === "stop") {
-        await stopApp(appId);
+        await AppService.stop(appId);
         setAppStatus("Inactivo");
       }
-      if (action === "restart") await restartApp(appId);
-      if (action === "scaleUp") await scaleApp(appId);
+      if (action === "restart") await AppService.restart(appId);
+      if (action === "scaleUp") await AppService.scale(appId);
       await fetchApp();
     } catch (err) {
       console.error(err);

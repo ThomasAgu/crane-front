@@ -1,11 +1,17 @@
-import apiRequest from "./baseService";
+import apiRequest from "./apiClient";
 
 //POST
-export const startRules = () =>
+const startRules = () =>
   apiRequest<void>("/rules", "POST");
 
-export const stopRules = () =>
+const stopRules = () =>
   apiRequest<void>("/rules/stop", "POST");
 
-export const restarRules = () =>
+const restartRules = () =>
   apiRequest<void>("/rules/restart", "POST");
+
+export const RuleService = {
+  start: startRules,
+  stop: stopRules,
+  restart: restartRules
+};

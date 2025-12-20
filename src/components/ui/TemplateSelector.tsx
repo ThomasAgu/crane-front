@@ -56,9 +56,10 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             }`}
           >
             {apps.length > 0 ? (
-              apps.map((app: AppDto) => {
+              apps.map((app: AppDto, index: number) => {
                 return (
                   <TemplateItem
+                    key={index}
                     title={app.name}
                     description="Todavia no hay"
                     services={app.services?.length || 0}

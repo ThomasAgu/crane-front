@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { editorService } from "@/src/app/services/EditorService";
-import { createApp } from "@/src/lib/api/appService";
+import { AppService } from "@/src/lib/api/appService";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
 import styles from "./ConfigurationEditor.module.css";
 import { FileText, Copy, PlusCircle } from "lucide-react";
@@ -24,7 +24,7 @@ const ConfurationEditor: React.FC = () => {
         );
         return;
       }
-      await createApp(payload as any);
+      await AppService.create(payload as any);
       showAlert(
         "La aplicación se ha creado con éxito.",
         "success",

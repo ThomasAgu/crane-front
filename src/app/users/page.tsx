@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getRoles, createRole, deleteRole } from '@/src/lib/api/roleService';
-import NavBar from '../../components/layout/NavBar';
+import { RoleService } from '@/src/lib/api/roleService';
 import { RolesDto } from '@/src/lib/dto/RolesDto';
+import NavBar from '../../components/layout/NavBar';
 import styles from './users.module.css'
 
 export default function HomePage() {
@@ -11,7 +11,7 @@ export default function HomePage() {
 
   const fetchRoles = async () => {
     try {
-      const data = await getRoles();
+      const data = await RoleService.getAll();
       setRoles(data);
     } catch (err) {
       console.error("❌ Error al obtener roles:", err);
@@ -21,7 +21,7 @@ export default function HomePage() {
   const handleCreateRole = async () => {
     if (!newRole.trim()) return;
     try {
-      await createRole(newRole);
+      await RoleService.create(newRole);
       setNewRole('');
       await fetchRoles();
     } catch (err) {
@@ -31,7 +31,7 @@ export default function HomePage() {
 
   const handleDeleteRole = async (id: string) => {
     try {
-      await deleteRole(Number(id));
+      await RoleService.delete(Number(id), Number(id));
       setRoles(roles.filter(r => r.id !== id));
     } catch (err) {
       console.error("❌ Error al eliminar rol:", err);

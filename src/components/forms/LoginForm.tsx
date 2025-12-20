@@ -2,7 +2,7 @@
 import styles from './LoginForm.module.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginUser } from "@/src/lib/api/authService";
+import { AuthService } from '@/src/lib/api/authService';
 import { emailValidator } from '@/src/lib/validators/EmailValidator';
 import { requiredValidator } from '@/src/lib/validators/RequiredValidator';
 import InputText from './InputText';
@@ -69,7 +69,7 @@ export default function LoginFormComponent() {
 
     setLoading(true);
     try {
-      const data = await loginUser(formObj.data);
+      const data = await AuthService.login(formObj.data);
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("token_type", data.token_type);
       router.push("/home");

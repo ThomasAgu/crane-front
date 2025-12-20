@@ -3,7 +3,7 @@ import NavBar from '../../components/layout/NavBar';
 import FlowChart from '../../components/laboratory/FlowChart';
 import TemplateSelector from '@/src/components/ui/TemplateSelector';
 import { useEffect, useState } from 'react';
-import { getApps } from '@/src/lib/api/appService';
+import { AppService } from '@/src/lib/api/appService';
 import { AppDto } from '@/src/lib/dto/AppDto';
 
 export default function HomePage() {
@@ -15,7 +15,7 @@ export default function HomePage() {
    useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getApps();
+        const data = await AppService.getAll();
         setApps(data);
       } catch (err) {
         console.error("Error cargando las apps:", err);

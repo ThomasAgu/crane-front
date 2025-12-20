@@ -15,6 +15,7 @@ async function apiRequest<T>(
 
   if (auth) {
     const token = getToken();
+    if (!token) console.warn(`No hay token para la petición a: ${endpoint}`);
     headers["Authorization"] = `Bearer ${token}`;
   }
 
@@ -25,8 +26,8 @@ async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error en ${endpoint}: ${errorText}`);
+    const errorData = await response.json().catch(() => ({ message: "Error desconocido" }));
+    throw new Error(errorData.message || `Error ${response.status}: ${endpoint}`);
   }
   
   return response.json();

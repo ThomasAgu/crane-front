@@ -1,41 +1,56 @@
-import apiRequest from "./baseService";
+import apiRequest from "./apiClient";
 import { AppDto, CreateAppDto } from "../dto/AppDto";
 import { ContainerStatsDto } from "../dto/ContainerStats";
 //GET
-export const getApps = () => apiRequest<AppDto[]>("/apps");
+const getApps = () => apiRequest<AppDto[]>("/apps");
 
-export const getApp = (id: string) => apiRequest<AppDto>(`/apps/${id}`);
+const getApp = (id: string) => apiRequest<AppDto>(`/apps/${id}`);
 
 //POST
-export const createApp = (data: CreateAppDto) => {
+const createApp = (data: CreateAppDto) => {
   apiRequest<AppDto>("/apps", "POST", data);
 }
 
-export const restartApp = (id: string) =>
+const restartApp = (id: string) =>
   apiRequest<string>(`/apps/${id}/restart`, "POST");
 
-export const startApp = (id: string) =>
+const startApp = (id: string) =>
   apiRequest<string>(`/apps/${id}/start`, "POST");
 
-export const stopApp = (id: string) =>
+const stopApp = (id: string) =>
   apiRequest<string>(`/apps/${id}/stop`, "POST");
 
-export const scaleApp = (id: string) =>
+const scaleApp = (id: string) =>
   apiRequest<string>(`/apps/${id}/scale`, "POST");
 
-export const getLogs = (id: string) =>
+const getLogs = (id: string) =>
   apiRequest<string>(`/apps/${id}/logs`, "POST");
 
-export const getStats = (id: string) =>
+const getStats = (id: string) =>
   apiRequest<ContainerStatsDto>(`/apps/${id}/stats`, "POST");
 
-export const refreshApps = () =>
+const refreshApps = () =>
   apiRequest<string>(`/apps/refresh`, "POST");
 
 //DELETE
-export const deleteApp = (id: string) =>
+const deleteApp = (id: string) =>
   apiRequest<string>(`/apps/${id}`, "DELETE");
 
 //PATCH
-export const updateApp = (data: AppDto) =>
+const updateApp = (data: AppDto) =>
   apiRequest<AppDto>(`/apps/${data.id}`, "PATCH", data);
+
+export const AppService = {
+  getAll: getApps,
+  get: getApp,
+  create: createApp,
+  restart: restartApp,
+  start: startApp,
+  stop: stopApp,
+  scale: scaleApp,
+  getLogs: getLogs,
+  getStats: getStats,
+  refresh: refreshApps,
+  delete: deleteApp,
+  update: updateApp
+};

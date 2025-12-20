@@ -11,13 +11,7 @@ import {
   Trash,
   Layers2,
 } from 'lucide-react'
-import {
-  restartApp,
-  startApp,
-  stopApp,
-  deleteApp,
-  scaleApp,
-} from '@/src/lib/api/appService'
+import { AppService } from '@/src/lib/api/appService'
 import DeleteModal from './DeleteModal'
 import Loader from './Loader'
 import style from './DashboardItem.module.css'
@@ -41,7 +35,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const handleStart = async (e: any) => {
     stopClick(e)
     setLoading(true)
-    await startApp(String(app.id))
+    await AppService.start(String(app.id))
     setActive(true)
     onUpdate()
     showAlert(
@@ -55,7 +49,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const handleStop = async (e: any) => {
     stopClick(e)
     setLoading(true);
-    await stopApp(String(app.id))
+    await AppService.stop(String(app.id))
     setActive(false)
     onUpdate()
     showAlert(
@@ -69,7 +63,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const handleRestart = async (e: any) => {
     stopClick(e)
     setLoading(true);
-    await restartApp(String(app.id))
+    await AppService.restart(String(app.id))
     setActive(true)
     onUpdate();
     showAlert(
@@ -83,7 +77,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const handleScale = async (e: any) => {
     stopClick(e)
     setLoading(true)
-    await scaleApp(String(app.id))
+    await AppService.scale(String(app.id))
     onUpdate()
     showAlert(
       "La aplicación ha sido escalada.",
@@ -99,7 +93,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   }
 
   const handleConfirmDelete = async () => {
-    await deleteApp(String(app.id))
+    await AppService.delete(String(app.id))
     setDeleteModal(false)
     onUpdate()
   }

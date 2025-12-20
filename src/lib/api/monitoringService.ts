@@ -1,14 +1,21 @@
-import apiRequest from "./baseService";
+import apiRequest from "./apiClient";
 
 //POST
-export const startMonitoring = () =>
+const startMonitoring = () =>
   apiRequest<void>("/monitoring", "POST");
 
-export const stopMonitoring = () =>
+const stopMonitoring = () =>
   apiRequest<void>("/monitoring/stop", "POST");
 
-export const restartMonitoring = () =>
+const restartMonitoring = () =>
   apiRequest<void>("/monitoring/restart", "POST");
 
-export const getMonitoring = () =>
+const getMonitoring = () =>
   apiRequest<void>("/monitoring/alert", "POST");
+
+export const MonitoringService = {
+  startMonitoring,
+  stopMonitoring,
+  restartMonitoring,
+  getMonitoring,
+};

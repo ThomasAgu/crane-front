@@ -5,7 +5,7 @@ import lock from '../../public/lock.svg';
 import mail from '../../public/mail.svg';
 import InputText from './InputText';
 import Loader from '../ui/Loader';
-import { createUser } from "@/src/lib/api/authService";
+import { AuthService } from '@/src/lib/api/authService';
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import { requiredValidator } from '@/src/lib/validators/RequiredValidator';
@@ -75,7 +75,7 @@ export default function LoginForm() {
 
     setLoading(true);
     try {
-      const data = await createUser(formObj.data);
+      const data = await AuthService.create(formObj.data);
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("token_type", data.token_type);
       router.push('/home');
