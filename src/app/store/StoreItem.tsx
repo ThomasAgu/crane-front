@@ -1,4 +1,3 @@
-// components/AppItem.tsx
 import React from 'react';
 import { StoreApp } from '@/src/lib/dto/AppDto';
 import styles from './store.module.css'

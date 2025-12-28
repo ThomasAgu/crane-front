@@ -1,0 +1,18 @@
+ .GoogleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid var(--light-grey);
+    color: var(--darkest); 
+    transition: all ease 0.1s;
+    width: 80%;
+  }
+
+.GoogleButton:hover {
+  cursor: pointer;
+  border-color: var(--darker);
+  box-shadow: 1px 1px 2px var(--darker);
+}

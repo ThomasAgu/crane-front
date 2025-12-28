@@ -32,7 +32,6 @@ class EditorStateService {
     return this.nodes.find((n) => n.id === nodeId);
   }
 
-  // merge partial data into node.data and update internal nodes array
   setNodeData(nodeId: string, partialData: Record<string, any>) {
     const idx = this.nodes.findIndex((n) => n.id === nodeId);
     if (idx === -1) return;

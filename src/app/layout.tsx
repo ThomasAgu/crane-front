@@ -5,8 +5,8 @@ import "../globals.css";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "700"], // podés elegir los pesos que uses
-  variable: "--font-montserrat", // opcional: lo guardás en una CSS var
+  weight: ["400", "700"],
+  variable: "--font-montserrat",
 });
 
 const geistSans = Geist({

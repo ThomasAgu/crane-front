@@ -14,6 +14,20 @@
   animation: float 6s ease-in-out infinite;
 }
 
+ .logo-text-crane {
+    color: var(--darkest);
+    font-size: 32px;
+    font-family: var(--font-montserrat), sans-serif;
+    font-weight: lighter;
+  }
+
+  .logo-text-crane-white {
+     color: var(--white);
+      font-size: 26px;
+      font-family: var(--font-montserrat), sans-serif;
+      font-weight: lighter;
+  }
+
 @keyframes float {
   0% {
     transform: translateY(0px);

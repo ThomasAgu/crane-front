@@ -16,6 +16,7 @@ export default function Dashboard({ apps, onUpdate }: DashboardProps) {
   return (
     <div
       className="
+        text-left
         grid gap-6
         grid-cols-1
         sm:grid-cols-2

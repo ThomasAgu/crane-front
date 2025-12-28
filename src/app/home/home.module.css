@@ -17,6 +17,13 @@
     padding: 10px 90px;
 }
 
+.appsContainer {
+    background-color: white;
+    width: 80vw;
+    text-align: center;
+    padding: 10px 90px;
+}
+
 .homeDetailPage {
     background-color: white;
     min-height: 100vh;

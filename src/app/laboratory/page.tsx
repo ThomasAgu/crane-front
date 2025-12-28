@@ -2,41 +2,31 @@
 import NavBar from '../../components/layout/NavBar';
 import FlowChart from '../../components/laboratory/FlowChart';
 import TemplateSelector from '@/src/components/ui/TemplateSelector';
-import { useEffect, useState } from 'react';
-import { AppService } from '@/src/lib/api/appService';
-import { AppDto } from '@/src/lib/dto/AppDto';
+import { useLaboratory } from '@/src/hooks/useLaboratory';
 
-export default function HomePage() {
-    const [popUp, setPopUp] = useState(true);
-    const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-    const [selectedApp, setSelectedApp] = useState<AppDto | null>(null);
-    const [apps, setApps] = useState<AppDto[]>([]);
-    
-   useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await AppService.getAll();
-        setApps(data);
-      } catch (err) {
-        console.error("Error cargando las apps:", err);
-      }
-    }
-    fetchData();
-  }, []);
-    
-
+export default function LaboratoryPage() {
+    const { 
+        apps, 
+        popUp, 
+        setPopUp, 
+        selectedTemplate, 
+        setSelectedTemplate, 
+        selectedApp, 
+        setSelectedApp 
+    } = useLaboratory();
 
     return (
         <NavBar>
             <main className="flex min-h-screen">
-                {popUp && 
+                {popUp && (
                     <TemplateSelector 
                         setPopUp={setPopUp} 
                         setSelectedTemplate={setSelectedTemplate}
                         setSelectedApp={setSelectedApp}
                         apps={apps}
                     />
-                }
+                )}
+                
                 <FlowChart
                     selectedTemplate={selectedTemplate}
                     selectedApp={selectedApp}
@@ -45,7 +35,3 @@ export default function HomePage() {
         </NavBar>
     );
 }
-
-/*
-1. Faltaria agregar el selector de proyectos previos
-*/

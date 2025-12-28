@@ -18,6 +18,7 @@
   --success: #02E58F;
   --error: #E6362E;
   --warning: orange;
+  font-family: var(--font-montserrat);
 }
 
 @layer utilities {
@@ -30,20 +31,6 @@
 
   .text-darkest {
     color: var(--darkest)
-  }
-
-  .logo-text-crane {
-    color: var(--darkest);
-    font-size: 32px;
-    font-family: var(--font-montserrat), sans-serif;
-    font-weight: lighter;
-  }
-
-  .logo-text-crane-white {
-     color: var(--white);
-      font-size: 26px;
-      font-family: var(--font-montserrat), sans-serif;
-      font-weight: lighter;
   }
 
 
@@ -59,26 +46,8 @@
     transition: all ease 0.1s;
   }
 
-  .btn-primary:hover {
-    cursor: pointer;
-  }
-
-  .btn-google {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    padding: 5px;
-    border: 1px solid var(--light-grey);
-    color: var(--darkest); 
-    transition: all ease 0.1s;
-  }
-
-.btn-google:hover {
+.btn-primary:hover {
   cursor: pointer;
-  border-color: var(--darker);
-  box-shadow: 1px 1px 2px var(--darker);
 }
 
 .navBar {
@@ -96,22 +65,6 @@
   cursor: pointer;
 }
 
-#sidebar {
-    position: absolute;
-    right: 0;
-    top: 0; 
-    min-height: 100vh;
-    height: 100%;
-    transition: all ease 0.3s; /* Transición suave para el desplazamiento */
-}
-
-.sidebar-inactive {
-    width: 30px;
-}
-
-.sidebar-active {
-    width: 400px;
-}
 }
 
 @theme inline {

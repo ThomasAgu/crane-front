@@ -1,0 +1,17 @@
+#sidebar {
+    position: absolute;
+    right: 0;
+    top: 0; 
+    min-height: 100vh;
+    height: 100%;
+    transition: all ease 0.3s; /* Transición suave para el desplazamiento */
+    background-color: var(--white);
+}
+
+.sidebarInactive {
+    width: 30px;
+}
+
+.sidebarActive {
+    width: 400px;
+}

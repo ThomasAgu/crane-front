@@ -1,57 +1,45 @@
 "use client";
-import { useEffect, useState } from "react";
-import { AppDto } from "@/src/lib/dto/AppDto";
-import { AppService } from "@/src/lib/api/appService";
+import { useApps } from "@/src/hooks/useApps";
 import NavBar from "../../components/layout/NavBar";
 import Dashboard from "../../components/ui/Dashboard";
-import styles from "./home.module.css";
 import EmptyHomeDashboard from "@/src/components/ui/EmptyHomeDashboard";
 import Loader from "@/src/components/ui/Loader";
+import styles from "./home.module.css";
 
 export default function HomePage() {
-  const [apps, setApps] = useState<AppDto[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { apps, loading, refreshApps } = useApps();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await AppService.getAll();
-        setApps(data);
-      } catch (err) {
-        console.error("Error cargando las apps:", err);
-      } finally {
-        setLoading(false);
-      }
+  const render = () => {
+    if (loading) {
+      return (
+        <div className="mt-6">
+          <Loader loading={loading} width={80} height={80} />
+        </div>
+      );
     }
-    fetchData();
-  }, []);
 
-  const handleUpdate = async () => {
-    const data = await AppService.getAll();
-    setApps(data);
+    if (apps.length === 0) {
+      return (
+        <div className={styles.noAppsContainer}>
+          <h1 className="text-3xl font-bold mt-6 text-darkest">Inicio</h1>
+          <EmptyHomeDashboard />
+        </div>
+      );
+    }
+
+    return (
+      <div className={styles.appsContainer}>
+        <h1 className="text-3xl font-bold mt-6 text-darkest">Aplicaciones</h1>
+        <Dashboard apps={apps} onUpdate={refreshApps} />
+      </div>
+    );
   };
 
   return (
-      <main className={styles.mainContent}>
-        <NavBar>
-        {apps.length === 0 && !loading ?
-          <div className={styles.noAppsContainer}>
-            <h1 className="text-3xl font-bold mt-6 text-darkest">Inicio</h1>
-            <EmptyHomeDashboard />
-          </div>
-        :
-        <>
-        <h1 className="text-3xl font-bold mt-6 text-darkest">Aplicaciones</h1>
-        {loading ? (
-          <div className="mt-6">
-            <Loader loading={loading} width={80} height={80} />
-          </div>
-        ) : (
-          <Dashboard apps={apps} onUpdate={handleUpdate} />
-        )}
-        </>
-      }
-        </NavBar>
-      </main>
+    <main className={styles.mainContent}>
+      <NavBar>
+        {render()}
+      </NavBar>
+    </main>
   );
 }

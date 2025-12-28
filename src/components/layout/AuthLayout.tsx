@@ -12,7 +12,6 @@ export default function AuthLayout({ title, children }: AuthLayoutProps) {
   return (
     <main className="flex min-h-screen">
       <div className="flex w-full">
-        {/* Columna izquierda */}
         <div className="w-full lg:w-1/2 bg-white">
           <div className="absolute flex flex-row items-center justify-start p-2 gap-2">
             <Image src={logotiny} alt="Logo tiny" width={50} />
@@ -25,7 +24,6 @@ export default function AuthLayout({ title, children }: AuthLayoutProps) {
           </div>
         </div>
 
-        {/* Columna derecha */}
         <div className={styles.rightColumn}>
           <div className={styles.logoContainer}>
             <Image

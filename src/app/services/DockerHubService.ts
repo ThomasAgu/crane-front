@@ -12,7 +12,7 @@ export async function searchDockerImages(query: string) {
   }
 
   const data = await res.json();
-  const parsed = JSON.parse(data.contents); // la respuesta real está dentro de `contents`
+  const parsed = JSON.parse(data.contents); 
 
   return parsed.results.map((item: any) => ({
     name: item.repo_name,

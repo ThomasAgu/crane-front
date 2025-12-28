@@ -3,27 +3,27 @@ import type { ServiceDto } from './ServiceDto'
 export interface AppDto {
   id: number
   name: string
-  services?: ServiceDto[] | null
+  services: ServiceDto[]
   hosts?: any[] | null
   min_scale?: number | null
   current_scale?: number | null
   max_scale?: number | null
   force_stop?: boolean | null
-  created_at?: Date | Date
-  updated_at?: string | null
-  deleted_at?: string | null
-  user_id?: number | null
+  created_at?: string | Date
+  updated_at?: string | Date
+  deleted_at?: string | Date
+  user_id: number
   status: string
 }
 
 export interface CreateAppDto {
   name: string
-  services?: ServiceDto[] | null
+  services?: ServiceDto[]
   hosts?: any[] | null
-  current_scale?: number | 1
-  min_scale?: number | 1
-  max_scale?: number | 1
-  user_id?: number | null
+  current_scale: number
+  min_scale: number
+  max_scale: number
+  user_id: number
 }
 
 export interface StoreAppDto {
@@ -35,7 +35,7 @@ export interface StoreAppDto {
   current_scale?: number | null
   max_scale?: number | null
   created_at?: Date | Date
-  updated_at?: string | null
+  updated_at?: string | Date
   user_id?: number | null
 }
 

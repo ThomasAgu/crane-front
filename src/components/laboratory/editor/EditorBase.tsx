@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import Image from "next/image";
+import styles from "./EditorBase.module.css"
 
 import double_expand from "../../../public/double_expand.svg";
 import double_collapse from "../../../public/double_collapse.svg";
@@ -42,9 +43,9 @@ const EditorBase: React.FC<EditorBaseProps> = ({
   return (
     <div
       className={
-        active ? "sidebar-active bg-white" : "sidebar-inactive bg-white"
+        active ? styles.sidebarActive : styles.sidebarInactive
       }
-      id="sidebar"
+      id={styles.sidebar}
     >
       <button
         onClick={() => setActive(!active)}
