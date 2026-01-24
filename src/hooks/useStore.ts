@@ -10,7 +10,6 @@ export function useStore() {
   const [selectedDockerImages, setSelectedDockerImages] = useState<string[]>([]);
   const [isDockerFilterOpen, setIsDockerFilterOpen] = useState(false);
 
-  // 1. Carga inicial
   useEffect(() => {
     const fetchApps = async () => {
       try {
@@ -25,7 +24,6 @@ export function useStore() {
     fetchApps();
   }, []);
 
-  // 2. Extraer todas las imágenes de Docker únicas
   const allDockerImages = useMemo(() => {
     const images = new Set<string>();
     storeItems.forEach(item => {
@@ -36,7 +34,6 @@ export function useStore() {
     return Array.from(images).sort();
   }, [storeItems]);
 
-  // 3. Lógica de filtrado y ordenamiento
   const displayedItems = useMemo(() => {
     let filtered = [...storeItems];
 
@@ -62,7 +59,6 @@ export function useStore() {
     return filtered.sort(sortMap[filterType]);
   }, [storeItems, searchTerm, filterType, selectedDockerImages]);
 
-  // 4. Handlers de acciones
   const handleVote = useCallback(async (appId: number, type: 'up' | 'down') => {
     const updatedApps = await StoreService.updateVote(appId, type);
     setStoreItems(updatedApps);

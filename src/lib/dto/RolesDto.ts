@@ -1,4 +1,5 @@
 export interface RolesDto {
-    id: string;
+    id: number;
     name: string; 
+    built_in: number;
 }

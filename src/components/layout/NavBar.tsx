@@ -15,8 +15,9 @@ import home_active from "../../public/home_active.svg";
 import store_active from "../../public/store_active.svg";
 import users from "../../public/users.svg";
 import users_active from "../../public/users_active.svg";
-
+import { usePermissions } from '@/src/hooks/usePermissions';
 import NavItem from './NavItem';
+import { RequirePermission } from "../../components/layout/RequirePermission";
 
 interface PrivateLayoutProps {
   children: ReactNode;
@@ -25,9 +26,11 @@ interface PrivateLayoutProps {
 const PrivateLayout = ({ children }: PrivateLayoutProps) => {
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
+  const { refreshPermissions } = usePermissions();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("access_token");
+    await refreshPermissions();     
     router.push("/auth/login");
   };
 
@@ -47,10 +50,16 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
         <div className="w-full border white bg-white rounded"></div>
 
         <NavItem href="/home" icon={home} iconActive={home_active} alt="Inicio" expanded={expanded} />
-        <NavItem href="/laboratory" icon={labs} iconActive={labs_active} alt="Laboratorio" expanded={expanded} />
-        <NavItem href="/store" icon={store} iconActive={store_active} alt="Repositorio" expanded={expanded} />
+        <RequirePermission object="USERS" action="GET">
+          <NavItem href="/laboratory" icon={labs} iconActive={labs_active} alt="Laboratorio" expanded={expanded} />
+        </RequirePermission>
+        <RequirePermission object="USERS" action="GET">
+          <NavItem href="/store" icon={store} iconActive={store_active} alt="Repositorio" expanded={expanded} />
+        </RequirePermission>
         <NavItem href="/configure" icon={gear} iconActive={gear_active} alt="Configuracion" expanded={expanded} />
-        <NavItem href="/users" icon={users} iconActive={users_active} alt="Usuarios" expanded={expanded}/>
+        <RequirePermission object="USERS" action="GET">
+          <NavItem href="/users" icon={users} iconActive={users_active} alt="Usuarios" expanded={expanded}/>
+        </RequirePermission>
 
         <Link href="/auth/login" className="mt-auto w-full">
           <button

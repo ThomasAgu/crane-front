@@ -1,80 +1,42 @@
 'use client';
-import styles from './LoginForm.module.css';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/src/lib/api/authService';
 import { emailValidator } from '@/src/lib/validators/EmailValidator';
 import { requiredValidator } from '@/src/lib/validators/RequiredValidator';
+import { useForm } from '@/src/hooks/useForm';
 import InputText from './InputText';
 import Loader from '../ui/Loader';
 import mail from '../../public/mail.svg';
 import lock from '../../public/lock.svg';
+import styles from './LoginForm.module.css';
+import { usePermissions } from '@/src/hooks/usePermissions';
 
-type LoginData = {
-  email: string;
-  password: string;
-};
-
-class LoginForm {
-  data: LoginData;
-  errors: Record<string, string | null> = {};
-
-  constructor(initial: LoginData = { email: '', password: '' }) {
-    this.data = {
-      email: initial.email,
-      password: initial.password,
-    };
-  }
-
-  update<K extends keyof LoginData>(key: K, value: LoginData[K]) {
-    this.data = { ...this.data, [key]: value };
-    return this.data;
-  }
-}
-
-export default function LoginFormComponent() {
+export default function LoginForm() {
   const router = useRouter();
+  const { refreshPermissions } = usePermissions();
   
-  const [formObj] = useState(() => new LoginForm());
-  const [state, setState] = useState<LoginData>(formObj.data);
-  
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showErrors, setShowErrors] = useState(false);
-
-  const [inputValidity, setInputValidity] = useState({
-    email: false,
-    password: false,
-  });
-
-  const updateValidity = (field: keyof typeof inputValidity, isValid: boolean) => {
-    setInputValidity(prev => ({ ...prev, [field]: isValid }));
-  };
-
-  const update = <K extends keyof LoginData>(key: K, value: LoginData[K]) => {
-    formObj.update(key, value);
-    setState({ ...formObj.data });
-    setError('');
-  };
+  const {
+    data, updateField, updateValidity,
+    showErrors, setShowErrors,
+    loading, setLoading,
+    apiError, setApiError, isFormValid
+  } = useForm({ email: '', password: '' });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowErrors(true);
-    const allValid = Object.values(inputValidity).every(Boolean);
 
-    if (!allValid) {
-      console.log('no se envi')
-      return;
-    }
+    if (!isFormValid) return;
 
     setLoading(true);
     try {
-      const data = await AuthService.login(formObj.data);
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("token_type", data.token_type);
+      const result = await AuthService.login(data);
+      localStorage.setItem("access_token", result.access_token);
+      localStorage.setItem("token_type", result.token_type);
+      await refreshPermissions();
       router.push("/home");
-    } catch (err: any) {
-      setError("Error al iniciar sesión");
+    } catch (err) {
+      setApiError("Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -84,39 +46,39 @@ export default function LoginFormComponent() {
     <form onSubmit={handleSubmit} className="w-full max-w-sm">
       <InputText
         label="Email o usuario"
-        type="text"
+        type='text'
         placeholder="correousuario@gmail.com"
-        value={state.email}
-        setValue={(v) => update('email', v)}
+        value={data.email}
+        setValue={(v) => updateField('email', v)}
         imagesrc={mail}
+        imagealt="Correo o nombre de usuario"
         submitValidators={[requiredValidator, emailValidator]}
         showErrors={showErrors}
-        imagealt="Correo o nombre de usuario"
-        setShowError={setShowErrors}
         onValidityChange={(valid) => updateValidity('email', valid)}
+        setShowError={setShowErrors}
       />
 
       <InputText
         label="Contraseña"
         type="password"
         placeholder="*********"
-        value={state.password}
-        setValue={(v) => update('password', v)}
+        value={data.password}
+        setValue={(v) => updateField('password', v)}
         imagesrc={lock}
         submitValidators={[requiredValidator]}
         showErrors={showErrors}
         imagealt="Contraseña"
+        onValidityChange={(valid) => updateValidity('password', valid)}
         setShowError={setShowErrors}
-        onValidityChange={(valid) => updateValidity('password', valid)} 
       />
 
-      {error && <div className={styles.errorMessage}>{error}</div>}
+      {apiError && <div className={styles.errorMessage}>{apiError}</div>}
 
       <div className="flex justify-center">
         <Loader loading={loading} />
       </div>
 
-      <button type="submit" className="btn-primary">
+      <button type="submit" className="btn-primary" disabled={loading}>
         Iniciar Sesión
       </button>
 

@@ -40,9 +40,6 @@ export class ServiceForm {
   }
 }
 
-/**
- * Placeholder image search - replace with real DockerHub API integration.
- */
 async function searchImages(query: string): Promise<string[]> {
   // TODO: call your backend / DockerHub API and return array of image names
   if (!query) return [];

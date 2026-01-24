@@ -30,7 +30,6 @@ export class AppForm {
     return this.data;
   }
 
-  // normalized payload to send back to parent
   getPayload(): AppData {
     return {
       ...this.data
@@ -51,14 +50,10 @@ export default function AppEditorForm({
   edges: any[];
   selectedNode: any;
 }) {
-  // Inicializar la clase de formulario
   const [formObj] = useState(() => new AppForm(data));
-  // Usar el estado local para la UI
   const [state, setState] = useState<AppData>(formObj.data);
   const [connectedServices, setConnectedServices] = useState<any[]>([]);
-  // Puedes agregar showErrors si planeas implementar validación
 
-  // Sincronizar cuando el padre envía nuevos datos (por ejemplo, al seleccionar un nodo diferente)
   useEffect(() => {
     formObj.update("name", data?.name || formObj.data.name);
     formObj.update("description", data?.description || "");
@@ -66,23 +61,19 @@ export default function AppEditorForm({
     formObj.update("minimas", data?.minimas ?? 1);
     formObj.update("maximas", data?.maximas ?? 2);
     setState({ ...formObj.data });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]); 
 
-  // Lógica para servicios conectados (se mantiene aquí, ya que depende de las props)
   useEffect(() => {
-    // Si 'selectedNode' está disponible y no es null
     if (selectedNode) {
       const services = editorService.getServicesConnectedToApp(selectedNode);
       setConnectedServices(services); 
     }
-  }, [nodes, edges, selectedNode]); // Dependencias para recalcular
+  }, [nodes, edges, selectedNode]); 
 
-  // Función de actualización unificada
   const update = <K extends keyof AppData>(key: K, value: AppData[K]) => {
     formObj.update(key, value);
     setState({ ...formObj.data });
-    onChange(formObj.getPayload()); // Notificar al padre con el payload normalizado
+    onChange(formObj.getPayload());
   };
 
   return (
@@ -109,7 +100,6 @@ export default function AppEditorForm({
       />
       <p className="text-xs text-gray-400">{(state.description?.length || 0)}/200</p>
       
-      {/* --- Instancias --- */}
       <h3 className="font-semibold text-lg mt-4 mb-3">Instancias</h3>
       <div className="grid grid-cols-1 gap-2">
         <InstanceControls
@@ -117,7 +107,6 @@ export default function AppEditorForm({
           minimas={state.minimas ?? 1}
           maximas={state.maximas ?? 2}
           onChange={(vals) => {
-            // Actualizar múltiples valores a la vez (actuales, minimas, maximas)
             formObj.update("actuales", vals.actuales);
             formObj.update("minimas", vals.minimas);
             formObj.update("maximas", vals.maximas);
@@ -127,7 +116,6 @@ export default function AppEditorForm({
         />
       </div>
       
-      {/* --- Servicios --- */}
       <h3 className="font-semibold mt-6 text-gray-800">Servicios</h3>
       <div className="border rounded-lg p-3 bg-gray-50">
         {connectedServices.length > 0 ? (
@@ -154,7 +142,6 @@ export default function AppEditorForm({
         )}
       </div>
 
-      {/* --- Reglas --- */}
       <h3 className="font-medium mt-4">Reglas</h3>
       <div className="border p-2 rounded text-sm text-gray-500">
         Aún no hay reglas definidas

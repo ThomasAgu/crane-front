@@ -36,10 +36,10 @@ export default function VolumeEditorForm({
 
   function normalizePath(p: string) {
     if (!p) return "";
-    let s = p.trim();
-    s = s.replace(/\\/g, "/");
+      let s = p.trim();
+      s = s.replace(/\\/g, "/");
     if (!s.startsWith("/")) s = "/" + s;
-    s = s.replace(/\/+/g, "/");
+      s = s.replace(/\/+/g, "/");
     return s;
   }
 

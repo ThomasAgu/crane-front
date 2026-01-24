@@ -1,164 +1,126 @@
 'use client';
-import styles from './LoginForm.module.css'
-import person from '../../public/person.svg';
-import lock from '../../public/lock.svg';
-import mail from '../../public/mail.svg';
-import InputText from './InputText';
-import Loader from '../ui/Loader';
-import { AuthService } from '@/src/lib/api/authService';
-import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import { useForm } from '@/src/hooks/useForm';
+import { AuthService } from '@/src/lib/api/authService';
 import { requiredValidator } from '@/src/lib/validators/RequiredValidator';
 import { emailValidator } from '@/src/lib/validators/EmailValidator';
 import { matchPasswordValidator } from '@/src/lib/validators/MatchPasswordValidator';
 
-type SingupData = {
-  email: string;
-  full_name: string;
-  password: string;
-  repeatedPassword: string;
-}
+import InputText from './InputText';
+import Loader from '../ui/Loader';
+import styles from './LoginForm.module.css';
 
-class SingupForm {
-  data: SingupData;
-  errors: Record<string, string | null> = {};
+import person from '../../public/person.svg';
+import lock from '../../public/lock.svg';
+import mail from '../../public/mail.svg';
 
-  constructor(initial: SingupData = { email: '', full_name: '', password: '', repeatedPassword: '' }) {
-    this.data = {
-      email: initial.email,
-      full_name: initial.full_name,
-      password: initial.password,
-      repeatedPassword: initial.repeatedPassword,
-    };
-  }
-
-  update<K extends keyof SingupData>(key: K, value: SingupData[K]) {
-    this.data = { ...this.data, [key]: value };
-    return this.data;
-  }
-}
-
-export default function LoginForm() {
+export default function SingUpForm() {
   const router = useRouter();
-  const [formObj] = useState(() => new SingupForm());
-  const [state, setState] = useState<SingupData>(formObj.data);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showErrors, setShowErrors] = useState(false);
 
-  const [inputValidity, setInputValidity] = useState({
-    email: false,
-    password: false,
-    full_name: false,
-    repeatedPassword: false,
+  const {
+    data, updateField, updateValidity,
+    showErrors, setShowErrors,
+    loading, setLoading,
+    apiError, setApiError, isFormValid
+  } = useForm({
+    email: '',
+    full_name: '',
+    password: '',
+    repeatedPassword: '',
   });
-
-  const updateValidity = (field: keyof typeof inputValidity, isValid: boolean) => {
-    setInputValidity(prev => ({ ...prev, [field]: isValid }));
-  };
-
-  const update = <K extends keyof SingupData>(key: K, value: SingupData[K]) => {
-    formObj.update(key, value);
-    setState({ ...formObj.data });
-    setError('');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setShowErrors(true);
-    const allValid = Object.values(inputValidity).every(Boolean);
-    if (!allValid) {
-      console.log('no se envi')
-      return;
-    }
+
+    if (!isFormValid) return;
 
     setLoading(true);
     try {
-      const data = await AuthService.create(formObj.data);
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("token_type", data.token_type);
+      const result = await AuthService.create(data);
+      localStorage.setItem("access_token", result.access_token);
+      localStorage.setItem("token_type", result.token_type);
       router.push('/home');
     } catch (err: any) {
-      setError(err.message || "Error al crear la cuenta")
+      setApiError(err.message || "Error al crear la cuenta");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-     <form onSubmit={handleSubmit} className="w-full max-w-sm">
-        <InputText
-          label={'Email'}
-          type={'text'}
-          placeholder={'correousuario@gmail.com'}
-          value={state.email}
-          setValue={(v) => update('email', v)}
-          imagesrc={mail}
-          submitValidators={[requiredValidator, emailValidator]}
-          showErrors={showErrors}
-          imagealt={'Correo o nombre de usuario'}
-          setShowError={setShowErrors}
-          onValidityChange={(valid) => updateValidity('email', valid)} 
-        />
+    <form onSubmit={handleSubmit} className="w-full max-w-sm">
+      <InputText
+        label="Email"
+        type="text"
+        placeholder={'correousuario@gmail.com'}
+        value={data.email}
+        setValue={(v) => updateField('email', v)}
+        imagesrc={mail}
+        imagealt="Correo o nombre de usuario"
+        submitValidators={[requiredValidator, emailValidator]}
+        showErrors={showErrors}
+        setShowError={setShowErrors}
+        onValidityChange={(valid) => updateValidity('email', valid)}
+      />
 
-        <InputText
-          label={'Nombre de usuario'}
-          type={'text'}
-          placeholder={'Nombre de usuario'}
-          value={state.full_name}
-          setValue={(v) => update('full_name', v)}
-          imagesrc={person}
-          submitValidators={[requiredValidator]}
-          showErrors={showErrors}
-          imagealt={'Nombre de usuario'}
-          setShowError={setShowErrors}
-          onValidityChange={(valid) => updateValidity('full_name', valid)}
-        />
+      <InputText
+        label="Nombre de usuario"
+        type="text"
+        placeholder={'Nombre de usuario'}
+        value={data.full_name}
+        setValue={(v) => updateField('full_name', v)}
+        imagesrc={person}
+        imagealt="Nombre de usuario"
+        submitValidators={[requiredValidator]}
+        showErrors={showErrors}
+        setShowError={setShowErrors}
+        onValidityChange={(valid) => updateValidity('full_name', valid)}
+      />
 
-        <InputText
-          label={'Contraseña'}
-          type={'password'}
-          placeholder={'*********'}
-          value={state.password}
-          setValue={(v) => update('password', v)}
-          imagesrc={lock}
-          submitValidators={[requiredValidator]}
-          showErrors={showErrors}
-          imagealt={'Contraseña'}
-          setShowError={setShowErrors}
-          onValidityChange={(valid) => updateValidity('password', valid)}
-        />
-          
-        <InputText
-          label={'Repetir contraseña'}
-          type={'password'}
-          placeholder={'*********'}
-          value={state.repeatedPassword}
-          setValue={(v) => update('repeatedPassword', v)}
-          imagesrc={lock}
-          liveValidators={[matchPasswordValidator(state.password)]}
-          submitValidators={[requiredValidator]}
-          showErrors={showErrors}
-          imagealt={'Contraseña'}
-          setShowError={setShowErrors}
-          onValidityChange={(valid) => updateValidity('repeatedPassword', valid)}
-        />  
-          
-        <div className={styles.errorMessage}>{error}</div>
-        
-        <div className="flex justify-center">
-          <Loader loading={loading} />
-        </div>
+      <InputText
+        label="Contraseña"
+        type="password"
+        value={data.password}
+        placeholder="********"
+        setValue={(v) => updateField('password', v)}
+        imagesrc={lock}
+        imagealt="Contraseña"
+        submitValidators={[requiredValidator]}
+        showErrors={showErrors}
+        setShowError={setShowErrors}
+        onValidityChange={(valid) => updateValidity('password', valid)}
+      />
 
-        <button
-          type="submit"
-          className="btn-primary"
-        >
-          Crear cuenta
-        </button>
+      <InputText
+        label="Repetir contraseña"
+        type="password"
+        placeholder="********"
+        value={data.repeatedPassword}
+        setValue={(v) => updateField('repeatedPassword', v)}
+        imagesrc={lock}
+        imagealt="Repetir contraseña"
+        liveValidators={[matchPasswordValidator(data.password)]}
+        submitValidators={[requiredValidator]}
+        showErrors={showErrors}
+        setShowError={setShowErrors}
+        onValidityChange={(valid) => updateValidity('repeatedPassword', valid)}
+      />
 
-        <p className="text-sm text-center mt-4">¿Ya tenés cuenta?{' '} <a href="/auth/login" className="text-blue-500 underlines ">iniciar sesion</a></p>
-      </form>
+      {apiError && <div className={styles.errorMessage}>{apiError}</div>}
+
+      <div className="flex justify-center">
+        <Loader loading={loading} />
+      </div>
+
+      <button type="submit" className="btn-primary" disabled={loading}>
+        Crear cuenta
+      </button>
+
+      <p className="text-sm text-center mt-4">
+        ¿Ya tenés cuenta?{' '}
+        <a href="/auth/login" className="text-blue-500 underline">iniciar sesión</a>
+      </p>
+    </form>
   );
 }

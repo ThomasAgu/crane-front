@@ -61,10 +61,47 @@
   z-index: 999;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--light-grey);
+  border-radius: 10px;
+}
+
 .navBar:hover {
   cursor: pointer;
 }
 
+}
+
+/* globals.css */
+@layer components {
+  .admin-table-container {
+    @apply w-full overflow-hidden rounded-xl border border-[var(--light-grey)] bg-white shadow-sm;
+  }
+
+  .admin-table {
+    @apply w-full text-left border-collapse;
+  }
+
+  .admin-table th {
+    @apply sticky top-0 bg-[var(--darkest)] text-white text-[10px] uppercase tracking-wider px-4 py-3 font-semibold z-10;
+  }
+
+  .admin-table td {
+    @apply px-4 py-3 border-b border-[var(--light-grey)] text-sm text-[var(--darker)] transition-colors;
+  }
+
+  .admin-table tr:hover td {
+    @apply bg-gray-50;
+  }
+
+  /* Altura máxima para los contenedores de tabla */
+  .table-scroll {
+    @apply overflow-auto;
+    max-height: 500px; /* Ajusta según prefieras */
+  }
 }
 
 @theme inline {
@@ -77,7 +114,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: var(--darker);
+    --background: var(--white);
     --foreground: #ededed;
   }
 }
