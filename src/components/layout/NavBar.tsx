@@ -50,10 +50,10 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
         <div className="w-full border white bg-white rounded"></div>
 
         <NavItem href="/home" icon={home} iconActive={home_active} alt="Inicio" expanded={expanded} />
-        <RequirePermission object="USERS" action="GET">
+        <RequirePermission object="APPS" action="GET">
           <NavItem href="/laboratory" icon={labs} iconActive={labs_active} alt="Laboratorio" expanded={expanded} />
         </RequirePermission>
-        <RequirePermission object="USERS" action="GET">
+        <RequirePermission object="REPOSITORY" action="GET">
           <NavItem href="/store" icon={store} iconActive={store_active} alt="Repositorio" expanded={expanded} />
         </RequirePermission>
         <NavItem href="/configure" icon={gear} iconActive={gear_active} alt="Configuracion" expanded={expanded} />

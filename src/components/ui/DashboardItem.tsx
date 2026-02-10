@@ -10,8 +10,10 @@ import {
   RefreshCcw,
   Trash,
   Layers2,
+  UploadCloud
 } from 'lucide-react'
 import { AppService } from '@/src/lib/api/appService'
+import { RepositoryService } from '@/src/lib/api/repositoryService'
 import DeleteModal from './DeleteModal'
 import Loader from './Loader'
 import style from './DashboardItem.module.css'
@@ -92,6 +94,24 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     setDeleteModal(true);
   }
 
+  const handleUpload = async (e: any) => {
+    stopClick(e)
+
+    await RepositoryService.createRepository({
+      name: app.name,
+      description: `Repositorio para la aplicación ${app.name} creado por el usuario ${app.user_id}`,
+      services: app.services.map(s => s.name).join(", "),
+      app_id: app.id,
+      user_id: app.user_id
+    })
+
+    showAlert(
+      "Se ha creado una peticion para subir tu aplicación al repositorio. El equipo de Crane revisará tu solicitud y te notificará una vez que se haya aprobado o rechazado.",
+      "success",
+      "Aplicación Subida al Repositorio"
+    );
+  }
+
   const handleConfirmDelete = async () => {
     await AppService.delete(String(app.id))
     setDeleteModal(false)
@@ -155,11 +175,18 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         ) : (
           <button
             onClick={handleStart}
-            className="p-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
+            className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
           >
             <Play size={20} />
           </button>
         )}
+
+        <button
+          onClick={handleUpload}
+          className="p-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
+        >
+          <UploadCloud size={20} />
+        </button>
 
         <button
           onClick={handleDelete}

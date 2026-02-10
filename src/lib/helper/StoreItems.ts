@@ -16,8 +16,7 @@ export interface StoreApp {
   id: number;
   description: string;
   app: AppInfo;
-  votes_down: number;
-  votes_up: number;
+  votes: number;
   favourites: number;
   downloads: number;
   isFavorite: boolean;

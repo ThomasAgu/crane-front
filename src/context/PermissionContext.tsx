@@ -5,7 +5,7 @@ export interface PermissionsContextType {
   permissions: PermissionDto[];
   hasPermission: (object: string, action: string) => boolean;
   loading: boolean;
-  refreshPermissions: () => Promise<void>; // <-- AGREGADO
+  refreshPermissions: () => Promise<void>; 
 }
 
 export const PermissionsContext = createContext<PermissionsContextType>({

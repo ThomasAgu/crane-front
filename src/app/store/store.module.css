@@ -75,6 +75,16 @@
   color: white;
 }
 
+.pendingFilter {
+  background-color: var(--darker);
+  color: white;
+  padding: 8px 15px;
+  border: 1px solid var(--greyer-blue);
+  border-radius: 6px;
+  position: relative;
+}
+
+
 .dockerFilterWrapper {
   position: relative;
 }
@@ -163,6 +173,11 @@
   color: var(--darker);
 }
 
+.favButtonCounterActive {
+  color: gold;
+  font-weight: bold;
+}
+
 .downloadButton {
   display: flex;
   border: 1px solid white;
@@ -179,6 +194,32 @@
     text-align: center;
     grid-column: 1 / -1;
     justify-self: center; 
+}
+
+.voteNumberNeutral {
+  color: grey;
+}
+
+/* Número cuando el usuario votó positivo */
+.voteNumberUp {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+/* Número cuando el usuario votó negativo */
+.voteNumberDown {
+  color: #F44336;
+  font-weight: bold;
+}
+
+/* Botón UP activo */
+.activeUp svg {
+  stroke: #4CAF50 !important;
+}
+
+/* Botón DOWN activo */
+.activeDown svg {
+  stroke: #F44336 !important;
 }
 
 @media (min-width: 900px) and (max-width: 1300px) {
