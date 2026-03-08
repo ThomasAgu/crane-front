@@ -18,7 +18,7 @@ async function apiRequest<T>(
     if (!token) console.warn(`No hay token para la petición a: ${endpoint}`);
     headers["Authorization"] = `Bearer ${token}`;
   }
-
+ 
   const response = await fetch(`${API_URL}${endpoint}`, {
     method,
     headers,
