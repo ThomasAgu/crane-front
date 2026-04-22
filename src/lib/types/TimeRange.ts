@@ -1,0 +1,1 @@
+export type TimeRange = "0" | "1h" | "1d" | "1w" | "1m";

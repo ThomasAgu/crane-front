@@ -117,7 +117,7 @@ const AppDetailView: FC = () => {
 
         <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
 
-        {activeTab === "stats" && <StatsPanel histories={Object.values(histories)} />}
+        {activeTab === "stats" && <StatsPanel histories={Object.values(histories)} appId={appId} />}
         {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
         {activeTab === "alertas" && <AlertsPanel appId={appId} />}
       </div>
