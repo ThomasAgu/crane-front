@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import { ReportService } from "@/src/lib/api/reportService";
 import { StatsReportDto, ContainerDataPointDto } from "@/src/lib/dto/StatsReportDto";
 import { KPICard } from "./KPICard";
-import { OverlappedMetricsDashboard } from "./OverlappedMetricsDashboard";
+import { MetricsDashboard } from "./OverlappedMetricsDashboard";
 import { COLORS, fmt } from "./statsUtils";
 import TimeRangeSelector from "./TimeRangeSelector";
 import { TimeRange } from "@/src/lib/types/TimeRange";
@@ -12,16 +12,17 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
   const [statsData, setStatsData] = useState<StatsReportDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedMetric, setSelectedMetric] = useState<"cpu" | "memory" | "net" | "disk">("cpu");
 
   // Fetch stats data from API
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
       try {
+        //habria que pedirlas cada un minuto si no cambia el timeRange, o cada vez que cambie el timeRange
         const data = await ReportService.getStats(appId, timeRange);
         setStatsData(data);
         console.log("Fetched stats data:", data);
-        // Set first service as default if not already selected
         if (!selectedService && data?.data_points && data.data_points.length > 0) {
           const firstServiceName = data.data_points[0].container_name;
           setSelectedService(firstServiceName);
@@ -70,7 +71,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
       };
     }
 
-    const summary = statsData.summary[selectedService];
+    const summary = statsData.summary?.[selectedService];
 
     // CPU metrics from summary
     const cpuMetrics = summary
@@ -141,13 +142,15 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
       {/* Service Selector */}
       {uniqueServices.length > 0 && (
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-darker">Servicio</label>
+          <label className="text-2xl font-semibold text-darker">Servicio</label>
           <select
             value={selectedService || ""}
             onChange={(e) => setSelectedService(e.target.value)}
-            className="px-4 py-2 text-black rounded-lg border border-black hover:border-blue-500 focus:border-blue-500 focus:outline-none transition"
+            className="px-4 py-3 text-xl rounded-lg text-darkest border border-gray-300 hover:border-blue-500 focus:border-blue-500 focus:outline-none transition"
           >
-            <option value="">Seleccionar servicio...</option>
+            <option value="" className="text-gray-500">
+              Seleccionar servicio...
+            </option>
             {uniqueServices.map((service) => (
               <option key={service.id} value={service.name}>
                 {service.name}
@@ -211,7 +214,12 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
 
       {/* Overlapped Metrics Dashboard */}
       {selectedServiceData.length > 0 && (
-        <OverlappedMetricsDashboard data={selectedServiceData} />
+        <MetricsDashboard 
+          timeRange={timeRange}
+          data={selectedServiceData} 
+          selectedMetric={selectedMetric}
+          onMetricChange={setSelectedMetric}
+        />
       )}
     </div>
   );

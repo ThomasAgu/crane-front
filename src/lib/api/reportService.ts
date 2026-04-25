@@ -3,13 +3,13 @@ import { StatsReportDto } from "../dto/StatsReportDto";
 import { AlertDto } from "../dto/AlertReportDto";
 import { CombinedReportDto } from "../dto/CombinedReportDto";
 import { TimeRange } from "../../lib/types/TimeRange"; 
+import { AppService } from "./appService";
 
 // GET /{app_id}/stats
 const getStats = (appId: string, timeRange: TimeRange = "1h") => {
-  return timeRange === "0" ? apiRequest<StatsReportDto>(
-    `/reports/${appId}/stats`,
-    "GET" 
-  ) : apiRequest<StatsReportDto>(
+  return timeRange === "0" 
+    ? AppService.getStats(appId)
+    : apiRequest<StatsReportDto>(
     `/reports/${appId}/stats?time_range=${timeRange}`,
     "GET"
   );

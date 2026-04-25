@@ -9,154 +9,192 @@ import {
   YAxis,
 } from "recharts";
 import { ContainerDataPointDto } from "@/src/lib/dto/StatsReportDto";
-import { COLORS, fmt } from "./statsUtils";
+import { COLORS, fmt, downsample } from "./statsUtils";
 
-interface OverlappedMetricsDashboardProps {
+interface MetricsDashboardProps {
+  timeRange: "1m" | "1h" | "1d" | "1w" | "1M";
   data: ContainerDataPointDto[];
+  selectedMetric?: "cpu" | "memory" | "net" | "disk";
+  onMetricChange?: (metric: "cpu" | "memory" | "net" | "disk") => void;
 }
 
-interface MetricToggle {
-  cpu: boolean;
-  memory: boolean;
-  net: boolean;
-  disk: boolean;
+type MetricType = "cpu" | "memory" | "net" | "disk";
+
+interface MetricConfig {
+  label: string;
+  unit: string;
+  color: string;
+  yAxisFormatter: (value: number) => string;
+  tooltipFormatter: (value: number) => string;
 }
+
+const METRIC_CONFIG: Record<MetricType, MetricConfig> = {
+  cpu: {
+    label: "CPU",
+    unit: "%",
+    color: COLORS.cpu,
+    yAxisFormatter: (value: number) => `${fmt(value, 0)}%`,
+    tooltipFormatter: (value: number) => `${fmt(value, 1)}%`,
+  },
+  memory: {
+    label: "Memoria",
+    unit: "%",
+    color: COLORS.mem,
+    yAxisFormatter: (value: number) => `${fmt(value, 0)}%`,
+    tooltipFormatter: (value: number) => `${fmt(value, 1)}%`,
+  },
+  net: {
+    label: "Red",
+    unit: "MB",
+    color: COLORS.net,
+    yAxisFormatter: (value: number) => `${fmt(value / 100, 1)}MB`,
+    tooltipFormatter: (value: number) => `${fmt(value / 100, 2)} MB`,
+  },
+  disk: {
+    label: "Disco",
+    unit: "MB",
+    color: COLORS.disk,
+    yAxisFormatter: (value: number) => `${fmt(value / 10, 1)}MB`,
+    tooltipFormatter: (value: number) => `${fmt(value / 10, 2)} MB`,
+  },
+};
 
 /**
- * Overlapped Metrics Dashboard Component
- * Displays all metrics (CPU, Memory, Network, Disk) in a single chart with toggles
+ * Single Metric Dashboard Component
+ * Displays one metric (CPU, Memory, Network, or Disk) at a time
  */
-export const OverlappedMetricsDashboard: FC<OverlappedMetricsDashboardProps> = ({
+export const MetricsDashboard: FC<MetricsDashboardProps> = ({
+  timeRange,
   data,
+  selectedMetric = "cpu",
+  onMetricChange,
 }) => {
-  const [visibleMetrics, setVisibleMetrics] = useState<MetricToggle>({
-    cpu: true,
-    memory: true,
-    net: false,
-    disk: false,
-  });
+  const [activeMetric, setActiveMetric] = useState<MetricType>(selectedMetric);
 
   // Transform data for the chart
+
   const chartData = useMemo(() => {
-    return data.map((point, index) => ({
-      index,
-      timestamp: new Date(point.timestamp).toLocaleTimeString(),
+    const transformed = data.map((point) => ({
+      timestamp: new Date(point.timestamp),
       cpu: point.cpu_percentage,
       memory: point.memory_percentage,
-      net: (point.net_upload_mb + point.net_download_mb) * 100, // Scale for visibility
-      disk: (point.block_read_mb + point.block_write_mb) * 10, // Scale for visibility
+      net: point.net_upload_mb + point.net_download_mb,
+      disk: point.block_read_mb + point.block_write_mb,
     }));
+
+    return downsample(transformed, 100);
   }, [data]);
 
-  const toggleMetric = (metric: keyof MetricToggle) => {
-    setVisibleMetrics((prev) => ({
-      ...prev,
-      [metric]: !prev[metric],
-    }));
+  const handleMetricChange = (metric: MetricType) => {
+    setActiveMetric(metric);
+    onMetricChange?.(metric);
   };
 
+  const config = METRIC_CONFIG[activeMetric];
+
   return (
-    <div className="w-full space-y-6">
-      {/* Metric Toggles */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={() => toggleMetric("cpu")}
-          className={`px-4 py-2 rounded-lg font-medium transition ${
-            visibleMetrics.cpu
-              ? `bg-[${COLORS.cpu}] text-white`
-              : "bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]"
-          }`}
-          style={{
-            backgroundColor: visibleMetrics.cpu ? COLORS.cpu : "rgba(255,255,255,0.05)",
-            color: visibleMetrics.cpu ? "white" : "#9ca3af",
-          }}
-        >
-          <span className="flex items-center gap-2">
-            <span
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.cpu }}
-            />
-            CPU
-          </span>
-        </button>
-
-        <button
-          onClick={() => toggleMetric("memory")}
-          className={`px-4 py-2 rounded-lg font-medium transition`}
-          style={{
-            backgroundColor: visibleMetrics.memory ? COLORS.mem : "rgba(255,255,255,0.05)",
-            color: visibleMetrics.memory ? "white" : "#9ca3af",
-          }}
-        >
-          <span className="flex items-center gap-2">
-            <span
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.mem }}
-            />
-            Memory
-          </span>
-        </button>
-
-        <button
-          onClick={() => toggleMetric("net")}
-          className={`px-4 py-2 rounded-lg font-medium transition`}
-          style={{
-            backgroundColor: visibleMetrics.net ? COLORS.net : "rgba(255,255,255,0.05)",
-            color: visibleMetrics.net ? "white" : "#9ca3af",
-          }}
-        >
-          <span className="flex items-center gap-2">
-            <span
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.net }}
-            />
-            Network
-          </span>
-        </button>
-
-        <button
-          onClick={() => toggleMetric("disk")}
-          className={`px-4 py-2 rounded-lg font-medium transition`}
-          style={{
-            backgroundColor: visibleMetrics.disk ? COLORS.disk : "rgba(255,255,255,0.05)",
-            color: visibleMetrics.disk ? "white" : "#9ca3af",
-          }}
-        >
-          <span className="flex items-center gap-2">
-            <span
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: COLORS.disk }}
-            />
-            Disk
-          </span>
-        </button>
+    <div className="w-full space-y-1 mt-6">
+      {/* Metric Selector Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {(["cpu", "memory", "net", "disk"] as MetricType[]).map((metric) => (
+          <button
+            key={metric}
+            onClick={() => handleMetricChange(metric)}
+            className="px-4 p-2 rounded-lg font-medium transition border rounded-lg cursor-pointer"
+            style={{
+              backgroundColor:
+                activeMetric === metric
+                  ? METRIC_CONFIG[metric].color
+                  : "rgba(255,255,255,0.05)",
+              color: activeMetric === metric ? "white" : "#9ca3af",
+              border:
+                activeMetric === metric
+                  ? `2px solid`
+                  : `2px solid ${METRIC_CONFIG[metric].color}`
+            }}
+          >
+            <span className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ 
+                  backgroundColor: 
+                  activeMetric === metric 
+                    ? "white" 
+                    : METRIC_CONFIG[metric].color 
+                  }}
+              />
+              {METRIC_CONFIG[metric].label}
+            </span>
+          </button>
+        ))}
       </div>
 
       {/* Chart */}
       <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-6 shadow-xl border border-[rgba(255,255,255,0.05)]">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-lg font-semibold text-gray-100">
-            Resources Overview
+          <div className="flex items-center gap-3">
+            <div className="text-lg font-semibold" style={{ color: config.color }}>
+              {config.label}
+            </div>
+            <div className="text-sm text-darkest font-medium" style={{ color: config.color }}>
+              {config.unit}
+            </div>
           </div>
           <div className="text-xs text-gray-400">
-            {chartData.length} data points
+            {chartData.length} Mediciones
           </div>
         </div>
 
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <LineChart 
+              data={chartData}
+              margin={{ top: 10, right: 20, bottom: 40, left: 0 }}
+            >
               <CartesianGrid
                 stroke="rgba(255,255,255,0.08)"
                 strokeDasharray="3 3"
               />
               <XAxis
-                dataKey="index"
+                dataKey="timestamp"
                 stroke="rgba(255,255,255,0.05)"
                 tick={{ fill: "#9aa0ad", fontSize: 11 }}
                 tickLine={false}
+                angle={-45}
+                textAnchor="end"
                 axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                tickFormatter={(value) => `${value}`}
+                tickFormatter={(value) => {
+                  const d = new Date(value);
+                  switch (timeRange) {
+                    case "1h":
+                      return d.toLocaleTimeString("es-AR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                    case "1d":
+                      return d.toLocaleTimeString("es-AR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                    case "1w":
+                      return d.toLocaleDateString("es-AR", {
+                        weekday: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                    case "1m":
+                      return d.toLocaleDateString("es-AR", {
+                        day: "2-digit",
+                        hour: "2-digit",
+                        month: "short",
+                      });
+                    default:
+                      return d.toLocaleDateString("es-AR", {
+                        day: "2-digit",
+                        month: "short",
+                      });
+                  }
+                }} 
               />
               <YAxis
                 domain={["auto", "auto"]}
@@ -164,7 +202,7 @@ export const OverlappedMetricsDashboard: FC<OverlappedMetricsDashboardProps> = (
                 tick={{ fill: "#9aa0ad", fontSize: 11 }}
                 tickLine={false}
                 axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                tickFormatter={(value) => fmt(value, 0)}
+                tickFormatter={(value) => config.yAxisFormatter(value)}
               />
               <Tooltip
                 contentStyle={{
@@ -174,97 +212,35 @@ export const OverlappedMetricsDashboard: FC<OverlappedMetricsDashboardProps> = (
                   color: "#fff",
                   fontSize: 12,
                 }}
-                formatter={(value: number, name: string) => {
-                  switch (name) {
-                    case "cpu":
-                    case "memory":
-                      return [`${fmt(value, 1)}%`, name.toUpperCase()];
-                    case "net":
-                      return [`${fmt(value / 100, 2)} MB/s`, "Network"];
-                    case "disk":
-                      return [`${fmt(value / 10, 2)} MB/s`, "Disk"];
-                    default:
-                      return [fmt(value, 2), name];
-                  }
-                }}
+                formatter={(value: number) => [
+                  config.tooltipFormatter(value),
+                  config.label,
+                ]}
               />
 
-              {visibleMetrics.cpu && (
-                <Line
-                  type="monotone"
-                  dataKey="cpu"
-                  stroke={COLORS.cpu}
-                  strokeWidth={2.5}
-                  dot={false}
-                  name="CPU"
-                  activeDot={{
-                    r: 5,
-                    strokeWidth: 2,
-                    stroke: COLORS.cpu,
-                    fill: COLORS.surface,
-                  }}
-                />
-              )}
-
-              {visibleMetrics.memory && (
-                <Line
-                  type="monotone"
-                  dataKey="memory"
-                  stroke={COLORS.mem}
-                  strokeWidth={2.5}
-                  dot={false}
-                  name="Memory"
-                  activeDot={{
-                    r: 5,
-                    strokeWidth: 2,
-                    stroke: COLORS.mem,
-                    fill: COLORS.surface,
-                  }}
-                />
-              )}
-
-              {visibleMetrics.net && (
-                <Line
-                  type="monotone"
-                  dataKey="net"
-                  stroke={COLORS.net}
-                  strokeWidth={2.5}
-                  dot={false}
-                  name="Net"
-                  activeDot={{
-                    r: 5,
-                    strokeWidth: 2,
-                    stroke: COLORS.net,
-                    fill: COLORS.surface,
-                  }}
-                />
-              )}
-
-              {visibleMetrics.disk && (
-                <Line
-                  type="monotone"
-                  dataKey="disk"
-                  stroke={COLORS.disk}
-                  strokeWidth={2.5}
-                  dot={false}
-                  name="Disk"
-                  activeDot={{
-                    r: 5,
-                    strokeWidth: 2,
-                    stroke: COLORS.disk,
-                    fill: COLORS.surface,
-                  }}
-                />
-              )}
+              <Line
+                type="monotone"
+                dataKey={activeMetric}
+                stroke={config.color}
+                strokeWidth={2.5}
+                dot={false}
+                name={config.label}
+                activeDot={{
+                  r: 5,
+                  strokeWidth: 2,
+                  stroke: config.color,
+                  fill: COLORS.surface,
+                }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Legend */}
-        <div className="mt-4 text-xs text-gray-400 space-y-1">
+        <div className="mt-4 text-lg space-y-1 ">
           <div>
-            <span className="font-semibold">Note:</span> Network and Disk values are
-            scaled for chart visibility
+            <span className="font-semibold text-gray-500">Unidad</span> <span className="font-semibold" style={{ color: config.color }}>
+              {config.unit}
+            </span>
           </div>
         </div>
       </div>
@@ -272,4 +248,4 @@ export const OverlappedMetricsDashboard: FC<OverlappedMetricsDashboardProps> = (
   );
 };
 
-export default OverlappedMetricsDashboard;
+export default MetricsDashboard;

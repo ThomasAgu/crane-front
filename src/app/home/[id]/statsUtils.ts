@@ -84,3 +84,10 @@ export const getTabColor = (
   }
 };
 
+// Downsampling adaptativo basado en el rango real de timestamps
+export function downsample(data: any[], maxPoints: number = 300) {
+  if (data.length <= maxPoints) return data;
+
+  const factor = Math.floor(data.length / maxPoints);
+  return data.filter((_, idx) => idx % factor === 0);
+}
