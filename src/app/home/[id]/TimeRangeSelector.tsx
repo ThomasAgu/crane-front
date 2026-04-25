@@ -12,7 +12,7 @@ const ranges = [
 export default function TimeRangeSelector({ timeRange, setTimeRange }: { timeRange: TimeRange; setTimeRange: (timeRange: TimeRange) => void }) {
   return (
     <div>
-      <div className="text-gray-400 mt-1 gap-2 flex items-center">
+      <div className="text-gray-700 mt-1 gap-2 flex items-center">
         {ranges.map((r) => {
           const active = timeRange === r.value;
 
@@ -24,7 +24,7 @@ export default function TimeRangeSelector({ timeRange, setTimeRange }: { timeRan
                 px-2 rounded-xl transition
                 ${active
                   ? "bg-primary text-white shadow" 
-                  : "bg-transparent hover:bg-gray-100"
+                  : "bg-transparent text-blue-500 border border-blue-500 hover:bg-gray-100"
                 }              
               `}
             >

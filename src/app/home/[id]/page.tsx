@@ -31,30 +31,12 @@ const AppDetailView: FC = () => {
   const [appStatus, setAppStatus] = useState<String>(status === 'Running' ? "Activo": "Inactivo");
   const [app, setApp] = useState<AppDto | null>(null);
   const [logs, setLogs] = useState<string>("");
-  const [histories, setHistories] = useState<Record<string, HistItem>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"services" | "stats" | "logs" | "alertas">("services");
 
   const fetchApp = useCallback(async () => {
     const res = await AppService.get(appId);
     setApp(res ?? null);
-  }, [appId]);
-
-  const fetchStats = useCallback(async () => {
-    const data = await AppService.getStats(appId);
-    if (!Array.isArray(data)) return;
-    setHistories((prev) => {
-      const next = { ...prev };
-      (data as ContainerStatsDto[]).forEach((s) => {
-        const id = s.container_id;
-        const name = s.container_name;
-        const cpu = Number(s.cpu_percentage ?? 0);
-        const prevItem = next[id] ?? { container_id: id, container_name: name, series: [], latest: s };
-        const newSeries = [...(prevItem.series || []), cpu].slice(-MAX_HISTORY);
-        next[id] = { container_id: id, container_name: name, series: newSeries, latest: s };
-      });
-      return next;
-    });
   }, [appId]);
 
   const fetchLogs = useCallback(async () => {
@@ -70,14 +52,6 @@ const AppDetailView: FC = () => {
       setLoading(false);
     })();
   }, [appId, fetchApp]);
-
-  useEffect(() => {
-    if (activeTab === "stats") {
-      fetchStats();
-      const id = setInterval(fetchStats, 5000);
-      return () => clearInterval(id);
-    }
-  }, [activeTab, fetchStats]);
 
   useEffect(() => {
     if (activeTab === "logs") {
@@ -117,7 +91,7 @@ const AppDetailView: FC = () => {
 
         <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
 
-        {activeTab === "stats" && <StatsPanel histories={Object.values(histories)} appId={appId} />}
+        {activeTab === "stats" && <StatsPanel appId={appId} />}
         {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
         {activeTab === "alertas" && <AlertsPanel appId={appId} />}
       </div>
