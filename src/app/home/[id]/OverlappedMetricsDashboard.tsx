@@ -10,12 +10,14 @@ import {
 } from "recharts";
 import { ContainerDataPointDto } from "@/src/lib/dto/StatsReportDto";
 import { COLORS, fmt, downsample } from "./statsUtils";
+import Loader from "@/src/components/ui/Loader";
 
 interface MetricsDashboardProps {
   timeRange: "1m" | "1h" | "1d" | "1w" | "1M";
   data: ContainerDataPointDto[];
   selectedMetric?: "cpu" | "memory" | "net" | "disk";
   onMetricChange?: (metric: "cpu" | "memory" | "net" | "disk") => void;
+  loading: boolean;
 }
 
 type MetricType = "cpu" | "memory" | "net" | "disk";
@@ -68,6 +70,7 @@ export const MetricsDashboard: FC<MetricsDashboardProps> = ({
   data,
   selectedMetric = "cpu",
   onMetricChange,
+  loading
 }) => {
   const [activeMetric, setActiveMetric] = useState<MetricType>(selectedMetric);
 
@@ -129,8 +132,14 @@ export const MetricsDashboard: FC<MetricsDashboardProps> = ({
         ))}
       </div>
 
-      {/* Chart */}
-      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-6 shadow-xl border border-[rgba(255,255,255,0.05)]">
+      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-6 shadow-xl border border-[rgba(255,255,255,0.05)] relative">\
+
+        {loading && (
+          <div className="absolute inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center rounded-xl">
+            <Loader loading={loading} width={40} height={40} />
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="text-lg font-semibold" style={{ color: config.color }}>

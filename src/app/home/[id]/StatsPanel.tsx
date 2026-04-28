@@ -6,8 +6,8 @@ import { KPICard } from "./KPICard";
 import { MetricsDashboard } from "./OverlappedMetricsDashboard";
 import { RealtimeDashboard, ContainerStatsDto } from "./RealtimeDashboard";
 import { COLORS, fmt } from "./statsUtils";
-import TimeRangeSelector from "./TimeRangeSelector";
 import { TimeRange } from "@/src/lib/types/TimeRange";
+import TimeRangeSelector from "./TimeRangeSelector";
 
 export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>("1h");
@@ -23,9 +23,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
       setLoading(true);
       try {
         if (timeRange === "0") {
-          // Real-time data
           const data = await AppService.getStats(appId);
-          // data is an array of ContainerStatsDto
           setRealtimeData(Array.isArray(data) ? data : [data]);
         } else {
           // Historical data
@@ -245,6 +243,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
                 avg: kpiMetrics.cpu.avg,
               }}
               color={COLORS.cpu}
+              loading={loading}
             />
             <KPICard
               title="Memoria"
@@ -255,6 +254,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
                 avg: kpiMetrics.memory.avg,
               }}
               color={COLORS.mem}
+              loading={loading}
             />
             <KPICard
               title="Disco L/E"
@@ -263,6 +263,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
                 1
               )} (MB)`}
               color={COLORS.disk}
+              loading={loading}
             />
             <KPICard
               title="Red S/B"
@@ -271,6 +272,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
                 1
               )} (MB)`}
               color={COLORS.net}
+              loading={loading}
             />
           </div>
         </div>
@@ -290,6 +292,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
           data={selectedServiceData} 
           selectedMetric={selectedMetric}
           onMetricChange={setSelectedMetric}
+          loading={loading}
         />
       )}
     </div>
