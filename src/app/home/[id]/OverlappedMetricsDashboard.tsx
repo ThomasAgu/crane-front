@@ -132,7 +132,7 @@ export const MetricsDashboard: FC<MetricsDashboardProps> = ({
         ))}
       </div>
 
-      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-6 shadow-xl border border-[rgba(255,255,255,0.05)] relative">\
+      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-6 shadow-sm border border-[rgba(255,255,255,0.05)] relative">
 
         {loading && (
           <div className="absolute inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center rounded-xl">

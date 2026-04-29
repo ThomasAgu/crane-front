@@ -1,20 +1,6 @@
 import React, { FC } from "react";
 import { COLORS, fmt } from "./statsUtils";
-import { red } from "@mui/material/colors";
-
-export interface ContainerStatsDto {
-  block_read: number;
-  block_write: number;
-  cpu_percentage: number;
-  container: string;
-  container_id: string;
-  memory_percentage: number;
-  memory_used: number;
-  memory_limit: number;
-  container_name: string;
-  net_upload: number;
-  net_download: number;
-}
+import { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
 
 interface RealtimeDashboardProps {
   data: ContainerStatsDto[] | null;
@@ -28,7 +14,7 @@ interface RealtimeDashboardProps {
 export const RealtimeDashboard: FC<RealtimeDashboardProps> = ({ data, loading }) => {
   if (loading && !data) {
     return (
-      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-8 shadow-xl border border-[rgba(255,255,255,0.05)] flex items-center justify-center min-h-[500px]">
+      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-8 shadow-sm border border-[rgba(255,255,255,0.05)] flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <div className="text-lg text-gray-300 mb-4">Cargando estadísticas en tiempo real...</div>
           <div className="animate-spin inline-block w-8 h-8 border-4 border-gray-600 border-t-blue-500 rounded-full"></div>
@@ -39,7 +25,7 @@ export const RealtimeDashboard: FC<RealtimeDashboardProps> = ({ data, loading })
 
   if (!data || data.length === 0) {
     return (
-      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-8 shadow-xl border border-[rgba(255,255,255,0.05)] flex items-center justify-center min-h-[500px]">
+      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-8 shadow-sm border border-[rgba(255,255,255,0.05)] flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <div className="text-2xl text-gray-400 font-semibold">La aplicación no está ejecutándose</div>
           <div className="text-lg text-gray-500 mt-2">No se pudo conectar con ningún contenedor</div>

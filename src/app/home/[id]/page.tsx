@@ -3,7 +3,6 @@
 import React, { FC, useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import type { AppDto } from "@/src/lib/dto/AppDto";
-import type { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
 import { AppService } from "@/src/lib/api/appService";
 import { useSearchParams } from "next/navigation";
 import NavBar from '../../../components/layout/NavBar'
@@ -12,15 +11,6 @@ import StatsPanel from "./StatsPanel";
 import LogsPanel from "./LogsPanel";
 import AlertsPanel from "./AlertsPanel";
 import styles from '../home.module.css'
-
-type HistItem = {
-  container_id: string;
-  container_name: string;
-  series: number[];
-  latest: ContainerStatsDto;
-};
-
-const MAX_HISTORY = 20;
 
 const AppDetailView: FC = () => {
   const params = useParams<{ id: string }>();
@@ -90,7 +80,7 @@ const AppDetailView: FC = () => {
         </div>
 
         <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
-
+        {activeTab === "services" && (<div className="p-4 text-black">Aquí iría el panel de servicios (no implementado aún)</div>)}
         {activeTab === "stats" && <StatsPanel appId={appId} />}
         {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
         {activeTab === "alertas" && <AlertsPanel appId={appId} />}

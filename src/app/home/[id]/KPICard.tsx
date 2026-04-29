@@ -20,7 +20,7 @@ interface KPICardProps {
  * Clean, stats-focused design without visualizations
  */
 export const KPICard: FC<KPICardProps> = ({ title, value, stats, color, loading }) => (
-    <div className="flex flex-col rounded-xl p-4 shadow-lg border border-gray-200 relative" style={stats?.avg !== undefined? { justifyContent: "space-between" }: {justifyContent: "center"}}>
+    <div className="flex flex-col rounded-xl p-4 shadow-sm border border-gray-200 relative" style={stats?.avg !== undefined? { justifyContent: "space-between" }: {justifyContent: "center"}}>
     
 
     {loading && (

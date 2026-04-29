@@ -18,14 +18,14 @@ const getStats = (appId: string, timeRange: TimeRange = "1h") => {
 // GET /{app_id}/alerts
 const getAlerts = (appId: string, timeRange: TimeRange = "1h") =>
   apiRequest<AlertDto[]>(
-    `/${appId}/alerts?time_range=${timeRange}`,
+    `/reports/${appId}/alerts?time_range=${timeRange}`,
     "GET"
   );
 
 // GET /{app_id}/alerts/active
 const getActiveAlerts = (appId: string) =>
   apiRequest<AlertDto[]>(
-    `/${appId}/alerts/active`,
+    `/reports/${appId}/alerts/active`,
     "GET"
   );
 

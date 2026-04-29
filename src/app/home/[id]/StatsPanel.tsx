@@ -4,8 +4,10 @@ import { AppService } from "@/src/lib/api/appService";
 import { StatsReportDto, ContainerDataPointDto } from "@/src/lib/dto/StatsReportDto";
 import { KPICard } from "./KPICard";
 import { MetricsDashboard } from "./OverlappedMetricsDashboard";
-import { RealtimeDashboard, ContainerStatsDto } from "./RealtimeDashboard";
+import { RealtimeDashboard } from "./RealtimeDashboard";
+import { AlertDashboard } from "./AlertDashboard";
 import { COLORS, fmt } from "./statsUtils";
+import { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
 import { TimeRange } from "@/src/lib/types/TimeRange";
 import TimeRangeSelector from "./TimeRangeSelector";
 
@@ -178,19 +180,11 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
     };
   }, [statsData, realtimeData, selectedService, selectedServiceData, timeRange]);
 
-  if (loading && !statsData && !realtimeData) {
-    return (
-      <div className="min-h-screen bg-[#1e1f29] text-white p-6 md:p-10 flex items-center justify-center">
-        <div className="text-lg">Loading statistics...</div>
-      </div>
-    );
-  }
-
   if (timeRange === "0") {
     return (
       <div className="text-black p-6 flex flex-col gap-4 min-h-screen">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-4">Estadísticas</h1>
+          <h1 className="text-2xl font-bold mb-4">Estadísticas</h1>
           <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
         </div>
 
@@ -201,10 +195,10 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
 
   // Historical mode
     return (
-    <div className="text-black p-6 flex flex-col gap-4 min-h-screen">
+    <div className="text-black ps-6 flex flex-col gap-4 min-h-screen">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold mb-4">Estadisticas</h1>
+        <h2 className="text-2xl font-bold mb-4">Estadísticas</h2>
         <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
       </div>
 
@@ -279,9 +273,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
 
         {/* Alert Dashboard Right Column */}
         <div className="w-full xl:w-2/3">
-          <div className="text-lg font-semibold text-gray-300 bg-primary h-full min-h-[400px] rounded-lg p-4">
-            Alert dashboard
-          </div>
+          <AlertDashboard appId={appId} timeRange={timeRange} />
         </div>
       </div>
 

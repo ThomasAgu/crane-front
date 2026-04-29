@@ -9,7 +9,7 @@ type Props = {
 
 const AppBase: FC<Props> = ({ app, appStatus, onAppAction }) => {
   return (
-    <div className="mb-4">
+    <div className="m-6">
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-darkest">{app?.name ?? "Untitled App"}</h1>
@@ -29,20 +29,7 @@ const AppBase: FC<Props> = ({ app, appStatus, onAppAction }) => {
           
         </div>
       </header>
-
-      <section className="mt-4 grid gap-3">
-        {(app?.services ?? []).map((svc) => (
-          <div key={svc.name} className="flex items-center justify-between p-3 bg-white border rounded shadow-sm text-primary">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded bg-gray-50 flex items-center justify-center text-sm font-medium border">{svc.name?.charAt(0)?.toUpperCase()}</div>
-              <div>
-                <div className="font-bold">{svc.name}</div>
-                <div className="text-xs text-gray-500">{svc.image}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </section>
+        <hr className="my-6 border-gray-200" />
     </div>
   );
 };
