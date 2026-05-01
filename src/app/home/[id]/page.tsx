@@ -11,6 +11,7 @@ import StatsPanel from "./StatsPanel";
 import LogsPanel from "./LogsPanel";
 import AlertsPanel from "./AlertsPanel";
 import styles from '../home.module.css'
+import { GeneralPanel } from "./GeneralPanel";
 
 const AppDetailView: FC = () => {
   const params = useParams<{ id: string }>();
@@ -19,9 +20,10 @@ const AppDetailView: FC = () => {
   const appId = params?.id ?? "";
 
   const [appStatus, setAppStatus] = useState<String>(status === 'Running' ? "Activo": "Inactivo");
-  const [app, setApp] = useState<AppDto | null>(null);
+  const [app, setApp] = useState<AppDto>(null as any);
   const [logs, setLogs] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  debugger
   const [activeTab, setActiveTab] = useState<"general" | "stats" | "logs" | "alertas">("general");
 
   const fetchApp = useCallback(async () => {
@@ -80,8 +82,8 @@ const AppDetailView: FC = () => {
         </div>
 
         <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
-        {activeTab === "general" && (<div className="p-4 text-black">Aquí iría el panel de servicios (no implementado aún)</div>)}
-        {activeTab === "stats" && <StatsPanel appId={appId} />}
+        {activeTab === "general" && <GeneralPanel app={app} appStatus={appStatus} />}
+        {activeTab === "stats" && <StatsPanel appId={appId} appStatus={appStatus} />}
         {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
         {activeTab === "alertas" && <AlertsPanel appId={appId} />}
       </div>

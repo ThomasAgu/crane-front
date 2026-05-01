@@ -9,19 +9,18 @@ type Props = {
 
 const AppBase: FC<Props> = ({ app, appStatus, onAppAction }) => {
   return (
-    <div className="m-6">
-      <header className="flex items-center justify-between">
+    <div className="ml-6">
+      <header className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-semibold text-darkest">{app?.name ?? "Untitled App"}</h1>
           <div className="text-sm text-gray-500 mt-1">
-            <span className={`inline-block px-2 py-0.5 rounded text-xs ${appStatus === "Activo" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}>
+            <span className={`inline-block px-2 py-0.5 rounded text-xs ${appStatus === "Activo" ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
               {appStatus ?? "unknown"}
             </span>
-            <span className="ml-3 text-xs text-gray-500">Servicios: {app?.services?.length ?? 0}</span>
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex space-x-2 pt-2">
           { appStatus === "Inactivo" && <button className="px-3 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition" onClick={() => onAppAction("start")}>Iniciar</button>}
           { appStatus === "Activo" && <button className="px-3 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition" onClick={() => onAppAction("stop")}>Detener</button>}
           { appStatus === "Activo" && <button className="px-3 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 transition" onClick={() => onAppAction("restart")}>Reiniciar</button>}

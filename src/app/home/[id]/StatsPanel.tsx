@@ -11,7 +11,7 @@ import { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
 import { TimeRange } from "@/src/lib/types/TimeRange";
 import TimeRangeSelector from "./TimeRangeSelector";
 
-export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
+export const StatsPanel: FC<{ appId: string; appStatus: String }> = ({ appId, appStatus  }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>("1h");
   const [statsData, setStatsData] = useState<StatsReportDto | null>(null);
   const [realtimeData, setRealtimeData] = useState<ContainerStatsDto[] | null>(null);
@@ -185,7 +185,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
       <div className="text-black p-6 flex flex-col gap-4 min-h-screen">
         <div>
           <h1 className="text-xl font-bold mb-4">Estadísticas</h1>
-          <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
+          <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} appStatus={appStatus} />
         </div>
 
         <RealtimeDashboard data={realtimeData} loading={loading} />
@@ -193,13 +193,12 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
     );
   }
 
-  // Historical mode
     return (
     <div className="text-black ps-6 flex flex-col gap-4 min-h-screen">
       {/* Header */}
       <div>
         <h2 className="text-xl font-bold mb-4">Estadísticas</h2>
-        <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
+        <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} appStatus={appStatus} />
       </div>
 
       {/* Service Selector */}

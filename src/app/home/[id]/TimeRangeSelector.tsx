@@ -1,6 +1,5 @@
 import { TimeRange } from "@/src/lib/types/TimeRange";
 
-
 const ranges = [
   { label: "Tiempo Real", value: "0" },
   { label: "1 Hora", value: "1h" },
@@ -9,23 +8,36 @@ const ranges = [
   { label: "1 Mes", value: "1m" },
 ];
 
-export default function TimeRangeSelector({ timeRange, setTimeRange }: { timeRange: TimeRange; setTimeRange: (timeRange: TimeRange) => void }) {
+interface Props {
+  timeRange: TimeRange;
+  setTimeRange: (timeRange: TimeRange) => void;
+  appStatus: String;
+}
+
+export default function TimeRangeSelector({ timeRange, setTimeRange, appStatus }: Props) {
   return (
     <div>
       <div className="text-gray-700 mt-1 gap-2 flex items-center">
         {ranges.map((r) => {
-          const active = timeRange === r.value;
+          const isActive = timeRange === r.value;
+          
+          // Lógica: Si es "0" (Tiempo Real) y el status no es activo, deshabilitar
+          const isDisabled = r.value === "0" && appStatus.toLowerCase() !== "activo";
 
           return (
             <button
               key={r.value}
+              disabled={isDisabled}
               onClick={() => setTimeRange(r.value as TimeRange)}
+              title={isDisabled ? "Tiempo real solo disponible si la app está activa" : ""}
               className={`
-                px-2 rounded-xl transition
-                ${active
-                  ? "bg-primary text-white shadow" 
-                  : "bg-transparent text-blue-500 border border-blue-500 hover:bg-gray-100"
-                }              
+                px-3 py-1 rounded-xl transition text-sm font-medium
+                ${isDisabled 
+                  ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" 
+                  : isActive
+                    ? "bg-blue-600 text-white shadow-md" 
+                    : "bg-transparent text-blue-500 border border-blue-500 hover:bg-blue-50"
+                }               
               `}
             >
               {r.label}

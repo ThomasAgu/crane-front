@@ -9,9 +9,9 @@ export interface AppDto {
   current_scale?: number | null
   max_scale?: number | null
   force_stop?: boolean | null
-  created_at?: string | Date
-  updated_at?: string | Date
-  deleted_at?: string | Date
+  created_at: string 
+  updated_at: string 
+  deleted_at: string
   user_id: number
   status: string
 }
