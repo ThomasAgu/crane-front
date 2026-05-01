@@ -35,7 +35,7 @@ export const KPICard: FC<KPICardProps> = ({ title, value, stats, color, loading 
     </div>
     
     {/* Main Value */}
-    <div className="text-4xl font-bold" style={{ color: color }}>
+    <div className="text-2xl font-bold" style={{ color: color }}>
       {value}
     </div>
     

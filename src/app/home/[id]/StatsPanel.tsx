@@ -184,7 +184,7 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
     return (
       <div className="text-black p-6 flex flex-col gap-4 min-h-screen">
         <div>
-          <h1 className="text-2xl font-bold mb-4">Estadísticas</h1>
+          <h1 className="text-xl font-bold mb-4">Estadísticas</h1>
           <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
         </div>
 
@@ -198,18 +198,18 @@ export const StatsPanel: FC<{ appId: string }> = ({ appId }) => {
     <div className="text-black ps-6 flex flex-col gap-4 min-h-screen">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold mb-4">Estadísticas</h2>
+        <h2 className="text-xl font-bold mb-4">Estadísticas</h2>
         <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
       </div>
 
       {/* Service Selector */}
       {uniqueServices.length > 0 && (
         <div className="flex flex-col gap-2">
-          <label className="text-2xl font-semibold text-darker">Servicio</label>
+          <label className="text-xl font-semibold text-darker">Servicio</label>
           <select
             value={selectedService || ""}
             onChange={(e) => setSelectedService(e.target.value)}
-            className="px-4 py-3 text-xl rounded-lg text-darkest border border-gray-300 hover:border-blue-500 focus:border-blue-500 focus:outline-none transition"
+            className="px-4 py-3 rounded-lg text-darkest border border-gray-300 hover:border-blue-500 focus:border-blue-500 focus:outline-none transition"
           >
             <option value="" className="text-gray-500">
               Seleccionar servicio...

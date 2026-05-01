@@ -12,7 +12,7 @@ const AppBase: FC<Props> = ({ app, appStatus, onAppAction }) => {
     <div className="m-6">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-darkest">{app?.name ?? "Untitled App"}</h1>
+          <h1 className="text-xl font-semibold text-darkest">{app?.name ?? "Untitled App"}</h1>
           <div className="text-sm text-gray-500 mt-1">
             <span className={`inline-block px-2 py-0.5 rounded text-xs ${appStatus === "Activo" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}>
               {appStatus ?? "unknown"}

@@ -22,7 +22,7 @@ const AppDetailView: FC = () => {
   const [app, setApp] = useState<AppDto | null>(null);
   const [logs, setLogs] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<"services" | "stats" | "logs" | "alertas">("services");
+  const [activeTab, setActiveTab] = useState<"general" | "stats" | "logs" | "alertas">("general");
 
   const fetchApp = useCallback(async () => {
     const res = await AppService.get(appId);
@@ -73,14 +73,14 @@ const AppDetailView: FC = () => {
     <NavBar>
       <div className={styles.homeDetailPage} >
         <div className="flex gap-2 mb-4 border-b">
-          <button className={`px-4 py-2 ${activeTab === "services" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("services")}>Services</button>
+          <button className={`px-4 py-2 ${activeTab === "general" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("general")}>General</button>
           <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
           <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
           <button className={`px-4 py-2 ${activeTab === "alertas" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("alertas")}>Alertas</button>
         </div>
 
         <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
-        {activeTab === "services" && (<div className="p-4 text-black">Aquí iría el panel de servicios (no implementado aún)</div>)}
+        {activeTab === "general" && (<div className="p-4 text-black">Aquí iría el panel de servicios (no implementado aún)</div>)}
         {activeTab === "stats" && <StatsPanel appId={appId} />}
         {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} />}
         {activeTab === "alertas" && <AlertsPanel appId={appId} />}
