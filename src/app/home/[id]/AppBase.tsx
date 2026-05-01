@@ -21,11 +21,10 @@ const AppBase: FC<Props> = ({ app, appStatus, onAppAction }) => {
         </div>
 
         <div className="flex space-x-2 pt-2">
-          { appStatus === "Inactivo" && <button className="px-3 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition" onClick={() => onAppAction("start")}>Iniciar</button>}
-          { appStatus === "Activo" && <button className="px-3 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition" onClick={() => onAppAction("stop")}>Detener</button>}
-          { appStatus === "Activo" && <button className="px-3 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 transition" onClick={() => onAppAction("restart")}>Reiniciar</button>}
-          { appStatus === "Activo" && <button className="px-3 rounded-lg bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition" onClick={() => onAppAction("scaleUp")}>Escalar</button>}
-          
+          { appStatus === "Inactivo" && <button className="px-3 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition cursor-pointer" onClick={() => onAppAction("start")}>Iniciar</button>}
+          { appStatus === "Activo" && <button className="px-3 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition cursor-pointer" onClick={() => onAppAction("stop")}>Detener</button>}
+          { appStatus === "Activo" && <button className="px-3 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 transition cursor-pointer" onClick={() => onAppAction("restart")}>Reiniciar</button>}
+          { appStatus === "Activo" && <button className="px-3 rounded-lg bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition cursor-pointer" onClick={() => onAppAction("scaleUp")}>Escalar</button>} 
         </div>
       </header>
         <hr className="my-6 border-gray-200" />

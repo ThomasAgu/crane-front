@@ -208,9 +208,9 @@ export const StatsPanel: FC<{ appId: string; appStatus: String }> = ({ appId, ap
           <select
             value={selectedService || ""}
             onChange={(e) => setSelectedService(e.target.value)}
-            className="px-4 py-3 rounded-lg text-darkest border border-gray-300 hover:border-blue-500 focus:border-blue-500 focus:outline-none transition"
+            className="px-4 py-3 rounded-lg text-darkest border border-gray-300 hover:border-blue-500 focus:border-blue-500 focus:outline-none transition cursor-pointer"
           >
-            <option value="" className="text-gray-500">
+            <option value="" className="text-gray-400 italic" disabled>
               Seleccionar servicio...
             </option>
             {uniqueServices.map((service) => (

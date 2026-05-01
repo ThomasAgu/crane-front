@@ -35,8 +35,8 @@ export default function TimeRangeSelector({ timeRange, setTimeRange, appStatus }
                 ${isDisabled 
                   ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" 
                   : isActive
-                    ? "bg-blue-600 text-white shadow-md" 
-                    : "bg-transparent text-blue-500 border border-blue-500 hover:bg-blue-50"
+                    ? "bg-blue-600 text-white shadow-md cursor-pointer" 
+                    : "bg-transparent text-blue-500 border border-blue-500 hover:bg-blue-50 cursor-pointer"
                 }               
               `}
             >

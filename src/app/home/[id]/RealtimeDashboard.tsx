@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { COLORS, fmt } from "./statsUtils";
 import { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
+import Loader from "@/src/components/ui/Loader";
 
 interface RealtimeDashboardProps {
   data: ContainerStatsDto[] | null;
@@ -14,16 +15,16 @@ interface RealtimeDashboardProps {
 export const RealtimeDashboard: FC<RealtimeDashboardProps> = ({ data, loading }) => {
   if (loading && !data) {
     return (
-      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-8 shadow-sm border border-[rgba(255,255,255,0.05)] flex items-center justify-center min-h-[500px]">
-        <div className="text-center">
-          <div className="text-lg text-gray-300 mb-4">Cargando estadísticas en tiempo real...</div>
-          <div className="animate-spin inline-block w-8 h-8 border-4 border-gray-600 border-t-blue-500 rounded-full"></div>
+      <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-8 flex items-center justify-center min-h-[500px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-xl text-gray-300 mb-4">Cargando estadísticas en tiempo real...</div>
+          <Loader loading={loading} width={50} height={50}/>
         </div>
       </div>
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!data || data?.length === 0) {
     return (
       <div className="w-full bg-[rgba(255,255,255,0.02)] rounded-2xl p-8 shadow-sm border border-[rgba(255,255,255,0.05)] flex items-center justify-center min-h-[500px]">
         <div className="text-center">
@@ -38,7 +39,7 @@ export const RealtimeDashboard: FC<RealtimeDashboardProps> = ({ data, loading })
     <div className="w-full space-y-6">
       {/* Containers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {data.map((container) => {
+        {data?.map((container) => {
           const memoryPercentage = (container.memory_used / container.memory_limit) * 100;
           
           return (
