@@ -73,6 +73,25 @@
   cursor: pointer;
 }
 
+/* Colores de texto (Foreground) */
+.ansi-black-fg { color: #282a36; }
+.ansi-red-fg { @apply text-red-500; }
+.ansi-green-fg { @apply text-emerald-400; }
+.ansi-yellow-fg { @apply text-amber-400; }
+.ansi-blue-fg { @apply text-blue-400; }
+.ansi-magenta-fg { @apply text-pink-400; }
+.ansi-cyan-fg { @apply text-cyan-400; }
+.ansi-white-fg { @apply text-gray-100; }
+
+/* Colores brillantes (si los necesitas) */
+.ansi-bright-black-fg { @apply text-gray-600; }
+.ansi-bright-red-fg { @apply text-red-400; }
+/* ... etc */
+
+/* Fondos (Background) - Opcional */
+.ansi-red-bg { @apply bg-red-900; }
+.ansi-green-bg { @apply bg-green-900; }
+
 }
 
 /* globals.css */

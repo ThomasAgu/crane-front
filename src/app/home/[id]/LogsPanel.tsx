@@ -44,10 +44,10 @@ const LogsPanel: FC<Props> = ({ logs, onRefresh, appStatus }) => {
         className="bg-black text-gray-200 p-4 rounded border border-gray-800 font-mono text-xs leading-relaxed max-h-[60vh] overflow-y-auto whitespace-pre-wrap"
       >
         {appStatus === "Activo" ? (
-          logs ? <Ansi>{logs}</Ansi> : <span className="text-gray-500 italic">Esperando por logs...</span>
+          logs ? <Ansi useClasses={true}>{logs}</Ansi> : <span className="text-gray-500 italic">Esperando por logs...</span>
         ) : (
           <span className="text-gray-400 italic font-sans text-center block">
-            El servicio está inactivo. Inicia el contenedor para ver los logs.
+            El servicio está inactivo. Inicia la aplicación para ver los logs.
           </span>
         )}
       </div>
