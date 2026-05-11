@@ -4,6 +4,9 @@ import styles from "./TemplateSelector.module.css";
 import TemplateItem from "./TemplateItem";
 import { Database, Boxes, Layers, Square, Columns3Cog } from "lucide-react";
 import { AppDto } from "@/src/lib/dto/AppDto";
+import Image from "next/image";
+import goback from "../../public/goback.svg";
+import { useRouter } from "next/navigation";
 
 interface TemplateSelectorProps {
   setPopUp: Function;
@@ -19,6 +22,12 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   apps,
 }) => {
   const [appsTab, setAppsTab] = useState(true);
+  const router = useRouter();
+
+  const handleClickGoBackButton = () => {
+    router.back();
+  };
+
 
   const handleTemplateSelect = (templateToLoad: string, app?: AppDto) => {
     if (app) {
@@ -32,23 +41,33 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     <div className={styles.overlay}>
       <div className={styles.popup}>
         <div className={styles.content}>
-          <div className={styles.buttonGroup}>
-            <button
-              className={`${
-                appsTab ? styles.buttonActive : styles.buttonInactive
-              }`}
-              onClick={() => setAppsTab(true)}
-            >
-              Aplicaciones
+          <div className={styles.header}> 
+            <button className={styles.GoBackButton} onClick={handleClickGoBackButton} aria-label="Volver a la página anterior"> 
+              <Image
+                src={goback}
+                alt={"Salir de laboratorio"}
+                width={30}
+                height={30}
+              />
             </button>
-            <button
-              className={`${
-                !appsTab ? styles.buttonActive : styles.buttonInactive
-              }`}
-              onClick={() => setAppsTab(false)}
-            >
-              Plantillas
-            </button>
+            <div className={styles.buttonGroup}>
+              <button
+                className={`${
+                  appsTab ? styles.buttonActive : styles.buttonInactive
+                }`}
+                onClick={() => setAppsTab(true)}
+              >
+                Aplicaciones
+              </button>
+              <button
+                className={`${
+                  !appsTab ? styles.buttonActive : styles.buttonInactive
+                }`}
+                onClick={() => setAppsTab(false)}
+              >
+                Plantillas
+              </button>
+            </div>
           </div>
           <div
             className={`grid grid-cols-3 gap-4 ${

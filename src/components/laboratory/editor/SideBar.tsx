@@ -17,11 +17,13 @@ export default function Sidebar({
   onUpdateNode,
   nodes = [],
   edges = [],
+  selectedApp,
 }: {
   selectedNode: any;
   onUpdateNode: (id: string, data: any) => void;
   nodes?: any[];
   edges?: any[];
+  selectedApp?: any;
 }) {
   const Editor = editorMap[selectedNode?.type || "app"];
 
@@ -33,6 +35,7 @@ export default function Sidebar({
         Editor={Editor}
         nodes={nodes}
         edges={edges}
+        selectedApp={selectedApp}
       />
     </div>
   );

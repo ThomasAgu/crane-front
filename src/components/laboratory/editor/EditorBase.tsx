@@ -17,6 +17,7 @@ interface EditorBaseProps {
   Editor: React.FC<any>;
   nodes?: any[];
   edges?: any[];
+  selectedApp?: any;
 }
 
 const EditorBase: React.FC<EditorBaseProps> = ({
@@ -25,6 +26,7 @@ const EditorBase: React.FC<EditorBaseProps> = ({
   Editor,
   nodes = [],
   edges = [],
+  selectedApp,
 }) => {
   const [active, setActive] = useState(false);
   const [actualEditor, setActualEditor] = useState("Edicion");
@@ -47,25 +49,27 @@ const EditorBase: React.FC<EditorBaseProps> = ({
       }
       id={styles.sidebar}
     >
-      <button
-        onClick={() => setActive(!active)}
-        aria-label={
-          active ? "Colapsar barra lateral" : "Expandir barra lateral"
-        }
-        style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          padding: 0,
-        }}
-      >
-        <Image
-          src={active ? double_collapse : double_expand}
-          alt={active ? "colapsar sidebar" : "expandir sidebar"}
-          width={30}
-          height={30}
-        />
-      </button>
+      <div className="flex flex-col">
+        <button
+          onClick={() => setActive(!active)}
+          aria-label={
+            active ? "Colapsar barra lateral" : "Expandir barra lateral"
+          }
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+          }}
+        >
+          <Image
+            src={active ? double_collapse : double_expand}
+            alt={active ? "colapsar sidebar" : "expandir sidebar"}
+            width={30}
+            height={30}
+          />
+        </button>
+      </div>
       <div className="flex items-center justify-start ms-2">
         {active && (
           <div style={{ display: "flex", gap: "5px" }}>
@@ -104,7 +108,7 @@ const EditorBase: React.FC<EditorBaseProps> = ({
             />
           )}
           {actualEditor === "Simulacion" && <SimulationEditor />}
-          {actualEditor === "Configuracion" && <ConfurationEditor />}
+          {actualEditor === "Configuracion" && <ConfurationEditor isSaved={!!selectedApp}/>}
         </div>
       )}
     </div>

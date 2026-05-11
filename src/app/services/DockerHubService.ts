@@ -1,23 +1,29 @@
-// services/dockerHubService.ts
-// TODO: Cambiar esta implementación para que use la API oficial de Docker Hub cuando sea posible.
+import { DockerHubService as DockerHubAPI } from "@/src/lib/api/dockerHubService";
+
+/**
+ * Search for Docker images on Docker Hub through the backend API
+ */
 export async function searchDockerImages(query: string) {
   if (!query) return [];
 
-  const proxyUrl = "https://api.allorigins.win/get?url=";
-  const targetUrl = `https://hub.docker.com/v2/search/repositories/?query=${query}`;
-  const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));  
-  if (!res.ok) {
-    console.error("Error al buscar imágenes de Docker Hub:", res.statusText);
+  try {
+    return await DockerHubAPI.searchDockerImages(query);
+  } catch (error) {
+    console.error("Error searching Docker images:", error);
     return [];
   }
+}
 
-  const data = await res.json();
-  const parsed = JSON.parse(data.contents); 
+/**
+ * Get detailed information about a specific Docker image
+ */
+export async function getImageDetails(imageName: string) {
+  if (!imageName) return null;
 
-  return parsed.results.map((item: any) => ({
-    name: item.repo_name,
-    description: item.short_description,
-    official: item.is_official,
-    pulls: item.pull_count,
-  }));
+  try {
+    return await DockerHubAPI.getImageDetails(imageName);
+  } catch (error) {
+    console.error("Error fetching image details:", error);
+    return null;
+  }
 }

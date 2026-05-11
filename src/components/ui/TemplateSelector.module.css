@@ -30,10 +30,32 @@
     height: 100%;
   }
 
+.header {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    
+    margin-bottom: 40px;
+}
+
+
+.GoBackButton {
+  position: absolute;
+  background: none;
+  left: 0px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+
 .buttonGroup {
     display: flex;
     justify-content: center;
-    margin-bottom: 40px;
     border-radius: 8px;
     gap: 0;
     font-size: 20px;

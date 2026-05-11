@@ -169,6 +169,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
       selectedNode={selectedNode} 
       nodes={nodes}
       edges={edges}
+      selectedApp={selectedApp}
       onUpdateNode={(id, newData) => {
         setNodes((nodes) =>
           nodes.map((node) =>

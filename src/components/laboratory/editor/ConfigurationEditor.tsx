@@ -5,9 +5,9 @@ import { editorService } from "@/src/app/services/EditorService";
 import { AppService } from "@/src/lib/api/appService";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
 import styles from "./ConfigurationEditor.module.css";
-import { FileText, Copy, PlusCircle } from "lucide-react";
+import { FileText, Copy, PlusCircle, Save } from "lucide-react";
 
-const ConfurationEditor: React.FC = () => {
+const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
   const [showMakefile, setShowMakefile] = useState(false);
   const [makefileContent, setMakefileContent] = useState("");
 
@@ -73,10 +73,17 @@ const ConfurationEditor: React.FC = () => {
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Aplicación</h3>
 
-          <button className={styles.mainButton} onClick={handleCreateApp}>
-            <PlusCircle size={20} />
-            Crear aplicación
-          </button>
+          {isSaved ? (
+            <button className={styles.mainButton} onClick={handleCreateApp}>
+              <Save size={20} />
+              <span>Guardar</span>
+            </button>
+          ) : (
+            <button className={styles.mainButton} onClick={handleCreateApp}>
+              <PlusCircle size={20} />
+              <span>Crear</span>
+            </button>
+          )}
         </div>
 
         <div className={styles.section}>
