@@ -3,7 +3,7 @@ import { useState } from "react";
 import styles from "./TemplateSelector.module.css";
 import TemplateItem from "./TemplateItem";
 import { Database, Boxes, Layers, Square, Columns3Cog } from "lucide-react";
-import { AppDto } from "@/src/lib/dto/AppDto";
+import { AppDto } from "@/lib/dto/AppDto";
 import Image from "next/image";
 import goback from "../../public/goback.svg";
 import { useRouter } from "next/navigation";

@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { RolesDto } from '@/src/lib/dto/RolesDto';
-import { PermissionDto } from '@/src/lib/dto/PermissionDto';
-import { RoleService } from '@/src/lib/api/roleService';
-import { PermissionService } from '@/src/lib/api/permissionService';
+import { RolesDto } from '@/lib/dto/RolesDto';
+import { PermissionDto } from '@/lib/dto/PermissionDto';
+import { RoleService } from '@/lib/api/roleService';
+import { PermissionService } from '@/lib/api/permissionService';
 import { PlusIcon, TrashIcon } from 'lucide-react';
-import { usePermissions } from '@/src/hooks/usePermissions';
+import { usePermissions } from '@/hooks/usePermissions';
 
 interface Props {
   roles: RolesDto[];

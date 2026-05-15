@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RolesDto } from "@/src/lib/dto/RolesDto";
+import { RolesDto } from "@/lib/dto/RolesDto";
 
 interface RoleSelectorProps {
   availableRoles: RolesDto[];

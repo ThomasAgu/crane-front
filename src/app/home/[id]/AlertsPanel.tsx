@@ -8,8 +8,8 @@ import DeleteModal from '@/components/ui/DeleteModal'
 import { useAlert, AlertSnackbar } from '@/components/ui/AlertSnackbar'
 import styles from './AlertsPanel.module.css'
 import { Plus, Edit2, Trash2, AlertCircle, Loader } from 'lucide-react'
-import { ActionService } from '@/src/lib/api/actionService'
-import { AlertService } from '@/src/lib/api/alertService'
+import { ActionService } from '@/lib/api/actionService'
+import { AlertService } from '@/lib/api/alertService'
 
 interface AlertsPanelProps {
   appId: string

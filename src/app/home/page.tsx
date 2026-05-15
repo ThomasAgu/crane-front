@@ -1,9 +1,9 @@
 "use client";
-import { useApps } from "@/src/hooks/useApps";
+import { useApps } from "@/hooks/useApps";
 import NavBar from "../../components/layout/NavBar";
 import Dashboard from "../../components/ui/Dashboard";
-import EmptyHomeDashboard from "@/src/components/ui/EmptyHomeDashboard";
-import Loader from "@/src/components/ui/Loader";
+import EmptyHomeDashboard from "@/components/ui/EmptyHomeDashboard";
+import Loader from "@/components/ui/Loader";
 import styles from "./home.module.css";
 
 export default function HomePage() {

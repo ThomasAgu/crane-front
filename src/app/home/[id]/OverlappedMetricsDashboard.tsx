@@ -8,9 +8,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ContainerDataPointDto } from "@/src/lib/dto/StatsReportDto";
+import { ContainerDataPointDto } from "@/lib/dto/StatsReportDto";
 import { COLORS, fmt, downsample } from "./statsUtils";
-import Loader from "@/src/components/ui/Loader";
+import Loader from "@/components/ui/Loader";
 
 interface MetricsDashboardProps {
   timeRange: "1m" | "1h" | "1d" | "1w" | "1M";
