@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import NetworkEditorForm from "../../forms/NetworkEditor";
+import NetworkEditorForm from "./Form";
 
 export default function NetworkEditor({ data, onChange }: { 
   data: any, 

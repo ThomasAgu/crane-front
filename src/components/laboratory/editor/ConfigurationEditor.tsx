@@ -1,9 +1,9 @@
 "use client";
-
 import React, { useState } from "react";
 import { editorService } from "@/src/app/services/EditorService";
 import { AppService } from "@/src/lib/api/appService";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
+import { useUserId } from "@/src/hooks/useUserId";
 import styles from "./ConfigurationEditor.module.css";
 import { FileText, Copy, PlusCircle, Save } from "lucide-react";
 
@@ -12,10 +12,12 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
   const [makefileContent, setMakefileContent] = useState("");
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
+  const userId = useUserId();
 
   const handleCreateApp = async () => {
     try {
       const payload = editorService.exportAppDto();
+      debugger
       if (!payload.name || (payload.services?.length ?? 0) === 0) {
         showAlert(
           "No se detectó un nombre de aplicación o no hay servicios en el diagrama.",

@@ -1,8 +1,8 @@
 import React from "react";
-import AppEditor from "./AppEditor";
-import ServiceEditor from "./ServiceEditor";
-import NetworkEditor from "./NetworkEditor";
-import VolumeEditor from "./VolumeEditor";
+import AppEditor from "../nodes/app/Editor";
+import ServiceEditor from "../nodes/service/Editor";
+import NetworkEditor from "../nodes/network/Editor";
+import VolumeEditor from "../nodes/volume/Editor";
 import EditorBase from "./EditorBase";
 
 const editorMap: Record<string, React.FC<any>> = {

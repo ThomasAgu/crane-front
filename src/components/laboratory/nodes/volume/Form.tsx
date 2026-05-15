@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import InputText from "./InputText";
+import InputText from "../../../forms/InputText";
 import { requiredValidator } from "@/src/lib/validators/RequiredValidator";
 import { PathValidator } from "@/src/lib/validators/PathValidator";
 

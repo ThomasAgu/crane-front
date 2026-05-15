@@ -1,6 +1,7 @@
 import { Handle, Position } from "reactflow";
 
-export const App = ({ data }: any) => {
+export const App = ({ data }: { data: any }) => {
+  debugger
   return (
     <div className="bg-gray-800 text-white p-4 rounded-xl border border-purple-400 w-72">
       <h2 className="font-bold text-xl mb-2">

@@ -16,10 +16,10 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 
-import { App } from "./nodes/App";
-import { Service } from "./nodes/Service";
-import { Network } from "./nodes/Network";
-import { Volume } from "./nodes/Volume";
+import { App } from "./nodes/app/App";
+import { Service } from "./nodes/service/Service";
+import { Network } from "./nodes/network/Network";
+import { Volume } from "./nodes/volume/Volume";
 import Sidebar from "./editor/SideBar";
 import ContextMenu from "./ContextMenu";
 import { editorService } from "../../app/services/EditorService";
@@ -92,7 +92,6 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
   const onConnect = useCallback((params: Connection) => setEdges((es) => addEdge(params, es)), []);
 
   const onNodeClick = (_: any, node: Node) => {
-    //when node is same type as selceted somehow the editor don't change
     setSelectedNode(node);
   }
 

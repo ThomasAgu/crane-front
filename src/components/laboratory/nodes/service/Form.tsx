@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import InputText from "./InputText";
+import InputText from "../../../forms/InputText";
+import EnvironmentVariablesEditor from "./EnvironmentVariablesEditor";
+
+export type StartupScript = {
+  name: string;
+  content: string;
+  type: string;
+};
 
 export type ServiceData = {
   name?: string;
@@ -8,6 +15,8 @@ export type ServiceData = {
   ports?: string;
   networks?: string[];
   volumes?: string[];
+  environment?: Record<string, string>;
+  startupScripts?: StartupScript[];
 };
 
 export class ServiceForm {
@@ -22,6 +31,8 @@ export class ServiceForm {
       ports: initial.ports || "",
       networks: initial.networks || [],
       volumes: initial.volumes || [],
+      environment: initial.environment || {},
+      startupScripts: initial.startupScripts || [],
     };
   }
 
@@ -36,6 +47,8 @@ export class ServiceForm {
       name: this.data.name?.trim() || "",
       image: this.data.image?.trim() || "",
       ports: this.data.ports?.trim() || "",
+      environment: this.data.environment || {},
+      startupScripts: this.data.startupScripts || [],
     };
   }
 }
@@ -108,6 +121,42 @@ export default function ServiceEditorForm({
     update("volumes", next);
   };
 
+  const handleStartupScriptUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newScripts: StartupScript[] = [...(state.startupScripts || [])];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const content = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) =>
+          resolve(e.target?.result as string);
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+
+      const fileType = file.name.split(".").pop() || "txt";
+      newScripts.push({
+        name: file.name,
+        content,
+        type: fileType,
+      });
+    }
+
+    update("startupScripts", newScripts);
+    // Reset input
+    event.target.value = "";
+  };
+
+  const removeStartupScript = (index: number) => {
+    const updated = (state.startupScripts || []).filter((_, i) => i !== index);
+    update("startupScripts", updated);
+  };
+
   return (
     <div className="text-darkest">
       <h2 className="text-lg font-bold mb-4">Servicio</h2>
@@ -137,7 +186,7 @@ export default function ServiceEditorForm({
         label="Image (Docker)"
         type="text"
         placeholder="node, nginx, postgres"
-        value={imageQuery} // Changed from state.image to imageQuery
+        value={imageQuery}
         setShowError={setShowErrors}
         setValue={(v: string) => {
           update("image", v);
@@ -167,6 +216,13 @@ export default function ServiceEditorForm({
         value={state.ports || ""}
         setValue={(v: string) => update("ports", v)}
       />
+
+      <div className="mt-6 mb-6 p-4 border border-gray-300 rounded-lg bg-white">
+        <EnvironmentVariablesEditor
+          variables={state.environment || {}}
+          onChange={(val) => update("environment", val)}
+        />
+      </div>
 
       <h3 className="font-medium mt-4">Redes</h3>
       <div className="border p-2 rounded mb-3">
@@ -203,6 +259,60 @@ export default function ServiceEditorForm({
               {v}
             </label>
           ))
+        )}
+      </div>
+
+      <h3 className="font-medium mt-4">Scripts de Inicio (SQL, Bash, etc.)</h3>
+      <div className="border p-4 rounded mb-3 bg-gray-50">
+        <div className="mb-3">
+          <label className="block text-sm font-medium mb-2">
+            Cargar archivos de inicio
+          </label>
+          <input
+            type="file"
+            multiple
+            accept=".sql,.sh,.js,.py,.sql.gz"
+            onChange={handleStartupScriptUpload}
+            className="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Formatos soportados: .sql, .sh, .js, .py, .sql.gz
+          </p>
+        </div>
+
+        {(state.startupScripts || []).length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-sm font-medium mb-2">Archivos cargados:</h4>
+            <div className="space-y-2">
+              {(state.startupScripts || []).map((script, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-white p-2 rounded border border-gray-200"
+                >
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900">
+                      {script.name}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Tipo: {script.type} • {Math.round(script.content.length / 1024)} KB
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeStartupScript(index)}
+                    className="ml-2 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

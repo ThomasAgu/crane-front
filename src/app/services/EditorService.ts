@@ -187,15 +187,16 @@ class EditorStateService {
           labels: Array.isArray(svc.data?.labels) ? svc.data.labels : [],
           volumes: volumes,
           networks,
+          environment: svc.data?.environment || {},
         } as any;
       });
-
+      
     const payload: CreateAppDto = {
       name: appName,
       services,
       hosts: appNode?.data?.hosts ?? [""],
       current_scale: appNode?.data?.actuales ?? 1,
-      min_scale: appNode?.data?.minimas ?? 0,
+      min_scale: appNode?.data?.minimas ?? 1,
       max_scale: appNode?.data?.maximas ?? 2,
       user_id: appNode?.data?.user_id ?? null,
     };

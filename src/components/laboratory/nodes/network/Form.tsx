@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import InputText from "./InputText";
-import { ipv4Validator, maskValidator } from "../../lib/validators/Ipv4Validator";
+import InputText from "../../../forms/InputText";
+import { ipv4Validator, maskValidator } from "../../../../lib/validators/Ipv4Validator";
 import { requiredValidator } from "@/src/lib/validators/RequiredValidator";
 import {editorService} from "@/src/app/services/EditorService";
 

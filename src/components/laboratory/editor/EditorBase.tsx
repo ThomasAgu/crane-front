@@ -101,9 +101,7 @@ const EditorBase: React.FC<EditorBaseProps> = ({
               nodes={nodes}
               edges={edges}
               selectedNode={selectedNode}
-              onChange={(newData: any) => {
-                onUpdateNode(selectedNode.id, newData)
-                }
+              onChange={(newData: any) => {onUpdateNode(selectedNode.id, newData)}
               }
             />
           )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AppEditorForm, { AppData } from "../../forms/AppEditorForm";
+import AppEditorForm, { AppData } from "./Form";
 
 export default function AppEditor({
   data,

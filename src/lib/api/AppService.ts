@@ -7,9 +7,8 @@ const getApps = () => apiRequest<AppDto[]>("/apps");
 const getApp = (id: string) => apiRequest<AppDto>(`/apps/${id}`);
 
 //POST
-const createApp = (data: CreateAppDto) => {
+const createApp = (data: CreateAppDto) =>
   apiRequest<AppDto>("/apps", "POST", data);
-}
 
 const restartApp = (id: string) =>
   apiRequest<string>(`/apps/${id}/restart`, "POST");

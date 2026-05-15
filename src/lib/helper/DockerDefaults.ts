@@ -12,6 +12,12 @@ export const dockerDefaults: Record<string, any> = {
   "mysql": {
     ports: ["3306"],
     volumes: ["/var/lib/mysql"],
+    environment: {
+      MYSQL_ROOT_PASSWORD: "rootpass",
+      MYSQL_DATABASE: "mydb",
+      MYSQL_USER: "user",
+      MYSQL_PASSWORD: "userpass",
+    },
   },
   "redis": {
     ports: ["6379"],
@@ -19,5 +25,10 @@ export const dockerDefaults: Record<string, any> = {
   "postgres": {
     ports: ["5432"],
     volumes: ["/var/lib/postgresql/data"],
+    environment: {
+      POSTGRES_USER: "postgres",
+      POSTGRES_PASSWORD: "password",
+      POSTGRES_DB: "mydb",
+    },
   },
 };
