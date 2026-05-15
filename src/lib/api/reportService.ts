@@ -2,8 +2,8 @@ import apiRequest from "./apiClient";
 import { StatsReportDto } from "../dto/StatsReportDto";
 import { AlertDto } from "../dto/AlertReportDto";
 import { CombinedReportDto } from "../dto/CombinedReportDto";
-import { TimeRange } from "../../lib/types/TimeRange"; 
-import { AppService } from "./appService";
+import { TimeRange } from "@/lib/types/TimeRange"; 
+import { AppService } from "@/lib/api/appService";
 
 // GET /{app_id}/stats
 const getStats = (appId: string, timeRange: TimeRange = "1h") => {

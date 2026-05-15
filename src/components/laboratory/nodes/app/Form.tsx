@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { editorService } from "@/src/app/services/EditorService";
+import { editorService } from "@/app/services/EditorService";
 import InstanceControls from "./InstanceControls";
 import InputText from "../../../forms/InputText";
-import { requiredValidator } from "@/src/lib/validators/RequiredValidator";
+import { requiredValidator } from "@/lib/validators/RequiredValidator";
 export type AppData = {
   name?: string;
   description?: string;

@@ -1,10 +1,10 @@
-import { UserDataDto } from "@/src/lib/dto/UserDto";
+import { UserDataDto } from "@/lib/dto/UserDto";
 import { RoleLabel } from "./RoleLabel";
 import { RoleSelector } from "./RoleSelector";
-import { RoleService } from "@/src/lib/api/roleService";
-import { RolesDto } from "@/src/lib/dto/RolesDto";
-import { UserService } from "@/src/lib/api/userService";
-import { useAlert, AlertSnackbar } from "@/src/components/ui/AlertSnackbar";
+import { RoleService } from "@/lib/api/roleService";
+import { RolesDto } from "@/lib/dto/RolesDto";
+import { UserService } from "@/lib/api/userService";
+import { useAlert, AlertSnackbar } from "@/components/ui/AlertSnackbar";
 interface UserRowProps {
   user: UserDataDto;
   onUserUpdated: () => void;
