@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { Validator } from '@/src/lib/validators/ValidatorInterface';
+import { Validator } from '@/lib/validators/ValidatorInterface';
 import styles from './InputText.module.css'
 
 interface props {

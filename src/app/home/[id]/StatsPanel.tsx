@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query"; // Importamos el hook
-import { ReportService } from "@/src/lib/api/reportService";
-import { AppService } from "@/src/lib/api/appService";
-import { StatsReportDto } from "@/src/lib/dto/StatsReportDto";
-import { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
-import { TimeRange } from "@/src/lib/types/TimeRange";
+import { ReportService } from "@/lib/api/reportService";
+import { AppService } from "@/lib/api/appService";
+import { StatsReportDto } from "@/lib/dto/StatsReportDto";
+import { ContainerStatsDto } from "@/lib/dto/ContainerStats";
+import { TimeRange } from "@/lib/types/TimeRange";
 import { KPICard } from "./KPICard";
 import { MetricsDashboard } from "./OverlappedMetricsDashboard";
 import { RealtimeDashboard } from "./RealtimeDashboard";

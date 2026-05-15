@@ -1,10 +1,10 @@
 'use client';
 
 import React, { FC, useEffect, useState, useMemo } from "react";
-import { ReportService } from "@/src/lib/api/reportService";
-import { AlertReportDto, AlertDto } from "@/src/lib/dto/AlertReportDto";
-import { TimeRange } from "@/src/lib/types/TimeRange";
-import Loader from "@/src/components/ui/Loader";
+import { ReportService } from "@/lib/api/reportService";
+import { AlertReportDto, AlertDto } from "@/lib/dto/AlertReportDto";
+import { TimeRange } from "@/lib/types/TimeRange";
+import Loader from "@/components/ui/Loader";
 import { Inbox } from "lucide-react";
 
 interface AlertGrouped {

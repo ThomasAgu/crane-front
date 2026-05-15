@@ -1,15 +1,15 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { AuthService } from '@/src/lib/api/authService';
-import { emailValidator } from '@/src/lib/validators/EmailValidator';
-import { requiredValidator } from '@/src/lib/validators/RequiredValidator';
-import { useForm } from '@/src/hooks/useForm';
+import { AuthService } from '@/lib/api/authService';
+import { emailValidator } from '@/lib/validators/EmailValidator';
+import { requiredValidator } from '@/lib/validators/RequiredValidator';
+import { useForm } from '@/hooks/useForm';
 import InputText from './InputText';
 import Loader from '../ui/Loader';
 import mail from '../../public/mail.svg';
 import lock from '../../public/lock.svg';
 import styles from './LoginForm.module.css';
-import { usePermissions } from '@/src/hooks/usePermissions';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function LoginForm() {
   const router = useRouter();

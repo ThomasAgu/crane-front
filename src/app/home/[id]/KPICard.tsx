@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import style from "styled-jsx/style";
-import Loader from "@/src/components/ui/Loader";
+import Loader from "@/components/ui/Loader";
 
 interface KPICardProps {
   title: string;

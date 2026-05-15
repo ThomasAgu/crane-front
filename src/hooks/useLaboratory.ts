@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { AppService } from '@/src/lib/api/appService';
-import { AppDto } from '@/src/lib/dto/AppDto';
+import { AppService } from '@/lib/api/appService';
+import { AppDto } from '@/lib/dto/AppDto';
 
 export function useLaboratory() {
     const [apps, setApps] = useState<AppDto[]>([]);

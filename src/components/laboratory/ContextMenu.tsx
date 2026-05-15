@@ -1,6 +1,6 @@
 // components/ContextMenu.tsx
 import React, { useEffect, useState } from "react";
-import { editorService } from "@/src/app/services/EditorService";
+import { editorService } from "@/app/services/EditorService";
 
 interface ContextMenuProps {
   position: { x: number; y: number; nodeId?: string} | null;

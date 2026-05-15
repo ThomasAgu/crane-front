@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InputText from "../../../forms/InputText";
-import { requiredValidator } from "@/src/lib/validators/RequiredValidator";
-import { PathValidator } from "@/src/lib/validators/PathValidator";
+import { requiredValidator } from "@/lib/validators/RequiredValidator";
+import { PathValidator } from "@/lib/validators/PathValidator";
 
 export default function VolumeEditorForm({
   data,

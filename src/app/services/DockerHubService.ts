@@ -1,4 +1,4 @@
-import { DockerHubService as DockerHubAPI } from "@/src/lib/api/dockerHubService";
+import { DockerHubService as DockerHubAPI } from "@/lib/api/dockerHubService";
 
 /**
  * Search for Docker images on Docker Hub through the backend API

@@ -1,5 +1,5 @@
 import { Node, Edge } from "reactflow";
-import { AppDto } from "@/src/lib/dto/AppDto";
+import { AppDto } from "@/lib/dto/AppDto";
 
 export type TemplateType =
   | "blank"

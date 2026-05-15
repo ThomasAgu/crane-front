@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { AppDto } from "@/src/lib/dto/AppDto";
-import { AppService } from "@/src/lib/api/appService";
+import { AppDto } from "@/lib/dto/AppDto";
+import { AppService } from "@/lib/api/appService";
 
 export function useApps() {
   const [apps, setApps] = useState<AppDto[]>([]);

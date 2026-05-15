@@ -2,8 +2,8 @@
 
 import React, { FC, useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import type { AppDto } from "@/src/lib/dto/AppDto";
-import { AppService } from "@/src/lib/api/appService";
+import type { AppDto } from "@/lib/dto/AppDto";
+import { AppService } from "@/lib/api/appService";
 import { useSearchParams } from "next/navigation";
 import NavBar from '../../../components/layout/NavBar'
 import AppBase from "./AppBase";

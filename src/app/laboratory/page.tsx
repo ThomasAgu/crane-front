@@ -1,8 +1,8 @@
 'use client';
 import NavBar from '../../components/layout/NavBar';
 import FlowChart from '../../components/laboratory/FlowChart';
-import TemplateSelector from '@/src/components/ui/TemplateSelector';
-import { useLaboratory } from '@/src/hooks/useLaboratory';
+import TemplateSelector from '@/components/ui/TemplateSelector';
+import { useLaboratory } from '@/hooks/useLaboratory';
 
 export default function LaboratoryPage() {
     const { 

@@ -1,10 +1,10 @@
 'use client';
 import { useRouter } from "next/navigation";
-import { useForm } from '@/src/hooks/useForm';
-import { AuthService } from '@/src/lib/api/authService';
-import { requiredValidator } from '@/src/lib/validators/RequiredValidator';
-import { emailValidator } from '@/src/lib/validators/EmailValidator';
-import { matchPasswordValidator } from '@/src/lib/validators/MatchPasswordValidator';
+import { useForm } from '@/hooks/useForm';
+import { AuthService } from '@/lib/api/authService';
+import { requiredValidator } from '@/lib/validators/RequiredValidator';
+import { emailValidator } from '@/lib/validators/EmailValidator';
+import { matchPasswordValidator } from '@/lib/validators/MatchPasswordValidator';
 
 import InputText from './InputText';
 import Loader from '../ui/Loader';

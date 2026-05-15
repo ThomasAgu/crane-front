@@ -1,5 +1,5 @@
 // RolesMiniTable.tsx
-import { RolesDto } from "@/src/lib/dto/RolesDto";
+import { RolesDto } from "@/lib/dto/RolesDto";
 
 interface RolesMiniTableProps {
   roles: RolesDto[];

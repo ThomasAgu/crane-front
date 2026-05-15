@@ -15,7 +15,7 @@ import home_active from "../../public/home_active.svg";
 import store_active from "../../public/store_active.svg";
 import users from "../../public/users.svg";
 import users_active from "../../public/users_active.svg";
-import { usePermissions } from '@/src/hooks/usePermissions';
+import { usePermissions } from '@/hooks/usePermissions';
 import NavItem from './NavItem';
 import { RequirePermission } from "../../components/layout/RequirePermission";
 

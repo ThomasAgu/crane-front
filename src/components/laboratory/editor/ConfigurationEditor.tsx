@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { editorService } from "@/src/app/services/EditorService";
-import { AppService } from "@/src/lib/api/appService";
+import { editorService } from "@/app/services/EditorService";
+import { AppService } from "@/lib/api/appService";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
-import { useUserId } from "@/src/hooks/useUserId";
+import { useUserId } from "@/hooks/useUserId";
 import styles from "./ConfigurationEditor.module.css";
 import { FileText, Copy, PlusCircle, Save } from "lucide-react";
 

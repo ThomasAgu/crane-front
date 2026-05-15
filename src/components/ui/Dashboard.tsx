@@ -1,7 +1,7 @@
 'use client'
 
 import DashboardItem from './DashboardItem'
-import type { AppDto } from '@/src/lib/dto/AppDto'
+import type { AppDto } from '@/lib/dto/AppDto'
 
 interface DashboardProps {
   apps: AppDto[];

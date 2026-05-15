@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { COLORS, fmt } from "./statsUtils";
-import { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
-import Loader from "@/src/components/ui/Loader";
+import { ContainerStatsDto } from "@/lib/dto/ContainerStats";
+import Loader from "@/components/ui/Loader";
 
 interface RealtimeDashboardProps {
   data: ContainerStatsDto[] | null;

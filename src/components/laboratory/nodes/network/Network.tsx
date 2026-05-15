@@ -1,5 +1,5 @@
 import { Handle, Position } from "reactflow";
-import { editorService } from "@/src/app/services/EditorService";
+import { editorService } from "@/app/services/EditorService";
 import { useState } from "react";
 
 export const Network = ({ data, id }: any) => {

@@ -3,17 +3,17 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import NavBar from "../../components/layout/NavBar";
 import AppItem from "./StoreItem";
 import { FilterType } from "../../lib/helper/StoreItems";
-import DockerImageFilter from "@/src/components/ui/DockerImageFilter";
+import DockerImageFilter from "@/components/ui/DockerImageFilter";
 import styles from "./store.module.css";
-import Loader from "@/src/components/ui/Loader";
+import Loader from "@/components/ui/Loader";
 import { Search } from "lucide-react";
 import {
   onHoldRepositoryDto,
   RepositoryDto,
-} from "@/src/lib/dto/RepositoryDto";
-import { RepositoryService } from "@/src/lib/api/repositoryService";
+} from "@/lib/dto/RepositoryDto";
+import { RepositoryService } from "@/lib/api/repositoryService";
 import { useRouter } from "next/dist/client/components/navigation";
-import { RequirePermission } from "@/src/components/layout/RequirePermission";
+import { RequirePermission } from "@/components/layout/RequirePermission";
 import { PendingItem } from "./PendingItem";
 
 const FilterBar: React.FC<{

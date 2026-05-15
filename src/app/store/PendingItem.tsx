@@ -1,5 +1,5 @@
 import { Check, X } from 'lucide-react';
-import { onHoldRepositoryDto } from '@/src/lib/dto/RepositoryDto';
+import { onHoldRepositoryDto } from '@/lib/dto/RepositoryDto';
 import styles from './store.module.css';
 
 interface PendingItemProps {

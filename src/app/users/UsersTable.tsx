@@ -1,6 +1,6 @@
-import { UserRow } from "@/src/components/ui/users/UserRow";
-import { RolesDto } from "@/src/lib/dto/RolesDto";
-import { UserDataDto } from "@/src/lib/dto/UserDto";
+import { UserRow } from "@/components/ui/users/UserRow";
+import { RolesDto } from "@/lib/dto/RolesDto";
+import { UserDataDto } from "@/lib/dto/UserDto";
 
 
 interface UserTableProps {

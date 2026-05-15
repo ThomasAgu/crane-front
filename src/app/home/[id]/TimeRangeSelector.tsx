@@ -1,4 +1,4 @@
-import { TimeRange } from "@/src/lib/types/TimeRange";
+import { TimeRange } from "@/lib/types/TimeRange";
 
 const ranges = [
   { label: "Tiempo Real", value: "0" },

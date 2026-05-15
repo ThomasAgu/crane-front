@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { AppDto } from "@/src/lib/dto/AppDto";
+import { AppDto } from "@/lib/dto/AppDto";
 
 // Helper to format dates cleanly
 const formatDate = (dateStr: string) => {

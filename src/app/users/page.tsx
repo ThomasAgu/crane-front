@@ -2,19 +2,19 @@
 import styles from "./users.module.css"
 
 import { useEffect, useState } from "react";
-import { RoleService } from "@/src/lib/api/roleService";
-import { UserService } from "@/src/lib/api/userService";
+import { RoleService } from "@/lib/api/roleService";
+import { UserService } from "@/lib/api/userService";
 
-import { RolesDto } from "@/src/lib/dto/RolesDto";
-import { PermissionDto } from "@/src/lib/dto/PermissionDto";
-import { UserDataDto } from "@/src/lib/dto/UserDto";
+import { RolesDto } from "@/lib/dto/RolesDto";
+import { PermissionDto } from "@/lib/dto/PermissionDto";
+import { UserDataDto } from "@/lib/dto/UserDto";
 
 import NavBar from "../../components/layout/NavBar";
 import { RolesMiniTable } from "./RolesMiniTable";
-import { PermissionService } from "@/src/lib/api/permissionService";
-import { RolePermissionsTable } from "@/src/app/users/RolePermissionTable";
+import { PermissionService } from "@/lib/api/permissionService";
+import { RolePermissionsTable } from "@/app/users/RolePermissionTable";
 import { UserTable } from "./UsersTable";
-import { useAlert, AlertSnackbar } from "@/src/components/ui/AlertSnackbar";
+import { useAlert, AlertSnackbar } from "@/components/ui/AlertSnackbar";
 
 export default function HomePage() {
   const [roles, setRoles] = useState<RolesDto[]>([]);

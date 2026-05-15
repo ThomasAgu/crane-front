@@ -23,7 +23,7 @@ import { Volume } from "./nodes/volume/Volume";
 import Sidebar from "./editor/SideBar";
 import ContextMenu from "./ContextMenu";
 import { editorService } from "../../app/services/EditorService";
-import { AppDto } from "@/src/lib/dto/AppDto";
+import { AppDto } from "@/lib/dto/AppDto";
 
 const nodeTypes = { app: App, service: Service, network: Network, volume: Volume };
 

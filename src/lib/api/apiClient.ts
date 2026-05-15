@@ -1,5 +1,5 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
-import { getToken } from "@/src/app/services/JWTService";
+import { getToken } from "@/app/services/JWTService";
 
 type HttpMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
 

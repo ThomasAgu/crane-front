@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InputText from "../../../forms/InputText";
-import { editorService } from "@/src/app/services/EditorService";
-import { dockerDefaults } from "@/src/lib/helper/DockerDefaults";
+import { editorService } from "@/app/services/EditorService";
+import { dockerDefaults } from "@/lib/helper/DockerDefaults";
 import DockerImageSelector from "./DockerHubSelector";
 import EnvironmentVariablesEditor from "./EnvironmentVariablesEditor";
 

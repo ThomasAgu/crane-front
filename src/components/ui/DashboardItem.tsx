@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import type { AppDto } from '@/src/lib/dto/AppDto'
+import type { AppDto } from '@/lib/dto/AppDto'
 import { useAlert, AlertSnackbar } from './AlertSnackbar'
 import {
   Play,
@@ -12,8 +12,8 @@ import {
   Layers2,
   UploadCloud
 } from 'lucide-react'
-import { AppService } from '@/src/lib/api/appService'
-import { RepositoryService } from '@/src/lib/api/repositoryService'
+import { AppService } from '@/lib/api/appService'
+import { RepositoryService } from '@/lib/api/repositoryService'
 import DeleteModal from './DeleteModal'
 import Loader from './Loader'
 import style from './DashboardItem.module.css'

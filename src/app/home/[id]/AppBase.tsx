@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import type { AppDto } from "@/src/lib/dto/AppDto";
+import type { AppDto } from "@/lib/dto/AppDto";
 
 type Props = {
   app: AppDto | null;

@@ -1,4 +1,4 @@
-import { ContainerStatsDto } from "@/src/lib/dto/ContainerStats";
+import { ContainerStatsDto } from "@/lib/dto/ContainerStats";
 
 /**
  * Type for historical container data

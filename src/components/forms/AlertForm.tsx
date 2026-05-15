@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { AlertDto } from '@/src/lib/dto/AlertDto';
-import { ActionDto } from '@/src/lib/dto/ActionDto';
+import { AlertDto } from '@/lib/dto/AlertDto';
+import { ActionDto } from '@/lib/dto/ActionDto';
 import PrometheusExpressionEditor from './PrometheusExpressionEditor';
 import InputText from './InputText';
-import { requiredValidator } from '@/src/lib/validators/RequiredValidator';
+import { requiredValidator } from '@/lib/validators/RequiredValidator';
 import styles from './AlertForm.module.css';
 import { X } from 'lucide-react';
 

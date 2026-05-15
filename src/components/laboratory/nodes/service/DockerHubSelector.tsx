@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { searchDockerImages } from "@/src/app/services/DockerHubService";
+import { searchDockerImages } from "@/app/services/DockerHubService";
 
 export default function DockerImageSelector({ 
   value, 

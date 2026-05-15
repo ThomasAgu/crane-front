@@ -1,8 +1,8 @@
 import React from 'react';
 import styles from './store.module.css'
 import { ArrowUp, ArrowDown, Star, Download } from 'lucide-react';
-import Tag from '@/src/components/ui/Tag';
-import { RepositoryDto } from '@/src/lib/dto/RepositoryDto';
+import Tag from '@/components/ui/Tag';
+import { RepositoryDto } from '@/lib/dto/RepositoryDto';
 
 interface AppItemProps {
   item: RepositoryDto;

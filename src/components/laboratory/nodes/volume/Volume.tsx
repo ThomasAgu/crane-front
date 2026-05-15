@@ -1,6 +1,6 @@
 import { Handle, Position } from "reactflow";
 import { useState } from "react";
-import { editorService } from "@/src/app/services/EditorService";
+import { editorService } from "@/app/services/EditorService";
 
 
 export const Volume = ({ data }: any) => {
