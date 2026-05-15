@@ -1,6 +1,7 @@
 import apiRequest from "./apiClient";
 import { AppDto, CreateAppDto } from "../dto/AppDto";
 import { ContainerStatsDto } from "../dto/ContainerStats";
+
 //GET
 const getApps = () => apiRequest<AppDto[]>("/apps");
 

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query"; // Importamos el hook
+import { useQuery } from "@tanstack/react-query"; 
 import { ReportService } from "@/lib/api/reportService";
 import { AppService } from "@/lib/api/appService";
 import { StatsReportDto } from "@/lib/dto/StatsReportDto";
