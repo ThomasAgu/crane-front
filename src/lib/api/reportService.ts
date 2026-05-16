@@ -3,7 +3,7 @@ import { StatsReportDto } from "../dto/StatsReportDto";
 import { AlertDto, AlertReportDto } from "../dto/AlertReportDto";
 import { CombinedReportDto } from "../dto/CombinedReportDto";
 import { TimeRange } from "@/lib/types/TimeRange"; 
-import { AppService } from "@/lib/api/appService";
+import { AppService } from "./appService";
 
 // GET /{app_id}/stats
 const getStats = (appId: string, timeRange: TimeRange = "1h") => {
