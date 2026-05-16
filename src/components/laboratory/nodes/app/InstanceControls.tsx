@@ -10,7 +10,7 @@ type Props = {
 
 function sanitize(values: InstanceVals): InstanceVals {
   let actuales = Math.max(0, Math.floor(Number(values.actuales) || 1));
-  let minimas = Math.max(0, Math.floor(Number(values.minimas) || 1));
+  const minimas = Math.max(0, Math.floor(Number(values.minimas) || 1));
   let maximas = Math.max(0, Math.floor(Number(values.maximas) || 2));
 
   // Ensure min ≤ max

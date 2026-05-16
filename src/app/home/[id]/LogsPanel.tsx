@@ -4,7 +4,7 @@ import Ansi from "ansi-to-react";
 type Props = {
   logs: string;
   onRefresh: () => Promise<void>;
-  appStatus: String;
+  appStatus: string;
 };
 
 const LogsPanel: FC<Props> = ({ logs, onRefresh, appStatus }) => {

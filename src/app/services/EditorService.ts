@@ -141,7 +141,7 @@ class EditorStateService {
     return this.getConnectedNodeDataByType(selectedNode, "service");
   }
 
-  private formatAppName = (name: String) => {
+  private formatAppName = (name: string) => {
     const lowercased = name.toLowerCase();
     const formatted = lowercased.replace(/\s/g, "");
     return formatted;

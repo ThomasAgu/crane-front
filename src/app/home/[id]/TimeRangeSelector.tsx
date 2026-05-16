@@ -11,7 +11,7 @@ const ranges = [
 interface Props {
   timeRange: TimeRange;
   setTimeRange: (timeRange: TimeRange) => void;
-  appStatus: String;
+  appStatus: string;
 }
 
 export default function TimeRangeSelector({ timeRange, setTimeRange, appStatus }: Props) {

@@ -9,9 +9,9 @@ import goback from "../../public/goback.svg";
 import { useRouter } from "next/navigation";
 
 interface TemplateSelectorProps {
-  setPopUp: Function;
-  setSelectedTemplate: Function;
-  setSelectedApp: Function;
+  setPopUp: (value: boolean) => void;
+  setSelectedTemplate: (value: string | null) => void;
+  setSelectedApp: (value: AppDto | null) => void;
   apps: AppDto[];
 }
 

@@ -6,7 +6,7 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleString();
 };
 
-export const GeneralPanel: FC<{ app: AppDto; appStatus: String }> = ({ app, appStatus }) => {
+export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appStatus }) => {
   return (
     <div className="pl-6 text-slate-800 bg-white rounded-lg">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

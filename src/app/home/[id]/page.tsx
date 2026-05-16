@@ -19,8 +19,8 @@ const AppDetailView: FC = () => {
   const status = searchParams.get("status") || "unknown";
   const appId = params?.id ?? "";
 
-  const [appStatus, setAppStatus] = useState<String>(status === 'Running' ? "Activo": "Inactivo");
-  const [app, setApp] = useState<AppDto>(null as any);
+  const [appStatus, setAppStatus] = useState<string>(status === 'Running' ? "Activo": "Inactivo");
+  const [app, setApp] = useState<AppDto | null>(null);
   const [logs, setLogs] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"general" | "stats" | "logs" | "alertas">("general");
@@ -48,7 +48,7 @@ const AppDetailView: FC = () => {
     if (activeTab === "logs") {
       fetchLogs();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchLogs]);
 
   const onAppAction = async (action: "start" | "stop" | "restart" | "scaleUp" | "scaleDown") => {
     try {

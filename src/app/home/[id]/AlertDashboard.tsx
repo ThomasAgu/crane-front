@@ -28,7 +28,7 @@ export const AlertDashboard: FC<{ appId: string; timeRange: TimeRange }> = ({
       setLoading(true);
       try {
         const data = await ReportService.getAlerts(appId, timeRange);
-        setAlertData(data as AlertReportDto);
+        setAlertData(data);
       } catch (error) {
         console.error("Failed to fetch alerts:", error);
       } finally {

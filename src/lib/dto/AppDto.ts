@@ -4,7 +4,7 @@ export interface AppDto {
   id: number
   name: string
   services: ServiceDto[]
-  hosts?: any[] | null
+  hosts?: Record<string, unknown>[] | null
   min_scale?: number | null
   current_scale?: number | null
   max_scale?: number | null
@@ -19,7 +19,7 @@ export interface AppDto {
 export interface CreateAppDto {
   name: string
   services?: ServiceDto[]
-  hosts?: any[] | null
+  hosts?: Record<string, unknown>[] | null
   current_scale: number
   min_scale: number
   max_scale: number
@@ -30,7 +30,7 @@ export interface StoreAppDto {
   id: number
   name: string
   services?: ServiceDto[] | null
-  hosts?: any[] | null
+  hosts?: Record<string, unknown>[] | null
   min_scale?: number | null
   current_scale?: number | null
   max_scale?: number | null

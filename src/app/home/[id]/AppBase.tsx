@@ -3,7 +3,7 @@ import type { AppDto } from "@/lib/dto/AppDto";
 
 type Props = {
   app: AppDto | null;
-  appStatus: String;
+  appStatus: string;
   onAppAction: (action: "start" | "stop" | "restart" | "scaleUp" ) => Promise<void>;
 };
 

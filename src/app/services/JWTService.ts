@@ -1,5 +1,5 @@
 
-export function getToken(): String {
+export function getToken(): string {
   const jwt = localStorage.getItem("access_token");
   if (!jwt) throw new Error("No hay token en localStorage");
   return jwt;

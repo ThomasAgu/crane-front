@@ -12,7 +12,7 @@ import { AlertDashboard } from "./AlertDashboard";
 import TimeRangeSelector from "./TimeRangeSelector";
 import { COLORS, fmt } from "./statsUtils";
 
-export const StatsPanel: FC<{ appId: string; appStatus: String }> = ({ appId, appStatus }) => {
+export const StatsPanel: FC<{ appId: string; appStatus: string }> = ({ appId, appStatus }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>("1h");
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<"cpu" | "memory" | "net" | "disk">("cpu");
@@ -209,7 +209,7 @@ export const StatsPanel: FC<{ appId: string; appStatus: String }> = ({ appId, ap
 
       {selectedServiceData.length > 0 && (
         <MetricsDashboard 
-          timeRange={timeRange as any}
+          timeRange={timeRange}
           data={selectedServiceData} 
           selectedMetric={selectedMetric}
           onMetricChange={setSelectedMetric}

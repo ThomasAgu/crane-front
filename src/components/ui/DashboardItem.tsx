@@ -32,9 +32,9 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
   
-  const stopClick = (e: any) => e.stopPropagation()
+  const stopClick = (e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()
 
-  const handleStart = async (e: any) => {
+  const handleStart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
     setLoading(true)
     await AppService.start(String(app.id))
@@ -48,7 +48,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     setLoading(false)
   }
 
-  const handleStop = async (e: any) => {
+  const handleStop = async (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
     setLoading(true);
     await AppService.stop(String(app.id))
@@ -62,7 +62,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     setLoading(false);
   }
 
-  const handleRestart = async (e: any) => {
+  const handleRestart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
     setLoading(true);
     await AppService.restart(String(app.id))
@@ -76,7 +76,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     setLoading(false);
   }
 
-  const handleScale = async (e: any) => {
+  const handleScale = async (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
     setLoading(true)
     await AppService.scale(String(app.id))
@@ -89,12 +89,12 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     setLoading(false)
   }
 
-  const handleDelete = (e: any) => {
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
     setDeleteModal(true);
   }
 
-  const handleUpload = async (e: any) => {
+  const handleUpload = async (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
 
     await RepositoryService.createRepository({

@@ -1,6 +1,6 @@
 import apiRequest from "./apiClient";
 import { StatsReportDto } from "../dto/StatsReportDto";
-import { AlertDto } from "../dto/AlertReportDto";
+import { AlertDto, AlertReportDto } from "../dto/AlertReportDto";
 import { CombinedReportDto } from "../dto/CombinedReportDto";
 import { TimeRange } from "@/lib/types/TimeRange"; 
 import { AppService } from "@/lib/api/appService";
@@ -17,7 +17,7 @@ const getStats = (appId: string, timeRange: TimeRange = "1h") => {
 
 // GET /{app_id}/alerts
 const getAlerts = (appId: string, timeRange: TimeRange = "1h") =>
-  apiRequest<AlertDto[]>(
+  apiRequest<AlertReportDto>(
     `/reports/${appId}/alerts?time_range=${timeRange}`,
     "GET"
   );
