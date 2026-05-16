@@ -18,7 +18,6 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ icon, title, description,
   <Link href={href} className={`${styles[area]} ${styles.dashboardCard}`}>
     <div className={styles.headerContent}>
       <div className={styles.iconContainer}>
-        {/* 2. Casteamos el icono como 'IconElement' para que TypeScript permita pasarle el size */}
         {React.cloneElement(icon as IconElement, { size: 32 })}
       </div>
       <h2 className="text-xl font-semibold text-darkest dark:text-gray-100">{title}</h2>
