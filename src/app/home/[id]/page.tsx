@@ -20,14 +20,14 @@ const AppDetailView: FC = () => {
   const appId = params?.id ?? "";
 
   const [appStatus, setAppStatus] = useState<string>(status === 'Running' ? "Activo": "Inactivo");
-  const [app, setApp] = useState<AppDto | null>(null);
+  const [app, setApp] = useState<AppDto>({} as AppDto);
   const [logs, setLogs] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"general" | "stats" | "logs" | "alertas">("general");
 
-  const fetchApp = useCallback(async () => {
+    const fetchApp = useCallback(async () => {
     const res = await AppService.get(appId);
-    setApp(res ?? null);
+    setApp(res ?? {} as AppDto);
   }, [appId]);
 
   const fetchLogs = useCallback(async () => {
