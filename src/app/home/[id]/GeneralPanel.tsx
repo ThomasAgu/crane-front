@@ -72,7 +72,7 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
         <div>
           <h3 className="text-lg font-semibold mb-3">Hosts</h3>
           <ul className="list-disc list-inside space-y-1">
-            {app.hosts?.map((host, index) => (
+            {app.hosts?.map((host: any, index) => (
               <li key={index} className="text-blue-500 hover:underline cursor-default font-mono text-sm">
                 {host}
               </li>
