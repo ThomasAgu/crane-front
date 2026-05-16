@@ -93,7 +93,7 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
   };
 
   const removeStartupScript = (index: number) => {
-    const updated = (form.startupScripts || []).filter((_, i) => i !== index);
+    const updated = (form.startupScripts || []).filter((_: any, i: number) => i !== index);
     update("startupScripts", updated);
   };
 
@@ -216,7 +216,7 @@ export default function ServiceEditor({ data, nodes, edges, selectedNode, onChan
           <div className="mt-4">
             <h4 className="text-sm font-medium mb-2 text-gray-700">Archivos cargados:</h4>
             <div className="space-y-2">
-              {(form.startupScripts || []).map((script, index) => (
+              {(form.startupScripts || []).map((script: any, index: number) => (
                 <div
                   key={index}
                   className="flex items-center justify-between bg-white p-2 rounded border border-gray-200 hover:bg-gray-100 transition-colors"

@@ -12,16 +12,19 @@ interface DashboardCardProps {
   area: string;
 }
 
+type IconElement = React.ReactElement<{ size?: number | string }>;
+
 const DashboardCard: React.FC<DashboardCardProps> = ({ icon, title, description, href, area }) => (
-  <Link href={href} passHref className={`${styles[area]} ${styles.dashboardCard}`}>
+  <Link href={href} className={`${styles[area]} ${styles.dashboardCard}`}>
     <div className={styles.headerContent}>
       <div className={styles.iconContainer}>
-        {React.cloneElement(icon as React.ReactElement, { size: 32 })} {/* Icono más pequeño aquí, pero el padding lo hace grande */}
+        {/* 2. Casteamos el icono como 'IconElement' para que TypeScript permita pasarle el size */}
+        {React.cloneElement(icon as IconElement, { size: 32 })}
       </div>
       <h2 className="text-xl font-semibold text-darkest dark:text-gray-100">{title}</h2>
     </div>
-    <p className="text-gray-600 dark:text-gray-400 text-base">{description}</p> {/* Texto de descripción ligeramente más grande */}
-    <span className={styles.dasboardCardLink}>Ir a {title} →</span>
+    <p className="text-gray-600 dark:text-gray-400 text-base">{description}</p>
+    <span className={styles.dashboardCardLink}>Ir a {title} →</span>
   </Link>
 );
 
