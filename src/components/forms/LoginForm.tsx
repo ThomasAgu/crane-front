@@ -3,12 +3,13 @@ import { useRouter } from 'next/navigation';
 import { AuthService } from '@/lib/api/authService';
 import { emailValidator } from '@/lib/validators/EmailValidator';
 import { requiredValidator } from '@/lib/validators/RequiredValidator';
-import { useForm } from '@/hooks/useForm';
 import InputText from './InputText';
 import Loader from '../ui/Loader';
 import mail from '../../public/mail.svg';
 import lock from '../../public/lock.svg';
 import styles from './LoginForm.module.css';
+
+import { useForm } from '@/hooks/useForm';
 import { usePermissions } from '@/hooks/usePermissions';
 
 export default function LoginForm() {
@@ -43,7 +44,7 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-sm">
+    <form onSubmit={handleSubmit} className="w-full text-left">
       <InputText
         label="Email o usuario"
         type='text'
@@ -82,7 +83,7 @@ export default function LoginForm() {
         Iniciar Sesión
       </button>
 
-      <p className="text-sm text-center mt-4">
+      <p className="text-sm text-darkest text-center mt-4">
         ¿No tenés cuenta?{' '}
         <a href="/auth/singup" className="text-blue-500 underline">
           crear cuenta

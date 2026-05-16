@@ -14,14 +14,14 @@
   animation: float 6s ease-in-out infinite;
 }
 
- .logo-text-crane {
+ .logoText {
     color: var(--darkest);
-    font-size: 32px;
+    font-size: 40px;
     font-family: var(--font-montserrat), sans-serif;
     font-weight: lighter;
   }
 
-  .logo-text-crane-white {
+  .logoTextWhite {
      color: var(--white);
       font-size: 26px;
       font-family: var(--font-montserrat), sans-serif;
