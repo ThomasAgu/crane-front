@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import NavBar from "../../components/layout/NavBar";
 import AppItem from "./StoreItem";
-import { FilterType } from "../../lib/helper/StoreItems";
+import { FilterType } from "@/lib/helper/FilterType";
 import DockerImageFilter from "@/components/ui/DockerImageFilter";
 import styles from "./store.module.css";
 import Loader from "@/components/ui/Loader";

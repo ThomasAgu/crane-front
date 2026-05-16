@@ -1,0 +1,1 @@
+export type FilterType = "best_rated" | "favourites" | "downloads";
