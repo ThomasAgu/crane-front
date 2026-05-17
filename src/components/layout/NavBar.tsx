@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import logotinywhite from "../../public/logoTinyWhite.svg";
+import appIcon from "../../public/logo.svg";
 import gear from "../../public/gear.svg";
 import labs from "../../public/labs.svg";
 import home from "../../public/home.svg";
@@ -42,9 +43,14 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
           ${expanded ? "w-50 items-start" : "w-20 items-start"}
         `}
       >
-        <div onClick={() => setExpanded(!expanded)} className='flex row justify-between items-center w-full'>
+        <div onClick={() => setExpanded(!expanded)} className='flex row justify-between items-center w-full cursor-pointer'>
           <Image src={logotinywhite} alt="Logo tiny" width={50} />
-          <p className="logo-text-crane-white">{expanded ? 'CRANE' : ''}</p>
+          {expanded && (
+            <div className='flex items-center gap-2'>
+              <p className="logo-text-crane-white">CRANE</p>
+              <Image src={appIcon} alt="App icon" width={24} height={24} />
+            </div>
+          )}
         </div>
 
         <div className="w-full border white bg-white rounded"></div>
