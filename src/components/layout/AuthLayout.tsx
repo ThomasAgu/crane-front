@@ -10,7 +10,7 @@ type AuthLayoutProps = {
 
 export default function AuthLayout({ title, children }: AuthLayoutProps) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-light">
+    <main className="flex items-start justify-center bg-light">
       <div className="flex w-full">
         <div className="w-full lg:w-1/2 bg-white">
           <div className="flex w-full flex-col lg:flex-row items-center lg:justify-start justify-center p-2 gap-2 ">
@@ -18,7 +18,7 @@ export default function AuthLayout({ title, children }: AuthLayoutProps) {
             <p className={styles.logoText}>CRANE</p>
           </div>
 
-          <div className="flex flex-col h-full w-full justify-center items-center p-8">
+          <div className="flex flex-col  w-full justify-center items-center pt-[10vh]">
             <div className="w-1/2 max-w-md text-center mb-6">
               <h1 className="text-3xl lg:text-2xl font-bold text-darkest mb-6">{title}</h1>
               {children}
@@ -30,6 +30,7 @@ export default function AuthLayout({ title, children }: AuthLayoutProps) {
           <div className={styles.logoContainer}>
             <Image
               src={logo}
+              className={styles.logoImage}
               alt="Logo grande"
             />
           </div>

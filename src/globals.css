@@ -48,6 +48,8 @@
 
 .btn-primary:hover {
   cursor: pointer;
+  box-shadow: 0 4px 8px rgba(50, 89, 230, 0.2);
+  transform: translateY(-1px);
 }
 
 .navBar {
