@@ -13,7 +13,7 @@ export default function AuthLayout({ title, children }: AuthLayoutProps) {
     <main className="flex items-start justify-center bg-light">
       <div className="flex w-full">
         <div className="w-full lg:w-1/2 bg-white">
-          <div className="flex w-full flex-col lg:flex-row items-center lg:justify-start justify-center p-2 gap-2 ">
+          <div className="flex w-full flex-col lg:flex-row items-center lg:justify-start justify-center p-2 mt-10 lg:mt-0 gap-2 ">
             <Image src={logotiny} alt="Logo tiny" width={50} />
             <p className={styles.logoText}>CRANE</p>
           </div>
