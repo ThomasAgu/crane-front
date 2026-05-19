@@ -1,0 +1,9 @@
+.craneText {
+  color: var(--white);
+  font-size: 30px;
+  text-align: left;
+  width: 100%;
+  margin-left: 14px;
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: lighter;
+}
