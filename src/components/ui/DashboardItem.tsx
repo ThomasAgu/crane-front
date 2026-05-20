@@ -112,11 +112,32 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     );
   }
 
-  const handleConfirmDelete = async () => {
-    await AppService.delete(String(app.id))
-    setDeleteModal(false)
-    onUpdate()
-  }
+  const handleConfirmDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    stopClick(e);
+    setDeleteModal(false);
+    setLoading(true);
+
+    try {
+      await AppService.delete(String(app.id));
+      setLoading(false);
+
+      onUpdate();
+      showAlert(
+        "La aplicación ha sido eliminada.",
+        "success",
+        "Aplicación Eliminada"
+      );
+
+    } catch (error: any) {
+      setLoading(false);
+      showAlert(
+        "La aplicación no puede eliminarse porque esta subida al repositorio.",
+        "error",
+        "Operación no permitida"
+      );
+      return;
+    }
+  };
 
   return (
     <div
