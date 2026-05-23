@@ -11,25 +11,31 @@
 .modal {
     background-color: white;
     width: 40vw;
-    height: 30vh;
+    height: auto;
     position: absolute;
     left: 30%;
-    top: 20%;
+    top: 30%;
     border-radius: 12px;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 30px;
 }
 
 .title {
   color: var(--darker);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.itemName {
+  color: var(--error);
+  font-weight: bold;
 }
 
 .buttons {
   display: flex;
-  font-size: 1.2rem;
+  font-size: 1rem;
   justify-content: flex-start;
   gap: 4px;
 }

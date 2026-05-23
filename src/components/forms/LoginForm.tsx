@@ -83,7 +83,7 @@ export default function LoginForm() {
         Iniciar Sesión
       </button>
 
-      <p className="text-sm text-darkest text-center mt-4">
+      <p className="text-xl lg:text-sm text-darkest text-center mt-4">
         ¿No tenés cuenta?{' '}
         <a href="/auth/singup" className="text-blue-500 underline">
           crear cuenta

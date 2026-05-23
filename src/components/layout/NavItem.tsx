@@ -20,8 +20,9 @@ const NavItem = ({ href, icon, iconActive, alt, expanded }: NavItemProps) => {
     <Link href={href} className='w-full'>
       <div
         className={`
+          rounded-lg  transition-colors
           flex items-center gap-3 p-2 rounded-lg transition-all duration-200
-          ${isActive ? 'bg-white' : ''}
+          ${isActive ? 'bg-white' : ' hover:bg-white/10'}
           ${expanded ? "justify-start" : "justify-start"}
         `}
       >
@@ -35,6 +36,7 @@ const NavItem = ({ href, icon, iconActive, alt, expanded }: NavItemProps) => {
         {expanded && <span className=
         {`
             transition-colors duration-200
+            ${expanded && isActive ? "text-darkest" : "justify-start"}
           `}>{alt}</span>}
       </div>
     </Link>

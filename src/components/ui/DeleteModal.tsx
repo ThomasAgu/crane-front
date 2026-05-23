@@ -18,7 +18,7 @@ export default function DeleteModal({itemName, itemType, deleteFunction, setActi
     return (
         <main className={styles.overlay}>
             <div className={styles.modal}>
-                <h2 className={styles.title}>Estas seguro que deseas eleiminar el {itemName} de los {itemType}</h2>
+                <h2 className={styles.title}>Estas seguro que deseas eleiminar el <span className={styles.itemName}>{itemName}</span> de los {itemType}</h2>
                 <div className={styles.buttons}>
                     <button className={styles.deleteButton} onClick={deleteFunction}>Borrar</button>
                     <button className={styles.cancelButton} onClick={deleteCancel}>Cancelar</button>

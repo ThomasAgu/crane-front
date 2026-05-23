@@ -117,7 +117,7 @@ export default function SingUpForm() {
         Crear cuenta
       </button>
 
-      <p className="text-sm text-darkest text-center mt-4">
+      <p className="text-xl lg:text-sm text-darkest text-center mt-4">
         ¿Ya tenés cuenta?{' '}
         <a href="/auth/login" className="text-blue-500 underline">iniciar sesión</a>
       </p>
