@@ -19,7 +19,7 @@ export default function AuthLayout({ title, children }: AuthLayoutProps) {
           </div>
 
           <div className="flex flex-col  w-full justify-center items-center pt-[10vh]">
-            <div className="w-1/2 max-w-md text-center mb-6">
+            <div className="w-full lg:w-1/2 max-w-md text-center mb-6">
               <h1 className="text-3xl lg:text-2xl font-bold text-darkest mb-6">{title}</h1>
               {children}
             </div>
