@@ -6,6 +6,9 @@ import AuthLayout from "../../../components/layout/AuthLayout";
 
 export default function LoginPage() {
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  console.log("CLIENT ID EN PROD:", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+  console.log(googleClientId);
+  
   return (
     <GoogleOAuthProvider clientId={googleClientId || ""}>
       <AuthLayout title="Iniciar Sesión">
