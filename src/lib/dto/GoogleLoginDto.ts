@@ -1,5 +1,5 @@
 export interface GoogleLoginDto {
-  id_token: string;
+  access_token: string;
 }
 
 export interface GoogleLoginResponseDto {

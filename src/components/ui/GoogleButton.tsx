@@ -19,43 +19,32 @@ export default function GoogleButton({ text }: GoogleButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const loginWithGoogle = useGoogleLogin({
-    
     onSuccess: async (tokenResponse) => {
-      setIsLoading(true);
-      try {
-        // 2. CORRECCIÓN CRÍTICA: En el flujo implícito, el token viene en 'access_token'.
-        // Este es el string largo que tu FastAPI necesita para validar contra GOOGLE_TOKENINFO_URL.
-        debugger
-        const googleToken = tokenResponse.access_token;
-
-        if (!googleToken) {
-          throw new Error("No se recibió el token desde Google");
-        }
-
-        // Enviamos el token real a tu FastAPI
-        const result = await AuthService.googleLogin({
-          id_token: googleToken 
-        });
-        // Guardamos en LocalStorage tal cual lo hace tu LoginForm clásico
-        localStorage.setItem("access_token", result.access_token);
-        localStorage.setItem("token_type", result.token_type);
-
-        // Refrescamos tus permisos globales
-        await refreshPermissions();
-
-        // Redirigimos al home
-        router.push("/home");
-      } catch (err) {
-        console.error("Error autenticando con FastAPI:", err);
-        alert("Hubo un problema al sincronizar tu cuenta de Google con el servidor.");
-      } finally {
-        setIsLoading(false);
+    setIsLoading(true);
+    try {
+      const googleToken = tokenResponse.access_token;
+     
+      if (!googleToken) {
+        throw new Error("No se recibió el access_token desde Google");
       }
-    },
-    onError: (errorResponse) => {
-      console.error("Login de Google cancelado o fallido:", errorResponse);
-    },
-  });
+
+      const result = await AuthService.googleLogin({
+        access_token: googleToken
+      });
+
+      localStorage.setItem("access_token", result.access_token);
+      localStorage.setItem("token_type", result.token_type);
+
+      await refreshPermissions();
+      router.push("/home");
+    } 
+    catch (err) {
+      alert("Hubo un problema al sincronizar tu cuenta de Google con el servidor.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+});
 
   return (
     <button 
