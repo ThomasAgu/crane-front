@@ -10,7 +10,7 @@ const loginUser = (credentials: UserLoginDto) =>
 const createUser = (newUser: UserCreateDto) =>
   apiRequest<UserCreateResponseDto>("/auth/register", "POST", newUser, false);
 
-const googleLogin = (googleData: GoogleLoginDto) => {
+const googleLogin = (googleData: GoogleLoginDto): Promise<GoogleLoginResponseDto> => {
   return apiRequest<GoogleLoginResponseDto>("/auth/google", "POST", googleData, false);
 }
   
