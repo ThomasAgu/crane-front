@@ -7,13 +7,11 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
-    // credentialResponse.credential contiene el ID Token enviado por Google
-    const idToken = credentialResponse.credential;
+    const token = credentialResponse.credential;
 
     try {
-      // Hacemos el POST directo a FastAPI
       const response = await AuthService.googleLogin({
-        id_token: idToken
+        access_token: token
       });
 
       debugger
