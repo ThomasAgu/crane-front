@@ -80,7 +80,7 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
       </nav>
 
       <main className={`
-        flex-1 p-6 ml-${expanded ? "48" : "20"} 
+        flex-1 ml-${expanded ? "48" : "20"} 
         overflow-y-auto
         `}>        
         {children}

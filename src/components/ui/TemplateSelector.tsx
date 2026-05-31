@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./TemplateSelector.module.css";
 import TemplateItem from "./TemplateItem";
 import { Database, Boxes, Layers, Square, Columns3Cog } from "lucide-react";
@@ -23,6 +23,12 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 }) => {
   const [appsTab, setAppsTab] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+  if (apps.length === 0) {
+      setAppsTab(false);
+    }
+  }, [apps.length]);
 
   const handleClickGoBackButton = () => {
     router.back();
@@ -51,14 +57,14 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
               />
             </button>
             <div className={styles.buttonGroup}>
-              <button
-                className={`${
-                  appsTab ? styles.buttonActive : styles.buttonInactive
-                }`}
-                onClick={() => setAppsTab(true)}
-              >
-                Aplicaciones
-              </button>
+              {apps.length > 0 && (
+                <button
+                  className={`${appsTab ? styles.buttonActive : styles.buttonInactive}`}
+                  onClick={() => setAppsTab(true)}
+                >
+                  Aplicaciones
+                </button>
+              )}
               <button
                 className={`${
                   !appsTab ? styles.buttonActive : styles.buttonInactive

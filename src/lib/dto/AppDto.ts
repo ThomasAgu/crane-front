@@ -5,6 +5,7 @@ export interface AppDto {
   name: string
   services: ServiceDto[]
   hosts?: Record<string, unknown>[] | null
+  environment?: Record<string, string> | null
   min_scale?: number | null
   current_scale?: number | null
   max_scale?: number | null
@@ -20,6 +21,7 @@ export interface CreateAppDto {
   name: string
   services?: ServiceDto[]
   hosts?: Record<string, unknown>[] | null
+  environment?: Record<string, string> | null
   current_scale: number
   min_scale: number
   max_scale: number

@@ -4,7 +4,7 @@ import { searchDockerImages } from "@/app/services/DockerHubService";
 export default function DockerImageSelector({ 
   value, 
   onChange,
-  onPickImage
+  onPickImage,
 }: { 
   value: string; 
   onChange: (v: string) => void; 
@@ -37,13 +37,20 @@ export default function DockerImageSelector({
 
   return (
     <div className="relative mb-3">
-      <label className="block text-sm font-medium mb-1">Imagen</label>
+      <label className="block text-sm font-medium mb-1">
+        Imagen <span className="text-red-500">*</span>
+      </label>
       <input
-        className="w-full border p-2 rounded"
+        className={`w-full border p-2 rounded transition-colors ${
+          !query ? "border-red-500 bg-red-50 focus:outline-red-500" : "border-gray-300"
+        }`}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Buscar imagen en Docker Hub"
       />
+      {!query && (
+        <p className="text-xs text-red-500 mt-1">La imagen del contenedor es obligatoria.</p>
+      )}
 
       {isOpen && results.length > 0 && (
         <ul className="absolute z-10 w-full bg-white border rounded shadow-md mt-1 max-h-60 overflow-y-auto">
