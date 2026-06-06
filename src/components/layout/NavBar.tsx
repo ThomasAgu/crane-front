@@ -4,12 +4,9 @@ import { ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 import Image from 'next/image';
 import logotinywhite from "../../public/logoTinyWhite.svg";
-import appIcon from "../../public/logo.svg";
-import gear from "../../public/gear.svg";
 import labs from "../../public/labs.svg";
 import home from "../../public/home.svg";
 import store from "../../public/store.svg";
-import gear_active from "../../public/gear_active.svg";
 import labs_active from "../../public/labs_active.svg";
 import home_active from "../../public/home_active.svg";
 import store_active from "../../public/store_active.svg";
@@ -20,6 +17,8 @@ import users_active from "../../public/users_active.svg";
 import { usePermissions } from '@/hooks/usePermissions';
 import NavItem from './NavItem';
 import { RequirePermission } from "../../components/layout/RequirePermission";
+import { NotificationProvider } from "@/context/NotificationContext";
+import NotificationBell from "./NotificationBell";
 import ProfileDropdown from './ProfileComponent';
 import styles from "./NavBar.module.css"
 
@@ -28,7 +27,7 @@ interface PrivateLayoutProps {
   children: ReactNode;
 }
 
-const PrivateLayout = ({ children }: PrivateLayoutProps) => {
+const PrivateLayoutContent = ({ children }: PrivateLayoutProps) => {
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
   const { refreshPermissions } = usePermissions();
@@ -74,9 +73,14 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
           </RequirePermission>
           
           <NavItem href="/docs" icon={documentation} iconActive={documentation_active} alt="Documentación" expanded={expanded}/>
+        
         </div>
 
-        <ProfileDropdown expanded={expanded} handleLogout={handleLogout} />
+
+        <div className="flex flex-col gap-2 w-full mt-auto shrink-0">
+          <NotificationBell expanded={expanded} />
+          <ProfileDropdown expanded={expanded} handleLogout={handleLogout} />
+        </div>  
       </nav>
 
       <main className={`
@@ -89,4 +93,10 @@ const PrivateLayout = ({ children }: PrivateLayoutProps) => {
   );
 };
 
-export default PrivateLayout;
+export default function PrivateLayout({ children }: PrivateLayoutProps) {
+  return (
+    <NotificationProvider>
+      <PrivateLayoutContent>{children}</PrivateLayoutContent>
+    </NotificationProvider>
+  );
+}
