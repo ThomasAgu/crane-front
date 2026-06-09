@@ -40,7 +40,6 @@ export default function AlertsPanel({ appId }: AlertsPanelProps) {
     try {
       const actions = await ActionService.get_all();
       setActions(actions)
-      debugger
     } catch(err) {
       console.log(err)
     }

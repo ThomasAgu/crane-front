@@ -25,7 +25,6 @@ export default function DockerImageSelector({
     const timeout = setTimeout(async () => {
       setLoading(true);
       const images = await searchDockerImages(query);
-      debugger
       setResults(images);
       setLoading(false);
       setIsOpen(true);

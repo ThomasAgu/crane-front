@@ -9,7 +9,6 @@ interface NotificationBellProps {
 
 const NotificationBell = ({ expanded }: NotificationBellProps) => {
   const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification } = useNotifications();
-  debugger
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

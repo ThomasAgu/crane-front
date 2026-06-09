@@ -5,7 +5,6 @@ import { NotificationDto } from "../dto/NotificationDto";
 const getNotifications = () =>
   apiRequiest<NotificationDto[]>("/notifications", "GET");
 
-  
 //POST
 const readNotification = (id: string) =>
   apiRequiest<void>(`/notifications/${id}/read`, "POST");

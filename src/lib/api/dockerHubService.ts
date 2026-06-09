@@ -16,7 +16,6 @@ const searchDockerImages = (query: string) => {
 }
 
 const getImageDetails = (imageName: string) => {
-  debugger;
   return apiRequest<ImageDetails>(`/docker-hub/${imageName}/details`, "GET", undefined, false);
 };
 

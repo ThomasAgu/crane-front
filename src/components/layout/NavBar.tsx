@@ -14,6 +14,8 @@ import documentation from "../../public/documentation.svg";
 import documentation_active from "../../public/documentation_active.svg";
 import users from "../../public/users.svg";
 import users_active from "../../public/users_active.svg";
+import groups from "../../public/groups.svg";
+import groups_active from "../../public/groups_active.svg";
 import { usePermissions } from '@/hooks/usePermissions';
 import NavItem from './NavItem';
 import { RequirePermission } from "../../components/layout/RequirePermission";
@@ -70,6 +72,10 @@ const PrivateLayoutContent = ({ children }: PrivateLayoutProps) => {
                     
           <RequirePermission object="USERS" action="GET">
             <NavItem href="/users" icon={users} iconActive={users_active} alt="Usuarios" expanded={expanded}/>
+          </RequirePermission>
+
+          <RequirePermission object="APPS" action="GET">
+            <NavItem href="/groups" icon={groups} iconActive={groups_active} alt="Grupos" expanded={expanded}/>
           </RequirePermission>
           
           <NavItem href="/docs" icon={documentation} iconActive={documentation_active} alt="Documentación" expanded={expanded}/>
