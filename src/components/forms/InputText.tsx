@@ -96,10 +96,15 @@ const InputText: React.FC<props> = ({
         }
     }, [showErrors]);
 
+    const hasRequiredValidator = () => {
+        const validators = [...liveValidators, ...submitValidators];
+        return validators.some(v => v === requiredValidator);
+    }
+
     return (
         <main>
             {/* Si no tiene requiredValidator entonces no deberia tener la marca */}
-            <label className={styles.label}>{label} {liveValidators.some(v => v === requiredValidator) && <span className={styles.requiredMark}>*</span>}</label>
+            <label className={styles.label}>{label} {hasRequiredValidator() && <span className={styles.requiredMark}>*</span>}</label>
             <div className={styles.inputWrapper}>
                 {(imagesrc && imagealt) && <Image
                     src={imagesrc}

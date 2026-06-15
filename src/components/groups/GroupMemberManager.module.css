@@ -1,0 +1,185 @@
+/* Member Manager Styles */
+.memberManagerSection {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+.memberManagerSection h3 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+
+.addMemberForm {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.memberSelect {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #334155;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.memberSelect:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.memberSelect:disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+}
+
+.addMemberButton {
+  padding: 10px 18px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.05);
+}
+
+.addMemberButton:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.addMemberButton:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.membersList {
+  margin-top: 16px;
+}
+
+.membersList ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.memberItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.memberItem:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+/* Contenedor del avatar + Email */
+.memberInfoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatarFallback {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  color: #0369a1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.memberEmail {
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.removeMemberButton {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.memberItem:hover .removeMemberButton {
+  color: #64748b;
+  border-color: #e2e8f0;
+  background: #ffffff;
+}
+
+.memberItem .removeMemberButton:hover {
+  color: #dc2626;
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.removeMemberButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.emptyMembers {
+  color: #64748b;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 32px;
+  margin: 0;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #e2e8f0;
+}
+
+.errorMessage {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-left: 4px solid #ef4444;
+}
