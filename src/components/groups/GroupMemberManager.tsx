@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { UserDataDto } from '@/lib/dto/UserDto';
 import { UserService } from '@/lib/api/userService';
 import { Plus, Trash2 } from 'lucide-react';
+import DeleteModal from '@/components/ui/DeleteModal';
 import styles from './GroupMemberManager.module.css';
+import { RequirePermission } from '../layout/RequirePermission';
 
 interface GroupMemberManagerProps {
   groupId: number;
@@ -25,6 +27,8 @@ export default function GroupMemberManager({
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedMemberToDelete, setSelectedMemberToDelete] = useState<UserDataDto | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -61,11 +65,20 @@ export default function GroupMemberManager({
     }
   };
 
-  const handleRemoveMember = async (userId: string, gId: number) => {
+  const openDeleteModal = (member: UserDataDto) => {
+    setSelectedMemberToDelete(member);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedMemberToDelete) return;
+
     setLoading(true);
     setError(null);
     try {
-      await onRemoveMember(parseInt(userId), gId);
+      await onRemoveMember(selectedMemberToDelete.id, groupId);
+      setShowDeleteModal(false);
+      setSelectedMemberToDelete(null);
     } catch (err) {
       setError('Error al eliminar miembro');
       console.error('Error removing member:', err);
@@ -77,37 +90,37 @@ export default function GroupMemberManager({
   return (
     <div className={styles.memberManagerSection}>
       <h3>Miembros del Grupo</h3>
-
       {error && <div className={styles.errorMessage}>{error}</div>}
 
-      <div className={styles.addMemberForm}>
-        <select
-          value={selectedUserId}
-          onChange={(e) => setSelectedUserId(e.target.value)}
-          disabled={loading || availableUsers.length === 0}
-          className={styles.memberSelect}
-        >
-          <option value="">
-            {availableUsers.length === 0
-              ? 'No hay usuarios disponibles'
-              : 'Selecciona un usuario para agregar'}
-          </option>
-          {availableUsers.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.email}
+      <RequirePermission object="GROUPS" action="POST">
+        <div className={styles.addMemberForm}>
+          <select
+            value={selectedUserId}
+            onChange={(e) => setSelectedUserId(e.target.value)}
+            disabled={loading || availableUsers.length === 0}
+            className={styles.memberSelect}
+          >
+            <option value="">
+              {availableUsers.length === 0
+                ? 'No hay usuarios disponibles'
+                : 'Selecciona un usuario para agregar'}
             </option>
-          ))}
-        </select>
-        <button
-          onClick={handleAddMember}
-          disabled={!selectedUserId || loading}
-          className={styles.addMemberButton}
-        >
-          <Plus size={18} />
-          Agregar
-        </button>
-      </div>
-
+            {availableUsers.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.email}
+              </option>
+            ))}
+          </select>
+              <button
+              onClick={handleAddMember}
+              disabled={!selectedUserId || loading}
+              className={styles.addMemberButton}
+              >
+                <Plus size={18} />
+                Agregar
+              </button>
+        </div>
+      </RequirePermission>
       <div className={styles.membersList}>
         {groupMembers.length === 0 ? (
           <p className={styles.emptyMembers}>Este grupo no tiene miembros aún</p>
@@ -122,20 +135,31 @@ export default function GroupMemberManager({
                     <div className={styles.avatarFallback}>{initial}</div>
                     <span className={styles.memberEmail}>{member.email}</span>
                   </div>
-                  <button
-                    onClick={() => handleRemoveMember(member.id.toString(), groupId)} // Asegurar tipo según tu backend
+                  <RequirePermission object="GROUPS" action="DELETE">
+                    <button
+                    onClick={() => openDeleteModal(member)}
                     disabled={loading}
                     className={styles.removeMemberButton}
                     title="Eliminar miembro"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </RequirePermission>
                 </li>
               );
             })}
           </ul>
         )}
       </div>
+
+      {showDeleteModal && selectedMemberToDelete && (
+        <DeleteModal
+          itemName={selectedMemberToDelete.email}
+          itemType="miembros del grupo"
+          deleteFunction={handleConfirmDelete}
+          setActive={setShowDeleteModal}
+        />
+      )}
     </div>
   );
 }

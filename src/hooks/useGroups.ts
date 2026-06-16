@@ -18,7 +18,6 @@ export function useGroups() {
     setError(null);
     try {
       const data = await GroupService.getGroupsForUser();
-      debugger
       setGroups(data);
     } catch (err) {
       setError('Error al cargar los grupos');
@@ -33,7 +32,6 @@ export function useGroups() {
     setLoading(true);
     setError(null);
     try {
-      debugger
       const data = await GroupService.getGroup(id);
       if (Array.isArray(data) && data.length > 0) {
         setSelectedGroup(data[0]);

@@ -1,4 +1,5 @@
 import { UserDataDto } from './UserDto';
+import { TaskDto } from './TaskDto';
 
 export interface UserGroupRelation {
   user_id: number;
@@ -13,7 +14,7 @@ export interface GroupDto {
   description: string;
   created_at: string;
   updated_at: string;
-  tasks: []
+  tasks: TaskDto[]
   user_groups: UserGroupRelation[]
 }
 
@@ -24,7 +25,7 @@ export interface GroupDtoDetails {
   created_at: string;
   updated_at: string;
   user_groups: UserGroupRelation[];
-  tasks: [];
+  tasks: TaskDto[];
 }
 
 export interface GroupCreateDto {

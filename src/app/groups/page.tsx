@@ -8,15 +8,17 @@ import { Plus } from "lucide-react";
 import { useGroups } from "@/hooks/useGroups";
 import GroupGrid from "@/components/groups/GroupGrid";
 import GroupForm from "@/components/groups/GroupForm";
+import TaskForm from "@/components/tasks/TaskForm";
 import TaskGrid from "@/components/groups/TaskGrid";
 import { TaskService } from "@/lib/api/taskService";
-import { TaskDto } from "@/lib/dto/TaskDto";
+import { TaskDto, TaskCreateDto } from "@/lib/dto/TaskDto";
 import DeleteModal from "@/components/ui/DeleteModal";
 import styles from "@/components/groups/groups.module.css";
 
 export default function GroupsPage() {
   const [activeTab, setActiveTab] = useState<"groups" | "tasks">("groups");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateTaskForm, setShowCreateTask] = useState(false);
   const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [deleteModal, setDeleteModal] = useState<{
     active: boolean;
@@ -25,6 +27,7 @@ export default function GroupsPage() {
     type?: "group" | "task";
   }>({ active: false });
   const [formLoading, setFormLoading] = useState(false);
+  const [taskLoading, setTaskLoading] = useState(false);
   
   const {
     groups,
@@ -39,25 +42,17 @@ export default function GroupsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    fetchGroups();
-    fetchTasks();
+    const initializeData = async () => {
+      await fetchGroups();
+      await fetchTasks();
+    };
+    initializeData();
   }, []);
 
   const fetchTasks = async () => {
     try {
-      // Get all groups first to fetch their tasks
-      const allGroups = await Promise.all(
-        groups.map(async (group) => {
-          try {
-            const groupTasks = await TaskService.getTasks(String(group.id));
-            return groupTasks;
-          } catch {
-            return [];
-          }
-        })
-      );
-      const flatTasks = allGroups.flat();
-      setTasks(flatTasks);
+      const tasks = await TaskService.getTasks();
+      setTasks(tasks);
     } catch (err) {
       console.error("Error loading tasks:", err);
     }
@@ -80,9 +75,30 @@ export default function GroupsPage() {
         "error",
         "Error"
       );
-      console.error("Error creating group:", err);
     } finally {
       setFormLoading(false);
+    }
+  };
+
+  const handleCreateTask = async(formData: TaskCreateDto) => {
+    setTaskLoading(true);
+    try {
+      await TaskService.createTask(formData);
+      setShowCreateTask(false);
+      showAlert(
+        "La tarea se creo con exito",
+        "success",
+        "Tarea Creada"
+      )
+      await fetchTasks();
+    } catch (err) {
+      showAlert(
+        "Error al crear la tarea",
+        "error",
+        "Error"
+      )
+    } finally {
+      setTaskLoading(false);
     }
   };
 
@@ -149,13 +165,13 @@ export default function GroupsPage() {
     <main className={styles.mainContent}>
       <NavBar>
         <div className={styles.headerActions}>
-          <h1 className="text-3xl font-bold mt-6 text-darkest">Grupos</h1>
+          <h1 className="text-3xl font-bold mt-6 text-darkest">{activeTab === "groups" ? "Grupos" : "Tareas"}</h1>
           <button
             className={styles.createButton}
-            onClick={() => setShowCreateForm(true)}
+            onClick={activeTab === "groups" ? () => setShowCreateForm(true) : () => setShowCreateTask(true)}
           >
             <Plus size={20} />
-            Crear Grupo
+            {activeTab === "groups" ? "Crear Grupo" : "Crear Tarea"}
           </button>
         </div>
       </NavBar>
@@ -195,6 +211,14 @@ export default function GroupsPage() {
           onSubmit={handleCreateGroup}
           onCancel={() => setShowCreateForm(false)}
           isLoading={formLoading}
+        />
+      )}
+
+      {showCreateTaskForm && (
+        <TaskForm
+          onSubmit={handleCreateTask}
+          onCancel={() => setShowCreateTask(false)}
+          isLoading={taskLoading}
         />
       )}
 

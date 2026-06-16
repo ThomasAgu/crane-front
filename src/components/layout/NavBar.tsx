@@ -74,7 +74,7 @@ const PrivateLayoutContent = ({ children }: PrivateLayoutProps) => {
             <NavItem href="/users" icon={users} iconActive={users_active} alt="Usuarios" expanded={expanded}/>
           </RequirePermission>
 
-          <RequirePermission object="APPS" action="GET">
+          <RequirePermission object="GROUPS" action="GET">
             <NavItem href="/groups" icon={groups} iconActive={groups_active} alt="Grupos" expanded={expanded}/>
           </RequirePermission>
           

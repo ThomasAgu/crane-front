@@ -14,7 +14,6 @@ export const useUserId = (): string | null => {
         setUserId(null);
         return;
       }
-
       // Decode JWT: split by '.', take the payload (middle part), decode from Base64
       const payload = JSON.parse(atob(token.split('.')[1]));
       setUserId(payload.user_id || null);
