@@ -229,7 +229,6 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
   setTimeout(() => {
     setEdges([...freshEdges]);
     setNodes([...freshNodes]);
-
     setSelectedNode((prev) => {
       if (prev && prev.id === id) {
         return {

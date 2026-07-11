@@ -15,6 +15,7 @@ import {
 import { AppService } from '@/lib/api/appService'
 import { RepositoryService } from '@/lib/api/repositoryService'
 import DeleteModal from './DeleteModal'
+import RepositoryForm, {RepositoryFormData} from '../forms/RepositoryForm'
 import Loader from './Loader'
 import style from './DashboardItem.module.css'
 
@@ -29,6 +30,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const [active, setActive] = useState(app.status !== 'Stopped');
   const [loading, setLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [uploadModal, setUploadModal] = useState(false);
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
   
@@ -40,11 +42,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     await AppService.start(String(app.id))
     setActive(true)
     onUpdate()
-    showAlert(
-      "La aplicación ha sido iniciada.",
-      "success",
-      "Aplicación Iniciada"
-    );
+    showAlert("La aplicación ha sido iniciada.", "success", "Aplicación Iniciada");
     setLoading(false)
   }
 
@@ -54,11 +52,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     await AppService.stop(String(app.id))
     setActive(false)
     onUpdate()
-    showAlert(
-      "La aplicación ha sido detenida.",
-      "success",
-      "Aplicación Detenida"
-    );
+    showAlert("La aplicación ha sido detenida.", "success", "Aplicación Detenida");
     setLoading(false);
   }
 
@@ -68,11 +62,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     await AppService.restart(String(app.id))
     setActive(true)
     onUpdate();
-    showAlert(
-      "La aplicación ha sido reiniciada.",
-      "success",
-      "Aplicación Reiniciada"
-    );
+    showAlert("La aplicación ha sido reiniciada.", "success", "Aplicación Reiniciada");
     setLoading(false);
   }
 
@@ -81,11 +71,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     setLoading(true)
     await AppService.scale(String(app.id))
     onUpdate()
-    showAlert(
-      "La aplicación ha sido escalada.",
-      "success",
-      "Aplicación Escalada"
-    );
+    showAlert("La aplicación ha sido escalada.", "success", "Aplicación Escalada");
     setLoading(false)
   }
 
@@ -94,22 +80,50 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     setDeleteModal(true);
   }
 
-  const handleUpload = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
+    setUploadModal(true);
+  }
 
-    await RepositoryService.createRepository({
-      name: app.name,
-      description: `Repositorio para la aplicación ${app.name} creado por el usuario ${app.user_id}`,
-      services: app.services.map(s => s.name).join(", "),
+  const handleUploadSubmit = async (formData: RepositoryFormData) => {
+    setLoading(true);
+    setUploadModal(false);
+    console.log(app);
+    debugger
+    const repositoryData = {
+      name: formData.name,
+      description: formData.description,
+      services: app.services?.map(s => s.image).join(", ") || "",
       app_id: app.id,
-      user_id: app.user_id
-    })
+      user_id: app.user_id,
+      //Aun no hay soporte para plantillas, por lo que se asume que no es plantilla
+      is_template: false,
+      is_uploaded: false
+    };
 
-    showAlert(
-      "Se ha creado una peticion para subir tu aplicación al repositorio. El equipo de Crane revisará tu solicitud y te notificará una vez que se haya aprobado o rechazado.",
-      "success",
-      "Aplicación Subida al Repositorio"
-    );
+    try {
+      if (!app.is_uploaded) {
+        await RepositoryService.createRepository(repositoryData);
+        showAlert(
+          "Se ha creado una petición para subir tu aplicación al repositorio. El equipo de Crane revisará tu solicitud.",
+          "success",
+          "Aplicación Subida al Repositorio"
+        );
+      } else {
+        await RepositoryService.updateRepository(repositoryData);
+        showAlert(
+          "Los datos de tu aplicación en el repositorio se han actualizado correctamente.",
+          "success",
+          "Repositorio Actualizado"
+        );
+      }
+      
+      onUpdate(); // Refresca los datos del dashboard para capturar el nuevo estado `is_uploaded`
+    } catch (error) {
+      showAlert("Ocurrió un error al intentar procesar la solicitud.", "error", "Error");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const handleConfirmDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -120,14 +134,8 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     try {
       await AppService.delete(String(app.id));
       setLoading(false);
-
       onUpdate();
-      showAlert(
-        "La aplicación ha sido eliminada.",
-        "success",
-        "Aplicación Eliminada"
-      );
-
+      showAlert("La aplicación ha sido eliminada.", "success", "Aplicación Eliminada");
     } catch (error: any) {
       setLoading(false);
       showAlert(
@@ -135,7 +143,6 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         "error",
         "Operación no permitida"
       );
-      return;
     }
   };
 
@@ -167,6 +174,14 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
       <div className="text-sm text-gray-600 flex flex-col gap-1">
         <p>Escala actual: {app.current_scale}</p>
         <p>Creado: {createdAtText}</p>
+        {/* Indicador visual opcional del estado en el repositorio */}
+        <p className="text-xs mt-1">
+          Estado Repo: {app.is_uploaded ? (
+            <span className="text-blue-600 font-semibold">Publicado</span>
+          ) : (
+            <span className="text-gray-700 font-semibold">No publicado</span>
+          )}
+        </p>
       </div>
 
       <div className="mt-auto flex gap-3 pt-2">
@@ -203,8 +218,13 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         )}
 
         <button
-          onClick={handleUpload}
-          className="p-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
+          onClick={handleUploadClick}
+          className={`p-2 rounded-lg transition ${
+            app.is_uploaded 
+              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+          }`}
+          title={app.is_uploaded ? "Actualizar datos en repositorio" : "Subir al repositorio"}
         >
           <UploadCloud size={20} />
         </button>
@@ -217,16 +237,12 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         </button>
       </div>
       
-      <div>
-
-      </div>
       {loading && (
         <>
-            <div className={style.customLoader}>
-                <Loader loading={loading} width={20} height={20}/>
-            </div>
-
-            <div className={style.loadingOverlay} /> 
+          <div className={style.customLoader}>
+            <Loader loading={loading} width={20} height={20}/>
+          </div>
+          <div className={style.loadingOverlay} /> 
         </>
       )}
  
@@ -236,6 +252,19 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
           itemType="aplicación"
           deleteFunction={handleConfirmDelete}
           setActive={setDeleteModal}
+        />
+      )}
+
+      {uploadModal && (
+        <RepositoryForm
+          initialData={{
+            name: app.name,
+            description: app.is_uploaded ? "" : `Repositorio para la aplicación ${app.name}`
+          }}
+          isEdit={app.is_uploaded}
+          onSubmit={handleUploadSubmit}
+          onCancel={() => setUploadModal(false)}
+          isLoading={loading}
         />
       )}
 

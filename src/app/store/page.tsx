@@ -97,9 +97,8 @@ export default function Store() {
 
   const allDockerImages = useMemo(() => {
     const images = new Set<string>();
-
     storeItems.forEach((item) => {
-      item.services.split(",").forEach((service) => {
+      item.services?.split(",").forEach((service) => {
         if (service.trim()) {
           images.add(service.trim());
         }

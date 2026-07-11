@@ -15,6 +15,7 @@ export interface AppDto {
   deleted_at: string
   user_id: number
   status: string
+  is_uploaded: boolean
 }
 
 export interface CreateAppDto {

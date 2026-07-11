@@ -33,7 +33,6 @@ export interface onHoldRepositoryDto {
   is_template: boolean;
 }
 
-
 export interface CreateRepositoryDto {
   name: string;
   description: string;
@@ -41,4 +40,5 @@ export interface CreateRepositoryDto {
   user_id: number;
   app_id: number;
   is_template: boolean;
+  is_uploaded: boolean;
 }

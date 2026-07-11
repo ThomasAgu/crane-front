@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GroupDto, UserGroupDto } from '@/lib/dto/GroupDto';
@@ -108,7 +107,7 @@ export default function GroupDetail({ groupId }: GroupDetailProps) {
   };
 
   const handleTaskUnassigned = async () => {
--   try {
+    try {
       const data = await GroupService.getGroup(groupId);
       setGroupTasks(data.tasks || []);
       showAlert(

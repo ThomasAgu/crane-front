@@ -10,6 +10,9 @@ const getRepository = (id: string) => apiRequest<RepositoryDto>(`/repository/${i
 const createRepository = (data: CreateRepositoryDto) =>
   apiRequest<RepositoryDto>("/repository", "POST", data);
 
+const updateRepository = (data: CreateRepositoryDto) =>
+  apiRequest<RepositoryDto>("/repository", "PATCH", data);
+
 const voteUpRepository = (id: string) =>
   apiRequest<RepositoryDto>(`/repository/${id}/vote_up`, "POST");
 
@@ -36,6 +39,7 @@ export const RepositoryService = {
   getRepositories,
   getRepository,
   createRepository,
+  updateRepository,
   voteUpRepository,
   voteDownRepository,
   favouriteRepository,

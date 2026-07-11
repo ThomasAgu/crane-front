@@ -161,7 +161,7 @@ class EditorStateService {
     return this.getConnectedNodeDataByType(selectedNode, "service");
   }
 
-  private formatAppName = (name: string) => {
+  private formatName = (name: string) => {
     const lowercased = name.toLowerCase();
     const formatted = lowercased.replace(/\s/g, "");
     return formatted;
@@ -169,7 +169,7 @@ class EditorStateService {
 
   exportAppDto(): CreateAppDto {
     const appNode = this.nodes.find((n) => n.type === "app");
-    const appName = this.formatAppName(appNode?.data.name);
+    const appName = this.formatName(appNode?.data.name);
 
     const services = this.nodes
       .filter((n) => n.type === "service")
@@ -196,7 +196,7 @@ class EditorStateService {
         const networks = this.nodes
           .filter((n) => connectedIds.includes(n.id) && n.type === "network")
           .map((netNode) => ({
-            name: netNode.data.name,
+            name: this.formatName(netNode.data.name),
             driver: netNode.data.driver,
             address: netNode.data.address,
             mask: netNode.data.mask,
@@ -204,7 +204,7 @@ class EditorStateService {
           }));
   
         return {
-          name: svc.data?.name,
+          name: this.formatName(svc.data?.name),
           image: svc.data?.image || "",
           ports: Array.isArray(svc.data?.ports)
             ? svc.data.ports
