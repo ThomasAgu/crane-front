@@ -7,11 +7,12 @@ import double_expand from "../../../public/double_expand.svg";
 import double_collapse from "../../../public/double_collapse.svg";
 
 import SimulationEditor from "./SimulationEditor";
-import ConfurationEditor from "./ConfigurationEditor";
+import ConfigurationEditor from "./ConfigurationEditor";
 
 type EditorState = "Edicion" | "Simulacion" | "Configuracion";
 
 interface EditorBaseProps {
+  appId?: number | null;
   selectedNode: any;
   onUpdateNode: (id: string, data: any) => void;
   Editor: React.FC<any>;
@@ -21,6 +22,7 @@ interface EditorBaseProps {
 }
 
 const EditorBase: React.FC<EditorBaseProps> = ({
+  appId,
   selectedNode,
   onUpdateNode,
   Editor,
@@ -120,7 +122,9 @@ const EditorBase: React.FC<EditorBaseProps> = ({
       {/* Pestaña de Configuración */}
       {active && (
         <div className={actualEditor === "Configuracion" ? "block" : "hidden"}>
-          <ConfurationEditor isSaved={!!selectedApp} />
+          <ConfigurationEditor 
+            appId={appId} 
+            isSaved={!!selectedApp} />
         </div>
       )}
     </div>

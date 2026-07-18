@@ -266,37 +266,6 @@ export default function ServiceEditor({
               </div>
             </div>
 
-            {/* LÍMITE DE RECURSOS */}
-            <div className="p-4 border border-gray-200 rounded-lg bg-gray-50/50 space-y-4">
-              <h4 className="text-xs font-bold text-gray-700 tracking-wide uppercase">Límites de Recursos (Resource Limits)</h4>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <InputText
-                    label="Límite CPU (Cores)"
-                    type="text"
-                    placeholder="ej: 0.5 o 1.5"
-                    value={form.nanoCpus || ""}
-                    setValue={(val: string) => updateField("nanoCpus", val)}
-                    setShowError={setTriggerErrors}
-                  />
-                  <p className="text-[9px] text-gray-400 mt-0.5">Ej: 0.5 equivale a medio núcleo de procesamiento.</p>
-                </div>
-
-                <div>
-                  <InputText
-                    label="Límite Memoria"
-                    type="text"
-                    placeholder="ej: 512M o 2G"
-                    value={form.memoryLimit || ""}
-                    setValue={(val: string) => updateField("memoryLimit", val)}
-                    setShowError={setTriggerErrors}
-                  />
-                  <p className="text-[9px] text-gray-400 mt-0.5">Sufijos válidos: M para Megabytes, G para Gigabytes.</p>
-                </div>
-              </div>
-            </div>
-
             {/* VARIABLES DE ENTORNO */}
             <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
               <EnvironmentVariablesEditor

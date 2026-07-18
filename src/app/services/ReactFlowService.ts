@@ -112,7 +112,7 @@ export class ReactFlowService {
   getGraphForApp(appDto: AppDto): { nodes: Node[]; edges: Edge[] } {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
-        // Add the main App node
+    // Add the main App node
     nodes.push({
       id: `app-${appDto.id}`,
       type: "app",
@@ -152,30 +152,51 @@ export class ReactFlowService {
       });
     });
 
-        // Add Network nodes (if any)
-    appDto.hosts?.forEach((host, index) => {
-      const networkId = `network-${index}`;
+    //Add network nodes
+    const uniqueNetworksMap = new Map();
+
+    appDto.services?.forEach((service) => {
+      service.networks?.forEach((net) => {
+        if (!uniqueNetworksMap.has(net.name)) {
+          uniqueNetworksMap.set(net.name, net);
+        }
+      });
+    });
+
+
+    const uniqueNetworks = Array.from(uniqueNetworksMap.values());
+
+    uniqueNetworks.forEach((network, index) => {
+      const networkId = `network-${network.name}`; // ID único basado en el nombre de la red
+      
       nodes.push({
         id: networkId,
         type: "network",
-        position: { x: 600, y: index * 150 },
+        position: { x: 600, y: index * 150 }, // Se posicionan verticalmente sin solaparse
         data: {
-          name: `Red ${index + 1}`,
-          address: host.address || "192.168.0.1",
+          name: network.name,
+          address: network.address || "192.168.0.1",
+          driver: network.driver,
+          gateway: network.gateway,
         },
       });
+    });
 
-          // Connect Service nodes to Network node
-      appDto.services?.forEach((_, serviceIndex) => {
+    appDto.services?.forEach((service, serviceIndex) => {
+      const serviceId = `service-${serviceIndex}`; // Asegurate de que coincida con cómo generás los nodos de servicio
+
+      service.networks?.forEach((net) => {
+        const networkId = `network-${net.name}`;
+        
         edges.push({
-          id: `edge-service-${serviceIndex}-network-${index}`,
-          source: `service-${serviceIndex}`,
+          id: `edge-${serviceId}-${networkId}`,
+          source: serviceId,
           target: networkId,
         });
       });
     });
-
-        // Add Volume nodes (if any)
+    
+    // Add Volume nodes (if any)
     appDto.services?.forEach((service, serviceIndex) => {
       service.volumes?.forEach((volume, volumeIndex) => {
         const volumeId = `volume-${serviceIndex}-${volumeIndex}`;

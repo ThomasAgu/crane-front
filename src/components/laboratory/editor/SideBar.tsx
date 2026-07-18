@@ -13,12 +13,14 @@ const editorMap: Record<string, React.FC<any>> = {
 };
 
 export default function Sidebar({
+  appId,
   selectedNode,
   onUpdateNode,
   nodes = [],
   edges = [],
   selectedApp,
 }: {
+  appId?: number | null;
   selectedNode: any;
   onUpdateNode: (id: string, data: any) => void;
   nodes?: any[];
@@ -30,6 +32,7 @@ export default function Sidebar({
   return (
     <div className="bg-white">
       <EditorBase
+        appId={appId}
         selectedNode={selectedNode}
         onUpdateNode={onUpdateNode}
         Editor={Editor}

@@ -221,17 +221,8 @@ class EditorStateService {
           
           // Política de reinicio (ej: "unless-stopped", "always")
           restart_policy: svc.data?.restartPolicy || "unless-stopped",
-          
-          // Límites de recursos mapeados de manera clara para el orquestador
-          resources: {
-            limits: {
-              cpus: svc.data?.nanoCpus || null,
-              memory: svc.data?.memoryLimit || null
-            }
-          },
 
-          // Array de archivos/scripts de arranque cargados
-          // Estructura: [{ name: string, content: string, type: string }]
+          // Array de archivos/scripts de arranque cargados. Estructura: [{ name: string, content: string, type: string }]
           startup_scripts: svc.data?.startupScripts || []
 
         } as any;

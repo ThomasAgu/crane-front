@@ -8,7 +8,7 @@ import styles from "./ConfigurationEditor.module.css";
 import { FileText, Copy, PlusCircle, Save } from "lucide-react";
 import CreationModal from "../CreationModal";
 
-const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
+const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean }> = ({ appId,  isSaved }) => {
   const [showMakefile, setShowMakefile] = useState(false);
   const [makefileContent, setMakefileContent] = useState("");
 
@@ -16,104 +16,84 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
 
   const [isCreating, setIsCreating] = useState(false);
 
+  const prepareAndValidateApp = (): any | null => {
+  const payload = editorService.exportAppDto();
+
+  if (!payload.name) {
+    showAlert("No se detectó un nombre de aplicación", "error", "Validación Requerida");
+    return null;
+  }
+  
+  if (!payload.services || payload.services.length === 0) {
+    showAlert("No se detectaron servicios en el diagrama. Agrega al menos un servicio para crear la aplicación.", "error", "Validación Requerida");
+    return null;
+  }
+
+  if (payload.services.some((s) => !s.name || s.name.trim() === "")) {
+    showAlert("Todos los servicios deben tener un nombre definido.", "error", "Validación Requerida");
+    return null;
+  }
+
+  if (payload.services.some((s) => !s.image)) {
+    showAlert("Todos los servicios deben tener una imagen definida.", "error", "Validación Requerida");
+    return null;
+  }
+
+  // Volúmenes
+  const allVolumes = payload.services.flatMap((s) => s.volumes || []);
+  for (const v of allVolumes) {
+    const errors = validateVolume(v);
+    if (errors.length > 0) {
+      showAlert(errors.join("\n"), "error", "Validación Requerida");
+      return null;
+    }
+  }
+
+  // Redes
+  const allNetworks = payload.services.flatMap((s) => s.networks || []);
+  for (const net of allNetworks) {
+    if (typeof net.name !== "string" || net.name.trim() === "") {
+      showAlert("Todas las redes deben tener un nombre definido.", "error", "Validación Requerida");
+      return null;
+    }
+  }
+
+  return payload;
+};
   
   const userId = useUserId();
-
+  
   const handleCreateApp = async () => {
+    const payload = prepareAndValidateApp();
+    if (!payload) return; // Si falló la validación, frena acá.
+
+    setIsCreating(true);
     try {
-      const payload = editorService.exportAppDto();
-      if (!payload.name) {
-        showAlert(
-          "No se detectó un nombre de aplicación",
-          "error",
-          "Validación Requerida"
-        );
-        return;
-      }
-      if (!payload.services || payload.services.length === 0) {
-        showAlert(
-          "No se detectaron servicios en el diagrama. Agrega al menos un servicio para crear la aplicación.",
-          "error",
-          "Validación Requerida"
-        );
-        return;
-      }
-      if (payload.services.some((s) => !s.name || s.name.trim() === "")) {
-        showAlert(
-          "Todos los servicios deben tener un nombre definido.",
-          "error",
-          "Validación Requerida"
-        );
-        return;
-      }
-      if (payload?.services?.some((s) => !s.image)) {
-        showAlert(
-          "Todos los servicios deben tener una imagen definida.",
-          "error",
-          "Validación Requerida"
-        );
-        return;
-      }
-      //Volumenes
-      if (payload?.services?.map((s) => s.volumes).flat().length > 0) {
-        for (const v of payload?.services?.map((s) => s.volumes).flat()) {
-          const errors = validateVolume(v);
-
-          if (errors.length > 0) {
-            showAlert(
-              errors.join("\n"),
-              "error",
-              "Validación Requerida"
-            );
-            return;
-          }
-        }
-      }
-
-      //redes 
-      const allNetworks = payload?.services
-        ?.flatMap((s) => s.networks || [])
-        ?? [];
-
-      if (allNetworks.length > 0) {
-        for (const net of allNetworks) {
-          if (typeof net.name !== "string" || net.name.trim() === "") {
-            showAlert(
-              "Todas las redes deben tener un nombre definido.",
-              "error",
-              "Validación Requerida"
-            );
-            return;
-          }
-        }
-      }
-    
-      setIsCreating(true);
-      await AppService.create(payload as any);
-      showAlert(
-        "La aplicación se ha creado con éxito.",
-        "success",
-        "Creación Exitosa"
-      );
-    }
-    catch (err) {
+      await AppService.create(payload);
+      showAlert("La aplicación se ha creado con éxito.", "success", "Creación Exitosa");
+    } catch (err) {
       if (err instanceof Error && err.message.includes("App with this name already exists")) {
-        showAlert(
-          "Ya tienes una aplicación con ese nombre. Por favor, elige un nombre diferente.",
-          "error",
-          "Nombre de Aplicación Duplicado"
-        );
-        return;
+        showAlert("Ya tienes una aplicación con ese nombre. Por favor, elige un nombre diferente.", "error", "Nombre de Aplicación Duplicado");
+      } else {
+        showAlert("Hubo un error al intentar crear la aplicación.", "error", "Error en la Creación");
       }
-      else {
-        showAlert(
-          "Hubo un error al intentar crear la aplicación.",
-          "error",
-          "Error en la Creación"
-        );
-      }
+    } finally {
+      setIsCreating(false);
     }
-    finally {
+  };
+
+  const handleUpdateApp = async () => {
+    const payload = prepareAndValidateApp();
+    if (!payload) return;
+
+    setIsCreating(true);
+    try {
+      payload["id"] = appId;
+      await AppService.update(payload); 
+      showAlert("La aplicación se ha actualizado con éxito.", "success", "Actualización Exitosa");
+    } catch (err) {
+      showAlert("Hubo un error al intentar actualizar la aplicación.", "error", "Error en la Actualización");
+    } finally {
       setIsCreating(false);
     }
   };
@@ -163,19 +143,12 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Aplicación</h2>
 
-          {isSaved ? (
-            <button className={styles.mainButton} onClick={handleCreateApp}>
-              <Save size={20} />
-              <span>
-                {isCreating ? "Creando..." : isSaved ? "Guardar" : "Crear"}
-             </span>
-            </button>
-          ) : (
-            <button className={styles.mainButton} onClick={handleCreateApp}>
-              <PlusCircle size={20} />
-              <span>Crear</span>
-            </button>
-          )}
+          <button className={styles.mainButton} onClick={isSaved ? handleUpdateApp : handleCreateApp}>
+            <Save size={20} />
+            <span>
+              {isCreating ? "Creando..." : isSaved ? "Guardar" : "Crear"}
+            </span>
+          </button>
         </div>
 
         <div className={styles.section}>
@@ -249,4 +222,4 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
   );
 };
 
-export default ConfurationEditor;
+export default ConfigurationEditor;

@@ -273,7 +273,8 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
 
       </div>
 
-    <Sidebar 
+    <Sidebar
+      appId={selectedApp?.id || null}
       selectedNode={selectedNode} 
       nodes={nodes}
       edges={edges}
