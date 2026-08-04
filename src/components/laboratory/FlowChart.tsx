@@ -171,18 +171,26 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
   };
 
   const onUpdateNode = (id: string, newData: any) => {
+  const previousNode = editorService.getNodeById(id);
+  const previousImage = previousNode?.data?.image;
+  const newImage = newData.image;
+
   editorService.setNodeData(id, newData);
 
   let freshNodes = [...editorService.getNodes()];
   let freshEdges = [...editorService.getEdges()];
 
   const updatedNode = freshNodes.find((n) => n.id === id);
-  if (updatedNode && updatedNode.type === "service" && newData.image) {
+  const shouldApplyImageDefaults =
+    updatedNode?.type === "service" &&
+    newImage &&
+    newImage !== previousImage;
+
+  if (shouldApplyImageDefaults) {
     const defaults = dockerDefaults[newData.image];
 
     if (defaults && Array.isArray(defaults.volumes)) {
       defaults.volumes.forEach((volumePath: string, index: number) => {
-        
         const isAlreadyConnected = freshEdges.some((edge) => {
           if (edge.source !== id) return false;
           const targetNode = freshNodes.find((n) => n.id === edge.target);
@@ -191,13 +199,13 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
 
         if (!isAlreadyConnected) {
           const volumeNodeId = `vol-${Date.now()}-${index}`;
-          
+
           const newVolumeNode: Node = {
             id: volumeNodeId,
             type: "volume",
             position: {
               x: updatedNode.position.x + 320,
-              y: updatedNode.position.y + (index * 120),
+              y: updatedNode.position.y + index * 120,
             },
             data: {
               name: `vol_${newData.image}_data`,
@@ -213,7 +221,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
             id: `e-${id}-${volumeNodeId}`,
             source: id,
             target: volumeNodeId,
-            style: { stroke: "#a855f7", strokeWidth: 2, strokeDasharray: "5" }, 
+            style: { stroke: "#a855f7", strokeWidth: 2, strokeDasharray: "5" },
           };
 
           freshNodes.push(newVolumeNode);

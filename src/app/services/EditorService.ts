@@ -46,27 +46,27 @@ class EditorStateService {
   }
 
   applyImageDefaultsToNode(nodeId: string, imageName: string) {
-  const defaults = dockerDefaults[imageName];
-  if (!defaults) return { nodes: this.nodes, edges: this.edges };
+    const defaults = dockerDefaults[imageName];
+    if (!defaults) return { nodes: this.nodes, edges: this.edges };
 
-  this.nodes = this.nodes.map((node) => {
-    if (node.id !== nodeId) return node;
-    return {
-      ...node,
-      data: {
-        ...(node.data || {}),
-        image: imageName,
-        ...defaults, 
-        environment: {
-          ...(node.data?.environment || {}),
-          ...(defaults.environment || {}),
-        }
-      },
-    };
-  });
+    this.nodes = this.nodes.map((node) => {
+      if (node.id !== nodeId) return node;
+      return {
+        ...node,
+        data: {
+          ...(node.data || {}),
+          image: imageName,
+          ...defaults, 
+          environment: {
+            ...(node.data?.environment || {}),
+            ...(defaults.environment || {}),
+          }
+        },
+      };
+    });
 
-  return { nodes: this.nodes, edges: this.edges };
-}
+    return { nodes: this.nodes, edges: this.edges };
+  }
 
   getNodeNewNamesByType(type: string): string {
     const prefix = type.charAt(0).toUpperCase() + type.slice(1);
@@ -190,7 +190,7 @@ class EditorStateService {
 
          return vType === "bind"
           ? { path: `${localPath}:${containerPath}` }
-          : { path: `/:${containerPath}`, size: vNode.data?.size || "1GB" };
+          : { path: `${containerPath}`, size: vNode.data?.size || "1GB" };
         });
         
         const networks = this.nodes

@@ -200,6 +200,7 @@ export class ReactFlowService {
     appDto.services?.forEach((service, serviceIndex) => {
       service.volumes?.forEach((volume, volumeIndex) => {
         const volumeId = `volume-${serviceIndex}-${volumeIndex}`;
+        debugger
         nodes.push({
           id: volumeId,
           type: "volume",
