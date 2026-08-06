@@ -10,7 +10,8 @@ import {
   RefreshCcw,
   Trash,
   Layers2,
-  UploadCloud
+  UploadCloud,
+  LayoutTemplate
 } from 'lucide-react'
 import { AppService } from '@/lib/api/appService'
 import { RepositoryService } from '@/lib/api/repositoryService'
@@ -31,6 +32,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const [loading, setLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [uploadModal, setUploadModal] = useState(false);
+  const isTemplate = app.is_template ?? false;
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
   
@@ -96,8 +98,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
       services: app.services?.map(s => s.image).join(", ") || "",
       app_id: app.id,
       user_id: app.user_id,
-      //Aun no hay soporte para plantillas, por lo que se asume que no es plantilla
-      is_template: false,
+      is_template: app.is_template ?? false,
       is_uploaded: false
     };
 
@@ -156,10 +157,17 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         relative
       "
     >
-      <div className="flex items-start justify-between">
-        <h2 className="text-lg font-medium text-gray-800">
-          {app.name}
-        </h2>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-medium text-gray-800">
+            {app.name}
+          </h2>
+          {isTemplate && (
+            <span className="inline-flex items-center gap-1 mt-1 rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-700">
+              <LayoutTemplate size={12} /> Plantilla
+            </span>
+          )}
+        </div>
 
         <span
           className={`
@@ -185,36 +193,38 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
       </div>
 
       <div className="mt-auto flex gap-3 pt-2">
-        {active ? (
-          <>
-            <button
-              onClick={handleStop}
-              className="p-2 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition"
-            >
-              <Pause size={20} />
-            </button>
+        {!isTemplate && (
+          active ? (
+            <>
+              <button
+                onClick={handleStop}
+                className="p-2 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition"
+              >
+                <Pause size={20} />
+              </button>
 
-            <button
-              onClick={handleRestart}
-              className="p-2 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 transition"
-            >
-              <RefreshCcw size={20} />
-            </button>
+              <button
+                onClick={handleRestart}
+                className="p-2 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 transition"
+              >
+                <RefreshCcw size={20} />
+              </button>
 
+              <button
+                onClick={handleScale}
+                className="p-2 rounded-lg bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition"
+              >
+                <Layers2 size={20} />
+              </button>
+            </>
+          ) : (
             <button
-              onClick={handleScale}
-              className="p-2 rounded-lg bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition"
+              onClick={handleStart}
+              className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
             >
-              <Layers2 size={20} />
+              <Play size={20} />
             </button>
-          </>
-        ) : (
-          <button
-            onClick={handleStart}
-            className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
-          >
-            <Play size={20} />
-          </button>
+          )
         )}
 
         <button

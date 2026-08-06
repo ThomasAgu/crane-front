@@ -16,6 +16,7 @@ export interface AppDto {
   user_id: number
   status: string
   is_uploaded: boolean
+  is_template: boolean
 }
 
 export interface CreateAppDto {
@@ -27,6 +28,7 @@ export interface CreateAppDto {
   min_scale: number
   max_scale: number
   user_id: number
+  is_template: boolean
 }
 
 export interface StoreAppDto {

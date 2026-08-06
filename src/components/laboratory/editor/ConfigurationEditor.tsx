@@ -1,16 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { editorService } from "@/app/services/EditorService";
 import { AppService } from "@/lib/api/appService";
+import { AppDto } from "@/lib/dto/AppDto";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
-import { useUserId } from "@/hooks/useUserId";
 import styles from "./ConfigurationEditor.module.css";
 import { FileText, Copy, PlusCircle, Save } from "lucide-react";
 import CreationModal from "../CreationModal";
 
-const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean }> = ({ appId,  isSaved }) => {
+const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; selectedApp?: AppDto | null }> = ({ appId,  isSaved, selectedApp }) => {
   const [showMakefile, setShowMakefile] = useState(false);
   const [makefileContent, setMakefileContent] = useState("");
+  const [isTemplate, setIsTemplate] = useState<boolean>(selectedApp?.is_template ?? false);
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
 
@@ -61,14 +62,18 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean }>
   return payload;
 };
   
-  const userId = useUserId();
-  
+  useEffect(() => {
+    setIsTemplate(selectedApp?.is_template ?? false);
+  }, [selectedApp]);
+
   const handleCreateApp = async () => {
     const payload = prepareAndValidateApp();
-    if (!payload) return; // Si falló la validación, frena acá.
+    if (!payload) return;
 
     setIsCreating(true);
     try {
+      payload["is_template"] = isTemplate;
+
       await AppService.create(payload);
       showAlert("La aplicación se ha creado con éxito.", "success", "Creación Exitosa");
     } catch (err) {
@@ -89,6 +94,7 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean }>
     setIsCreating(true);
     try {
       payload["id"] = appId;
+      payload["is_template"] = isTemplate;
       await AppService.update(payload); 
       showAlert("La aplicación se ha actualizado con éxito.", "success", "Actualización Exitosa");
     } catch (err) {
@@ -142,6 +148,18 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean }>
       <div className={styles.wrapper}>
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Aplicación</h2>
+
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={isTemplate}
+              onChange={(event) => setIsTemplate(event.target.checked)}
+            />
+            Guardar como plantilla
+          </label>
+          <p className={styles.templateNote}>
+            Esta opción guarda el diseño como plantilla. Las plantillas guardan la estructura del proyecto, pero no pueden iniciarse, detenerse, reiniciarse ni escalarse.
+          </p>
 
           <button className={styles.mainButton} onClick={isSaved ? handleUpdateApp : handleCreateApp}>
             <Save size={20} />

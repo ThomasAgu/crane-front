@@ -124,7 +124,9 @@ const EditorBase: React.FC<EditorBaseProps> = ({
         <div className={actualEditor === "Configuracion" ? "block" : "hidden"}>
           <ConfigurationEditor 
             appId={appId} 
-            isSaved={!!selectedApp} />
+            isSaved={!!selectedApp}
+            selectedApp={selectedApp}
+          />
         </div>
       )}
     </div>

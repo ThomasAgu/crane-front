@@ -71,3 +71,24 @@
 .secondaryButtonBlue:hover {
   background: var(--light-blue-grey);
 }
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: var(--darkest);
+}
+
+.checkboxLabel input {
+  width: 16px;
+  height: 16px;
+}
+
+.templateNote {
+  margin: 0;
+  color: var(--greyest-blue);
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 520px;
+}

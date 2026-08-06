@@ -8,6 +8,7 @@ interface TemplateItemProps {
   services: number;
   rules: number;
   icon: React.ReactNode;
+  isTemplate?: boolean;
   onClick: () => void;
 }
 
@@ -17,6 +18,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
   services,
   rules,
   icon,
+  isTemplate = false,
   onClick 
 }) => {
   return (
@@ -26,7 +28,14 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
       </div>
 
       <div className="p-4">
-        <h2 className="text-base font-semibold text-gray-800">{title}</h2>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h2 className="text-base font-semibold text-gray-800">{title}</h2>
+          {isTemplate && (
+            <span className="rounded-full bg-purple-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-purple-700">
+              Plantilla
+            </span>
+          )}
+        </div>
         <p className="text-sm text-gray-500 mb-4">{description}</p>
 
         <div className="flex justify-between text-sm text-gray-700">

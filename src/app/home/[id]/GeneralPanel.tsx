@@ -15,24 +15,34 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
             <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Nombre de la aplicación</label>
             <p className="text-lg font-medium">{app.name}</p>
           </div>
-
-          <div>
-            <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Estado</label>
-            <div className="flex items-center mt-1">
-              <span className={`px-2 py-1 rounded text-xs font-bold ${appStatus === "Activo" ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {appStatus.toUpperCase()}
-              </span>
+          {app.is_template && (
+            <div>
+              <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Tipo</label>
+              <p className="text-md">Plantilla</p>
             </div>
-          </div>
+          )}
+          {!app.is_template && (
+            <>
+              <div>
+              <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Estado</label>
+              <div className="flex items-center mt-1">
+                <span className={`px-2 py-1 rounded text-xs font-bold ${appStatus === "Activo" ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {appStatus.toUpperCase()}
+                </span>
+              </div>
+            </div>
 
-          <div>
-            <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Escalado</label>
-            <p className="text-md">
-              Actual: <span className="font-bold">{app.current_scale}</span> 
-              <span className="text-slate-400 mx-2">|</span>
-              Rango: {app.min_scale} - {app.max_scale}
-            </p>
-          </div>
+            <div>
+              <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Escalado</label>
+              <p className="text-md">
+                Actual: <span className="font-bold">{app.current_scale}</span> 
+                <span className="text-slate-400 mx-2">|</span>
+                Rango: {app.min_scale} - {app.max_scale}
+              </p>
+            </div>
+          </>
+          )}
+          
         </section>
 
           {/* Timestamps */}

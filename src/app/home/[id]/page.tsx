@@ -24,9 +24,11 @@ const AppDetailView: FC = () => {
   const [logs, setLogs] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"general" | "stats" | "logs" | "alertas">("general");
+  const [isTemplate, setIsTemplate] = useState<boolean>(false);
 
     const fetchApp = useCallback(async () => {
     const res = await AppService.get(appId);
+    setIsTemplate(res?.is_template);
     setApp(res ?? {} as AppDto);
   }, [appId]);
 
@@ -75,9 +77,15 @@ const AppDetailView: FC = () => {
       <div className={styles.homeDetailPage} >
         <div className="flex gap-2 mb-4 border-b">
           <button className={`px-4 py-2 ${activeTab === "general" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("general")}>General</button>
-          <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
-          <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
-          <button className={`px-4 py-2 ${activeTab === "alertas" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("alertas")}>Alertas</button>
+          {!isTemplate && (
+            <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
+          )}
+          {!isTemplate && (
+              <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
+          )}
+          {!isTemplate && (
+            <button className={`px-4 py-2 ${activeTab === "alertas" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("alertas")}>Alertas</button>
+          )}
         </div>
 
         <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
