@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { AlertDto } from '@/lib/dto/AlertDto';
+import { AlertDto, AlertCreateDto } from '@/lib/dto/AlertDto';
 import { ActionDto } from '@/lib/dto/ActionDto';
 import PrometheusExpressionEditor from './PrometheusExpressionEditor';
 import InputText from './InputText';
 import { requiredValidator } from '@/lib/validators/RequiredValidator';
+import { prometheusExpressionValidator } from '@/lib/validators/PrometheusExpressionValidator';
 import styles from './AlertForm.module.css';
-import { X } from 'lucide-react';
+import { Info, X } from 'lucide-react';
 
 export interface AlertFormData {
   alert: string;
@@ -51,6 +52,8 @@ export class AlertFormController {
     }
     if (!this.data.expr?.trim()) {
       this.errors.expr = 'La expresión es requerida';
+    } else if (!prometheusExpressionValidator.isValid(this.data.expr)) {
+      this.errors.expr = prometheusExpressionValidator.message;
     }
     if (!this.data.for_time?.trim()) {
       this.errors.for_time = 'El tiempo es requerido';
@@ -62,11 +65,11 @@ export class AlertFormController {
     return Object.keys(this.errors).length === 0;
   }
 
-  static fromAlertDto(dto: AlertDto): AlertFormData {
+  static fromAlertDto(dto: AlertDto | AlertCreateDto): AlertFormData {
     return {
       alert: dto.alert,
       expr: dto.expr,
-      for_time: dto.for_time.toString(),
+      for_time: dto.for_time?.toString() || '5m',
       severity: dto.severity,
       summary: dto.summary,
       description: dto.description,
@@ -77,7 +80,7 @@ export class AlertFormController {
 }
 
 interface AlertFormProps {
-  initialData?: AlertDto;
+  initialData?: AlertDto | AlertCreateDto;
   onSubmit: (data: AlertFormData) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
@@ -309,7 +312,8 @@ export default function AlertForm({
               </option>
             ))}
           </select>
-          <small className={styles.fieldHelper}>Acción ejecutada cuando la alerta se activa</small>
+          
+          <small className={styles.fieldHelper}><Info />Acción ejecutada cuando la alerta se activa</small>
         </div>
 
         {/* Resolved Action */}
@@ -326,7 +330,10 @@ export default function AlertForm({
               </option>
             ))}
           </select>
-          <small className={styles.fieldHelper}>Acción ejecutada cuando la alerta se resuelve</small>
+          <small className={styles.fieldHelper}>
+            <Info />
+            Acción ejecutada cuando la alerta se resuelve
+          </small>
         </div>
       </div>
 

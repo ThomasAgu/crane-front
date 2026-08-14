@@ -1,4 +1,5 @@
 import type { ServiceDto } from './ServiceDto'
+import type { AlertDto, AlertCreateDto } from './AlertDto'
 
 export interface AppDto {
   id: number
@@ -17,6 +18,7 @@ export interface AppDto {
   status: string
   is_uploaded: boolean
   is_template: boolean
+  alerts?: AlertDto[]
 }
 
 export interface CreateAppDto {
@@ -29,6 +31,7 @@ export interface CreateAppDto {
   max_scale: number
   user_id: number
   is_template: boolean
+  alerts?: AlertCreateDto[]
 }
 
 export interface StoreAppDto {

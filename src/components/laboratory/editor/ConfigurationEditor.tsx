@@ -59,6 +59,27 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
     }
   }
 
+  const alerts = editorService.getAlerts();
+  if (alerts.length > 0) {
+    const invalidAlert = alerts.find(
+      (alert) =>
+        !alert.alert?.trim() ||
+        !alert.expr?.trim() ||
+        !alert.for_time?.toString().trim() ||
+        !alert.summary?.trim()
+    );
+
+    if (invalidAlert) {
+      showAlert(
+        "Hay alertas incompletas. Revisa nombre, expresión, duración y resumen de cada alerta.",
+        "error",
+        "Validación de Alertas"
+      );
+      return null;
+    }
+    payload.alerts = alerts;
+  }
+
   return payload;
 };
   
@@ -158,7 +179,7 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
             Guardar como plantilla
           </label>
           <p className={styles.templateNote}>
-            Esta opción guarda el diseño como plantilla. Las plantillas guardan la estructura del proyecto, pero no pueden iniciarse, detenerse, reiniciarse ni escalarse.
+            Esta opción guarda el diseño como plantilla. Las plantillas guardan la estructura del proyecto, pero no pueden iniciarse, detenerse, reiniciarse ni escalarse. Las alertas definidas sobre la template no seran creadas
           </p>
 
           <button className={styles.mainButton} onClick={isSaved ? handleUpdateApp : handleCreateApp}>

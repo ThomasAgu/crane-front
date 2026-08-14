@@ -1,0 +1,277 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.header {
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--darkest);
+  letter-spacing: 0.6px;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: #4b5563;
+  font-size: 0.875rem;
+  max-width: 640px;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-blue);
+  color: var(--white);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  width: 50%
+}
+
+.addButton:hover:not(:disabled) {
+  background: var(--primary-blue);
+}
+
+.addButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.closeError {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.formOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.formWrapper {
+  width: min(96%, 700px);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.15);
+}
+
+.alertsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loaderContainer,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  gap: 10px;
+  border: 1px dashed #d1d5db;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.emptyState h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #111827;
+}
+
+.emptyState p {
+  margin: 0;
+  color: #6b7280;
+  max-width: 520px;
+  text-align: center;
+}
+
+.emptyStateButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.alertsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.alertCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: white;
+  padding: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alertCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alertTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.severityBadge {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.severity-critical {
+  background: #dc2626;
+}
+
+.severity-warning {
+  background: #f59e0b;
+}
+
+.severity-info {
+  background: #2563eb;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.editButton,
+.deleteButton {
+  border: none;
+  background: #f3f4f6;
+  color: #111827;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.editButton:hover,
+.deleteButton:hover {
+  background: #e5e7eb;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.expression {
+  display: block;
+  background: #f3f4f6;
+  padding: 10px;
+  border-radius: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.description {
+  margin: 0;
+  color: #4b5563;
+}
+
+.metaGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaValue {
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

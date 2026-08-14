@@ -41,7 +41,13 @@ Abstracciones de almacenamiento que garantizan la persistencia del estado de los
 
 ---
 
-## 3. Ciclo de Vida: Del Canvas al Despliegue
+## 3. Gestor de alertas
+
+El editor de alertas permite definir politicas o reglas de escalado que estaran en continue funcionamiento cuando la aplicacion este corriendo. Cada alerta es definida por una funcion en PromQL que de ser de resultado verdadero la alerta sera disparada. 
+
+Las templates al no ser instanciadas, las alertas definidas sobre ellas no seran creadas.
+
+## 4. Ciclo de Vida: Del Canvas al Despliegue
 
 Una vez que la arquitectura visual es consistente y las conexiones entre puertos y redes han pasado la validación de tipado del canvas, el flujo de ejecución sigue estos pasos:
 

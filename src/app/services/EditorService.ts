@@ -2,10 +2,12 @@ import { Node, Edge } from "reactflow";
 import { rules } from "../../lib/helper/EditorRules";
 import { dockerDefaults } from "../../lib/helper/DockerDefaults";
 import { CreateAppDto } from "../../lib/dto/AppDto";
+import { AlertCreateDto, AlertDto } from "../../lib/dto/AlertDto";
 
 class EditorStateService {
   private nodes: Node[] = [];
   private edges: Edge[] = [];
+  private alerts: AlertCreateDto[] = [];
 
   getNodes() {
     return this.nodes;
@@ -21,6 +23,27 @@ class EditorStateService {
 
   setEdges(edges: Edge[]) {
     this.edges = edges;
+  }
+
+  getAlerts() {
+    return this.alerts;
+  }
+
+  setAlerts(alerts: (AlertCreateDto | AlertDto)[]) {
+    this.alerts = alerts.map((alert) => ({
+      alert: alert.alert,
+      expr: alert.expr,
+      for_time: String(alert.for_time),
+      severity: alert.severity,
+      summary: alert.summary,
+      description: alert.description,
+      firing_action: alert.firing_action,
+      resolved_action: alert.resolved_action,
+    }));
+  }
+
+  clearAlerts() {
+    this.alerts = [];
   }
 
   updateState(nodes: Node[], edges: Edge[]) {
@@ -238,6 +261,10 @@ class EditorStateService {
       max_scale: appNode?.data?.maximas ?? 2,
       user_id: appNode?.data?.user_id ?? null,
     };
+
+    if (this.alerts.length > 0) {
+      payload.alerts = this.alerts;
+    }
 
     return payload;
   }

@@ -6,10 +6,10 @@ import styles from "./EditorBase.module.css"
 import double_expand from "../../../public/double_expand.svg";
 import double_collapse from "../../../public/double_collapse.svg";
 
-import SimulationEditor from "./SimulationEditor";
 import ConfigurationEditor from "./ConfigurationEditor";
+import AlertEditor from "./AlertEditor";
 
-type EditorState = "Edicion" | "Simulacion" | "Configuracion";
+type EditorState = "Edicion" | "Alertas" | "Configuracion";
 
 interface EditorBaseProps {
   appId?: number | null;
@@ -34,7 +34,7 @@ const EditorBase: React.FC<EditorBaseProps> = ({
   const [actualEditor, setActualEditor] = useState("Edicion");
   const editorStates: EditorState[] = [
     "Edicion",
-    "Simulacion",
+    "Alertas",
     "Configuracion",
   ];
 
@@ -114,8 +114,8 @@ const EditorBase: React.FC<EditorBaseProps> = ({
 
       {/* Pestaña de Simulación */}
       {active && (
-        <div className={actualEditor === "Simulacion" ? "block" : "hidden"}>
-          <SimulationEditor />
+        <div className={actualEditor === "Alertas" ? "block" : "hidden"}>
+          <AlertEditor appId={appId} selectedApp={selectedApp} />
         </div>
       )}
 
