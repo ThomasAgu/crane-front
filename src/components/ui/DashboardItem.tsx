@@ -27,12 +27,16 @@ interface DashboardItemProps {
 
 export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const createdAtText = app?.created_at ? new Date(app.created_at).toLocaleDateString() : "—";
+  const repositoryUpdatedAtText = app?.repository_updated_at
+    ? new Date(app.repository_updated_at).toLocaleDateString()
+    : "—";
   const router = useRouter();
   const [active, setActive] = useState(app.status !== 'Stopped');
   const [loading, setLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [uploadModal, setUploadModal] = useState(false);
   const isTemplate = app.is_template ?? false;
+  const repositoryPending = app.repository_state === 'pending';
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
   
@@ -90,8 +94,6 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const handleUploadSubmit = async (formData: RepositoryFormData) => {
     setLoading(true);
     setUploadModal(false);
-    console.log(app);
-    debugger
     const repositoryData = {
       name: formData.name,
       description: formData.description,
@@ -99,7 +101,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
       app_id: app.id,
       user_id: app.user_id,
       is_template: app.is_template ?? false,
-      is_uploaded: false
+      is_uploaded: app.is_uploaded
     };
 
     try {
@@ -121,7 +123,11 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
       
       onUpdate(); // Refresca los datos del dashboard para capturar el nuevo estado `is_uploaded`
     } catch (error) {
-      showAlert("Ocurrió un error al intentar procesar la solicitud.", "error", "Error");
+      showAlert(
+        error instanceof Error ? error.message : "Ocurrió un error al intentar procesar la solicitud.",
+        "error",
+        "No se pudo procesar la solicitud"
+      );
     } finally {
       setLoading(false);
     }
@@ -182,9 +188,11 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
       <div className="text-sm text-gray-600 flex flex-col gap-1">
         <p>Escala actual: {app.current_scale}</p>
         <p>Creado: {createdAtText}</p>
-        {/* Indicador visual opcional del estado en el repositorio */}
+        <p>Última actualización del repositorio: {repositoryUpdatedAtText}</p>
         <p className="text-xs mt-1">
-          Estado Repo: {app.is_uploaded ? (
+          Estado Repo: {repositoryPending ? (
+            <span className="text-grey-600 font-semibold">Pendiente de aprobacion</span>
+          ) : app.is_uploaded ? (
             <span className="text-blue-600 font-semibold">Publicado</span>
           ) : (
             <span className="text-gray-700 font-semibold">No publicado</span>
@@ -229,12 +237,17 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
 
         <button
           onClick={handleUploadClick}
+          disabled={repositoryPending || loading}
           className={`p-2 rounded-lg transition ${
-            app.is_uploaded 
+            repositoryPending
+              ? 'bg-gray-100 text-gray-700 cursor-not-allowed'
+              : app.is_uploaded 
               ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+              : 'bg-blue-100 text-gray-700 hover:bg-blue-200' 
           }`}
-          title={app.is_uploaded ? "Actualizar datos en repositorio" : "Subir al repositorio"}
+          title={repositoryPending
+            ? "Solicitud pendiente de aprobación"
+            : app.is_uploaded ? "Actualizar datos en repositorio" : "Subir al repositorio"}
         >
           <UploadCloud size={20} />
         </button>

@@ -18,6 +18,8 @@ export interface AppDto {
   status: string
   is_uploaded: boolean
   is_template: boolean
+  repository_state?: 'pending' | 'approved' | 'rejected' | null
+  repository_updated_at?: string | null
   alerts?: AlertDto[]
 }
 
