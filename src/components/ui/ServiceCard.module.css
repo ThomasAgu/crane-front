@@ -1,0 +1,15 @@
+.card { overflow: hidden; border: 1px solid #dfe7f1; border-radius: 10px; background: #fff; box-shadow: 0 4px 14px rgba(37, 57, 91, .05); }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px 17px; border-bottom: 1px solid #e6edf5; background: #f7faff; }
+.header > div { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.header h3 { margin: 0; color: #263750; font-size: 1rem; overflow-wrap: anywhere; }
+.header code { max-width: 50%; overflow: hidden; color: #2563eb; font-family: var(--font-geist-mono), monospace; font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
+.number { color: #8ba0bd; font-family: var(--font-geist-mono), monospace; font-size: .7rem; font-weight: 700; }
+.body { display: flex; flex-direction: column; gap: 15px; padding: 17px; }
+.infoBlock, .subsection { display: flex; flex-direction: column; gap: 6px; }
+.infoBlock h4, .subsection h4 { margin: 0; color: #74839a; font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.infoBlock > span { color: #33445c; font-size: .85rem; }
+.infoBlock pre { max-height: 180px; margin: 0; overflow: auto; padding: 10px; border: 1px solid #e5ebf3; border-radius: 6px; color: #475569; background: #f8fafc; font-family: var(--font-geist-mono), monospace; font-size: .73rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.chipList { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip { padding: 5px 9px; border: 1px solid #dbe5f0; border-radius: 6px; color: #40536e; background: #f8fafc; font-family: var(--font-geist-mono), monospace; font-size: .73rem; overflow-wrap: anywhere; }
+.empty { margin: 0; color: #94a3b8; font-size: .8rem; font-style: italic; }
+@media (max-width: 520px) { .header { align-items: flex-start; flex-direction: column; } .header code { max-width: 100%; } }

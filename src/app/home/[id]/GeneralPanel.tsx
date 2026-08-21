@@ -1,5 +1,8 @@
 import React, { FC } from "react";
 import { AppDto } from "@/lib/dto/AppDto";
+import ServiceCard from "@/components/ui/ServiceCard";
+import NetworkList from "@/components/ui/NetworkList";
+import EnvironmentVariables from "@/components/ui/EnvironmentVariables";
 
 // Helper to format dates cleanly
 const formatDate = (dateStr: string) => {
@@ -62,21 +65,14 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
       <div className="grid grid-cols-1 gap-8">
         <div>
           <h3 className="text-lg font-semibold mb-3">Servicios ({app.services.length})</h3>
-          <div className="bg-slate-50 rounded border border-slate-200">
-            {app.services.map((service, index) => (
-              <div key={index} className="p-3 border-b last:border-b-0 flex justify-between items-center">
-                <div>
-                  <span className="font-mono font-bold text-blue-600">{service.name}</span>
-                  <span className="ml-3 text-sm text-slate-500">Image: {service.image}</span>
-                </div>
-                <div className="flex gap-1">
-                  {service.networks?.map(net => (
-                    <span key={net} className="bg-slate-200 text-[10px] px-2 py-0.5 rounded-full">{net}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 gap-4">
+            {app.services.map((service, index) => <ServiceCard key={`${service.name}-${index}`} service={service} index={index} />)}
           </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Redes</h3>
+          <NetworkList networks={app.services.flatMap((service) => service.networks ?? [])} services={app.services} />
         </div>
 
         <div>
@@ -88,6 +84,11 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
               </li>
             ))}
           </ul>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Variables de entorno</h3>
+          <EnvironmentVariables variables={app.environment} />
         </div>
       </div>
     </div>

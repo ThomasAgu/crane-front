@@ -1,0 +1,7 @@
+.list { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e1e8f1; border-radius: 8px; background: #f8fafc; }
+.row { display: grid; grid-template-columns: minmax(120px, .8fr) minmax(0, 1.5fr); gap: 16px; padding: 10px 12px; border-bottom: 1px solid #e7edf5; }
+.row:last-child { border-bottom: 0; }
+.key { min-width: 0; color: #536680; font-size: .75rem; font-weight: 700; overflow-wrap: anywhere; }
+.value { min-width: 0; color: #334155; font-size: .75rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.empty { margin: 0; color: #94a3b8; font-size: .8rem; font-style: italic; }
+@media (max-width: 520px) { .row { grid-template-columns: 1fr; gap: 4px; } .value { color: #526176; } }

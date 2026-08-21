@@ -83,7 +83,6 @@ export default function Store() {
       try {
         const apps = await RepositoryService.getRepositories();
         setStoreItems(apps.filter((app) => app.state === "approved"));
-
         setPendingCount(apps.filter((app) => app.state === "pending").length);
         setOnHoldStoreItems(apps.filter((app) => app.state === "pending"));
       } catch (error) {
@@ -182,6 +181,10 @@ export default function Store() {
     router.push(`/laboratory/`);
   }, []);
 
+  const handleViewDetails = useCallback((repositoryId: number) => {
+    router.push(`/store/${repositoryId}`);
+  }, [router]);
+
   const handleApprove = useCallback(async (appId: number) => {
     try {
       const updatedItem = await RepositoryService.approveRepository(
@@ -277,7 +280,7 @@ export default function Store() {
 
         <hr className={styles.divider} />
         {loading ? (
-          <div className="mt-6">
+          <div className="mt-6 m-auto flex items-center justify-center">
             <Loader loading={loading} width={80} height={80} />
           </div>
         ) : (
@@ -291,6 +294,7 @@ export default function Store() {
                       item={item as onHoldRepositoryDto}
                       onApprove={handleApprove}
                       onReject={handleReject}
+                      onViewDetails={handleViewDetails}
                     />
                   );
                 }
@@ -301,6 +305,7 @@ export default function Store() {
                     onVote={handleVote}
                     onToggleFavorite={handleToggleFavorite}
                     onDownload={handleDownload}
+                    onViewDetails={handleViewDetails}
                   />
                 );
               })

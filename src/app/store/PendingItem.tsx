@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, X, Calendar, LayoutTemplate, AppWindow } from 'lucide-react';
+import { Check, X, Calendar, LayoutTemplate, AppWindow, ArrowRight } from 'lucide-react';
 import { onHoldRepositoryDto } from '@/lib/dto/RepositoryDto';
 import styles from './store.module.css';
 
@@ -7,9 +7,10 @@ interface PendingItemProps {
   item: onHoldRepositoryDto;
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
+  onViewDetails: (id: number) => void;
 }
 
-export const PendingItem: React.FC<PendingItemProps> = ({ item, onApprove, onReject }) => {
+export const PendingItem: React.FC<PendingItemProps> = ({ item, onApprove, onReject, onViewDetails }) => {
   const isTemplate = item.is_template ?? false;
   
   const formatDate = (d?: string | Date) => 
@@ -39,6 +40,10 @@ export const PendingItem: React.FC<PendingItemProps> = ({ item, onApprove, onRej
       </div>
 
       <div className={styles.modernFooterPending}>
+        <button onClick={() => onViewDetails(item.id)} className={styles.detailsButton}>
+          <span>Ver detalle</span>
+          <ArrowRight size={15} />
+        </button>
         <button onClick={() => onReject(item.id)} className={styles.actionRejectBtn}>
           <X size={15} /> Rechazar
         </button>

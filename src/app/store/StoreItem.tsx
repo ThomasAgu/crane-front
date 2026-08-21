@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './store.module.css';
-import { ArrowUp, ArrowDown, Star, Download, LayoutTemplate, AppWindow, Calendar, RefreshCw } from 'lucide-react';
+import { ArrowUp, ArrowDown, Star, Download, LayoutTemplate, AppWindow, Calendar, RefreshCw, ArrowRight } from 'lucide-react';
 import { RepositoryDto } from '@/lib/dto/RepositoryDto';
 
 interface AppItemProps {
@@ -8,9 +8,10 @@ interface AppItemProps {
   onVote: (appId: number, type: 'up' | 'down') => void;
   onToggleFavorite: (appId: number) => void;
   onDownload: (appId: number) => void;
+  onViewDetails: (repositoryId: number) => void;
 }
 
-export const AppItem: React.FC<AppItemProps> = ({ item, onVote, onToggleFavorite, onDownload }) => {
+export const AppItem: React.FC<AppItemProps> = ({ item, onVote, onToggleFavorite, onDownload, onViewDetails }) => {
   const isTemplate = item.is_template ?? false;
   const isUp = item.is_voted_positive;
   const isDown = item.is_voted_negative;
@@ -62,6 +63,10 @@ export const AppItem: React.FC<AppItemProps> = ({ item, onVote, onToggleFavorite
 
       {/* Footer Minimalista (Sin fondos pesados) */}
       <div className={styles.modernFooter}>
+        <button onClick={() => onViewDetails(item.id)} className={styles.detailsButton}>
+          <span>Ver detalle</span>
+          <ArrowRight size={15} />
+        </button>
         <button onClick={() => onDownload(item.id)} className={styles.modernDownloadBtn}>
           <Download size={15} />
           <span>{item.downloads}</span>
