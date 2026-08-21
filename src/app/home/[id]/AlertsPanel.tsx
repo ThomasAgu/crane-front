@@ -7,9 +7,10 @@ import AlertForm, { AlertFormData, AlertFormController } from '@/components/form
 import DeleteModal from '@/components/ui/DeleteModal'
 import { useAlert, AlertSnackbar } from '@/components/ui/AlertSnackbar'
 import styles from './AlertsPanel.module.css'
-import { Plus, Edit2, Trash2, AlertCircle, Loader } from 'lucide-react'
+import { Plus, AlertCircle, Loader } from 'lucide-react'
 import { ActionService } from '@/lib/api/actionService'
 import { AlertService } from '@/lib/api/alertService'
+import AlertCard from '@/components/ui/AlertCard'
 
 interface AlertsPanelProps {
   appId: string
@@ -40,7 +41,6 @@ export default function AlertsPanel({ appId }: AlertsPanelProps) {
     try {
       const actions = await ActionService.get_all();
       setActions(actions)
-      debugger
     } catch(err) {
       console.log(err)
     }
@@ -212,73 +212,7 @@ export default function AlertsPanel({ appId }: AlertsPanelProps) {
         {!loading && alerts.length > 0 && (
           <div className={styles.alertsList}>
             {alerts.map((alert) => (
-              <div key={alert.id} className={styles.alertCard}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.titleSection}>
-                    <h3 className={styles.alertTitle}>{alert.alert}</h3>
-                    <span className={`${styles.severityBadge} ${styles[`severity-${alert.severity}`]}`}>
-                      {alert.severity}
-                    </span>
-                  </div>
-                  <div className={styles.actions}>
-                    <button
-                      className={styles.editButton}
-                      onClick={() => handleEditClick(alert)}
-                      title="Editar alerta"
-                      disabled={isSubmitting}
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDeleteClick(alert)}
-                      title="Eliminar alerta"
-                      disabled={isSubmitting}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className={styles.cardContent}>
-                  <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Expresión:</label>
-                    <code className={styles.expression}>{alert.expr}</code>
-                  </div>
-
-                  <div className={styles.field}>
-                    <label className={styles.fieldLabel}>Descripción:</label>
-                    <p className={styles.description}>{alert.description || 'Sin descripción'}</p>
-                  </div>
-
-                  <div className={styles.metaGrid}>
-                    <div className={styles.metaItem}>
-                      <label className={styles.fieldLabel}>Duración:</label>
-                      <span className={styles.metaValue}>
-                        {typeof alert.for_time === 'number'
-                          ? `${alert.for_time}s`
-                          : alert.for_time}
-                      </span>
-                    </div>
-                    <div className={styles.metaItem}>
-                      <label className={styles.fieldLabel}>Severidad:</label>
-                      <span className={styles.metaValue}>{alert.severity}</span>
-                    </div>
-                    {alert.firing_action && (
-                      <div className={styles.metaItem}>
-                        <label className={styles.fieldLabel}>Acción (Activación):</label>
-                        <span className={styles.metaValue}>{alert.firing_action}</span>
-                      </div>
-                    )}
-                    {alert.resolved_action && (
-                      <div className={styles.metaItem}>
-                        <label className={styles.fieldLabel}>Acción (Resolución):</label>
-                        <span className={styles.metaValue}>{alert.resolved_action}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <AlertCard key={alert.id} alert={alert} onEdit={handleEditClick} onDelete={handleDeleteClick} disabled={isSubmitting} />
             ))}
           </div>
         )}

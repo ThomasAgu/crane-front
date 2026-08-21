@@ -15,7 +15,6 @@ export const RequirePermission = ({
   loadingFallback = null
 }: Props) => {
   const { hasPermission, loading, permissions } = usePermissions();
-  
   if (loading) return loadingFallback;
   if (!hasPermission(object, action)) return null;
   return <>{children}</>;

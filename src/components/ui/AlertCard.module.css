@@ -1,0 +1,32 @@
+.card {
+  padding: 18px;
+  border: 1px solid #dfe7f1;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(37, 57, 91, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card:hover { border-color: #93b4ee; box-shadow: 0 8px 20px rgba(37, 57, 91, 0.09); }
+.header { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 13px; border-bottom: 1px solid #edf1f6; }
+.titleSection { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; min-width: 0; }
+.header h3 { margin: 0; color: #27364d; font-size: 1.05rem; font-weight: 700; overflow-wrap: anywhere; }
+.severity { padding: 4px 8px; border-radius: 5px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
+.severity-critical { color: #b42318; background: #fee4e2; }
+.severity-warning { color: #a16207; background: #fef3c7; }
+.severity-info { color: #1769aa; background: #e0f2fe; }
+.actions { display: flex; gap: 7px; flex-shrink: 0; }
+.editButton, .deleteButton { display: flex; padding: 6px; border: 0; border-radius: 5px; color: #64748b; background: #f1f5f9; cursor: pointer; }
+.editButton:hover:not(:disabled) { color: #2563eb; background: #dbeafe; }
+.deleteButton:hover:not(:disabled) { color: #dc2626; background: #fee2e2; }
+.editButton:disabled, .deleteButton:disabled { opacity: .5; cursor: not-allowed; }
+.content { display: flex; flex-direction: column; gap: 14px; padding-top: 15px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.label { color: #718096; font-size: .69rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.expression { padding: 9px 10px; overflow-x: auto; border: 1px solid #e4eaf2; border-radius: 6px; color: #334155; background: #f8fafc; font-family: var(--font-geist-mono), monospace; font-size: .77rem; line-height: 1.4; }
+.description { margin: 0; color: #5d6b7f; font-size: .88rem; line-height: 1.5; }
+.metaGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
+.metaGrid > div { display: flex; flex-direction: column; gap: 4px; }
+.metaGrid strong { color: #34445c; font-size: .85rem; overflow-wrap: anywhere; }
+
+@media (max-width: 520px) { .header { align-items: flex-start; flex-direction: column; } }

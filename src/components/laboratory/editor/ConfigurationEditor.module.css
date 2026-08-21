@@ -13,9 +13,8 @@
 
 .sectionTitle {
   font-weight: 600;
-  font-size: 15px;
-  color: var(--greyest-blue);
-  text-transform: uppercase;
+  font-size: 18px;
+  color: var(--darkest);
   letter-spacing: 0.6px;
 }
 
@@ -31,7 +30,7 @@
   font-size: 15px;
   font-weight: 500;
   transition: 0.15s;
-  width: 80%;
+  width: 90%;
 }
 
 .mainButton:hover {
@@ -71,4 +70,25 @@
 
 .secondaryButtonBlue:hover {
   background: var(--light-blue-grey);
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: var(--darkest);
+}
+
+.checkboxLabel input {
+  width: 16px;
+  height: 16px;
+}
+
+.templateNote {
+  margin: 0;
+  color: var(--greyest-blue);
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 520px;
 }

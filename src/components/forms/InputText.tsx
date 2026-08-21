@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Validator } from '@/lib/validators/ValidatorInterface';
 import styles from './InputText.module.css'
+import { requiredValidator } from '@/lib/validators/RequiredValidator';
 
 interface props {
     label: string;
@@ -62,10 +63,26 @@ const InputText: React.FC<props> = ({
     };
 
     useEffect(() => {
+        const checkIsValid = () => {
+            for (const validator of [...liveValidators, ...submitValidators]) {
+                if (!validator.isValid(value)) {
+                    
+                    if (showErrors || liveValidators.includes(validator)) {
+                        setError(validator.message);
+                        return false;
+                    }
+                }
+            }
+            setError(null);
+            return true;
+        };
+
+        const valid = checkIsValid();
+        
         if (onValidityChange) {
-            onValidityChange(isValid());
+            onValidityChange(valid);
         }
-    }, [value]);
+    }, [value, showErrors]);
 
     useEffect(() => {
         if (showErrors && submitValidators.length > 0) {
@@ -79,9 +96,15 @@ const InputText: React.FC<props> = ({
         }
     }, [showErrors]);
 
+    const hasRequiredValidator = () => {
+        const validators = [...liveValidators, ...submitValidators];
+        return validators.some(v => v === requiredValidator);
+    }
+
     return (
         <main>
-            <label className={styles.label}>{label} <span className={styles.requiredMark}>*</span></label>
+            {/* Si no tiene requiredValidator entonces no deberia tener la marca */}
+            <label className={styles.label}>{label} {hasRequiredValidator() && <span className={styles.requiredMark}>*</span>}</label>
             <div className={styles.inputWrapper}>
                 {(imagesrc && imagealt) && <Image
                     src={imagesrc}

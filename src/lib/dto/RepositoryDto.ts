@@ -15,6 +15,7 @@ export interface RepositoryDto {
   created_at?: string | Date;
   updated_at?: string | Date; 
   deleted_at?: string | Date;
+  is_template: boolean;
 }
 
 export interface onHoldRepositoryDto {
@@ -29,8 +30,8 @@ export interface onHoldRepositoryDto {
   created_at?: string | Date;
   updated_at?: string | Date; 
   deleted_at?: string | Date;
+  is_template: boolean;
 }
-
 
 export interface CreateRepositoryDto {
   name: string;
@@ -38,4 +39,6 @@ export interface CreateRepositoryDto {
   services: string;
   user_id: number;
   app_id: number;
+  is_template: boolean;
+  is_uploaded: boolean;
 }

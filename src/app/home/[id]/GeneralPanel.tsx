@@ -1,5 +1,8 @@
 import React, { FC } from "react";
 import { AppDto } from "@/lib/dto/AppDto";
+import ServiceCard from "@/components/ui/ServiceCard";
+import NetworkList from "@/components/ui/NetworkList";
+import EnvironmentVariables from "@/components/ui/EnvironmentVariables";
 
 // Helper to format dates cleanly
 const formatDate = (dateStr: string) => {
@@ -15,24 +18,34 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
             <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Nombre de la aplicación</label>
             <p className="text-lg font-medium">{app.name}</p>
           </div>
-
-          <div>
-            <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Estado</label>
-            <div className="flex items-center mt-1">
-              <span className={`px-2 py-1 rounded text-xs font-bold ${appStatus === "Activo" ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {appStatus.toUpperCase()}
-              </span>
+          {app.is_template && (
+            <div>
+              <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Tipo</label>
+              <p className="text-md">Plantilla</p>
             </div>
-          </div>
+          )}
+          {!app.is_template && (
+            <>
+              <div>
+              <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Estado</label>
+              <div className="flex items-center mt-1">
+                <span className={`px-2 py-1 rounded text-xs font-bold ${appStatus === "Activo" ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {appStatus.toUpperCase()}
+                </span>
+              </div>
+            </div>
 
-          <div>
-            <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Escalado</label>
-            <p className="text-md">
-              Actual: <span className="font-bold">{app.current_scale}</span> 
-              <span className="text-slate-400 mx-2">|</span>
-              Rango: {app.min_scale} - {app.max_scale}
-            </p>
-          </div>
+            <div>
+              <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Escalado</label>
+              <p className="text-md">
+                Actual: <span className="font-bold">{app.current_scale}</span> 
+                <span className="text-slate-400 mx-2">|</span>
+                Rango: {app.min_scale} - {app.max_scale}
+              </p>
+            </div>
+          </>
+          )}
+          
         </section>
 
           {/* Timestamps */}
@@ -52,21 +65,14 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
       <div className="grid grid-cols-1 gap-8">
         <div>
           <h3 className="text-lg font-semibold mb-3">Servicios ({app.services.length})</h3>
-          <div className="bg-slate-50 rounded border border-slate-200">
-            {app.services.map((service, index) => (
-              <div key={index} className="p-3 border-b last:border-b-0 flex justify-between items-center">
-                <div>
-                  <span className="font-mono font-bold text-blue-600">{service.name}</span>
-                  <span className="ml-3 text-sm text-slate-500">Image: {service.image}</span>
-                </div>
-                <div className="flex gap-1">
-                  {service.networks?.map(net => (
-                    <span key={net} className="bg-slate-200 text-[10px] px-2 py-0.5 rounded-full">{net}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 gap-4">
+            {app.services.map((service, index) => <ServiceCard key={`${service.name}-${index}`} service={service} index={index} />)}
           </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Redes</h3>
+          <NetworkList networks={app.services.flatMap((service) => service.networks ?? [])} services={app.services} />
         </div>
 
         <div>
@@ -78,6 +84,11 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
               </li>
             ))}
           </ul>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Variables de entorno</h3>
+          <EnvironmentVariables variables={app.environment} />
         </div>
       </div>
     </div>

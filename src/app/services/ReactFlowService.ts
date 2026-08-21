@@ -110,94 +110,119 @@ export class ReactFlowService {
   }
   
   getGraphForApp(appDto: AppDto): { nodes: Node[]; edges: Edge[] } {
-       const nodes: Node[] = [];
-        const edges: Edge[] = [];
+    const nodes: Node[] = [];
+    const edges: Edge[] = [];
+    // Add the main App node
+    nodes.push({
+      id: `app-${appDto.id}`,
+      type: "app",
+      position: { x: 0, y: 0 },
+      data: {
+        name: appDto.name,
+        description: "Aplicación personalizada",
+        actuales: appDto.current_scale,
+        environment: appDto.environment || []
+      },
+    });
 
-        // Add the main App node
+        // Add Service nodes
+    appDto.services?.forEach((service, index) => {
+      const serviceId = `service-${index}`;
+      nodes.push({
+        id: serviceId,
+        type: "service",
+        position: { x: 300, y: index * 150 },
+        data: {
+          name: service.name,
+          image: service.image,
+          labels: service.labels || [],
+          ports: service.ports?.join(", ") || "N/A",
+          command: service?.command || "",
+          restartPolicy: service?.restart_policy || "",
+          environment: service.environment ?? {},
+          //Falta startup script
+        },
+      });
+
+      // Connect App node to Service node
+      edges.push({
+        id: `edge-app-${serviceId}`,
+        source: `app-${appDto.id}`,
+        target: serviceId,
+      });
+    });
+
+    //Add network nodes
+    const uniqueNetworksMap = new Map();
+
+    appDto.services?.forEach((service) => {
+      service.networks?.forEach((net) => {
+        if (!uniqueNetworksMap.has(net.name)) {
+          uniqueNetworksMap.set(net.name, net);
+        }
+      });
+    });
+
+
+    const uniqueNetworks = Array.from(uniqueNetworksMap.values());
+
+    uniqueNetworks.forEach((network, index) => {
+      const networkId = `network-${network.name}`; // ID único basado en el nombre de la red
+      
+      nodes.push({
+        id: networkId,
+        type: "network",
+        position: { x: 600, y: index * 150 }, // Se posicionan verticalmente sin solaparse
+        data: {
+          name: network.name,
+          address: network.address || "192.168.0.1",
+          driver: network.driver,
+          gateway: network.gateway,
+        },
+      });
+    });
+
+    appDto.services?.forEach((service, serviceIndex) => {
+      const serviceId = `service-${serviceIndex}`; // Asegurate de que coincida con cómo generás los nodos de servicio
+
+      service.networks?.forEach((net) => {
+        const networkId = `network-${net.name}`;
+        
+        edges.push({
+          id: `edge-${serviceId}-${networkId}`,
+          source: serviceId,
+          target: networkId,
+        });
+      });
+    });
+    
+    // Add Volume nodes (if any)
+    appDto.services?.forEach((service, serviceIndex) => {
+      service.volumes?.forEach((volume, volumeIndex) => {
+        const volumeId = `volume-${serviceIndex}-${volumeIndex}`;
+        debugger
         nodes.push({
-          id: `app-${appDto.id}`,
-          type: "app",
-          position: { x: 0, y: 0 },
+          id: volumeId,
+          type: "volume",
+          position: { x: 900, y: serviceIndex * 150 + volumeIndex * 50 },
           data: {
-            name: appDto.name,
-            description: "Aplicación personalizada",
-            actuales: appDto.current_scale,
+            name: `Volumen ${volumeIndex + 1}`,
+            containerPath: volume?.path || '',
+            localPath: `/data/${volumeIndex}`,
+            size: volume?.size || 20,
           },
         });
 
-        // Add Service nodes
-        appDto.services?.forEach((service, index) => {
-          const serviceId = `service-${index}`;
-          nodes.push({
-            id: serviceId,
-            type: "service",
-            position: { x: 300, y: index * 150 },
-            data: {
-              name: service.name,
-              image: service.image,
-              ports: service.ports?.join(", ") || "N/A",
-              labels: service.labels || [],
-            },
-          });
-
-          // Connect App node to Service node
-          edges.push({
-            id: `edge-app-${serviceId}`,
-            source: `app-${appDto.id}`,
-            target: serviceId,
-          });
-        });
-
-        // Add Network nodes (if any)
-        appDto.hosts?.forEach((host, index) => {
-          const networkId = `network-${index}`;
-          nodes.push({
-            id: networkId,
-            type: "network",
-            position: { x: 600, y: index * 150 },
-            data: {
-              name: `Red ${index + 1}`,
-              address: host.address || "192.168.0.1",
-            },
-          });
-
-          // Connect Service nodes to Network node
-          appDto.services?.forEach((_, serviceIndex) => {
-            edges.push({
-              id: `edge-service-${serviceIndex}-network-${index}`,
-              source: `service-${serviceIndex}`,
-              target: networkId,
-            });
-          });
-        });
-
-        // Add Volume nodes (if any)
-        appDto.services?.forEach((service, serviceIndex) => {
-          service.volumes?.forEach((volume, volumeIndex) => {
-            const volumeId = `volume-${serviceIndex}-${volumeIndex}`;
-            nodes.push({
-              id: volumeId,
-              type: "volume",
-              position: { x: 900, y: serviceIndex * 150 + volumeIndex * 50 },
-              data: {
-                name: `Volumen ${volumeIndex + 1}`,
-                containerPath: volume,
-                localPath: `/data/${volumeIndex}`,
-                size: 20,
-              },
-            });
-
             // Connect Service node to Volume node
-            edges.push({
-              id: `edge-service-${serviceIndex}-volume-${volumeIndex}`,
-              source: `service-${serviceIndex}`,
-              target: volumeId,
-            });
-          });
+        edges.push({
+          id: `edge-service-${serviceIndex}-volume-${volumeIndex}`,
+          source: `service-${serviceIndex}`,
+          target: volumeId,
         });
+      });
+    });
 
-        return { nodes, edges };
-    
+  return { nodes, edges };  
   }
 }
 

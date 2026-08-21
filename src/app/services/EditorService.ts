@@ -2,10 +2,12 @@ import { Node, Edge } from "reactflow";
 import { rules } from "../../lib/helper/EditorRules";
 import { dockerDefaults } from "../../lib/helper/DockerDefaults";
 import { CreateAppDto } from "../../lib/dto/AppDto";
+import { AlertCreateDto, AlertDto } from "../../lib/dto/AlertDto";
 
 class EditorStateService {
   private nodes: Node[] = [];
   private edges: Edge[] = [];
+  private alerts: AlertCreateDto[] = [];
 
   getNodes() {
     return this.nodes;
@@ -23,6 +25,27 @@ class EditorStateService {
     this.edges = edges;
   }
 
+  getAlerts() {
+    return this.alerts;
+  }
+
+  setAlerts(alerts: (AlertCreateDto | AlertDto)[]) {
+    this.alerts = alerts.map((alert) => ({
+      alert: alert.alert,
+      expr: alert.expr,
+      for_time: String(alert.for_time),
+      severity: alert.severity,
+      summary: alert.summary,
+      description: alert.description,
+      firing_action: alert.firing_action,
+      resolved_action: alert.resolved_action,
+    }));
+  }
+
+  clearAlerts() {
+    this.alerts = [];
+  }
+
   updateState(nodes: Node[], edges: Edge[]) {
     this.nodes = nodes;
     this.edges = edges;
@@ -33,29 +56,37 @@ class EditorStateService {
   }
 
   setNodeData(nodeId: string, partialData: Record<string, any>) {
-    const idx = this.nodes.findIndex((n) => n.id === nodeId);
-    if (idx === -1) return;
-    const node = this.nodes[idx];
-    this.nodes[idx] = {
-      ...node,
-      data: {
-        ...(node.data || {}),
-        ...partialData,
-      },
-    };
+    this.nodes = this.nodes.map((node) => {
+      if (node.id !== nodeId) return node;
+      return {
+        ...node,
+        data: {
+          ...(node.data || {}),
+          ...partialData,
+        },
+      };
+    });
   }
 
   applyImageDefaultsToNode(nodeId: string, imageName: string) {
     const defaults = dockerDefaults[imageName];
     if (!defaults) return { nodes: this.nodes, edges: this.edges };
 
-    const node = this.getNodeById(nodeId);
-    if (!node) return { nodes: this.nodes, edges: this.edges };
-
-    node.data = {
-      ...(node.data || {}),
-      image: imageName,
-    };
+    this.nodes = this.nodes.map((node) => {
+      if (node.id !== nodeId) return node;
+      return {
+        ...node,
+        data: {
+          ...(node.data || {}),
+          image: imageName,
+          ...defaults, 
+          environment: {
+            ...(node.data?.environment || {}),
+            ...(defaults.environment || {}),
+          }
+        },
+      };
+    });
 
     return { nodes: this.nodes, edges: this.edges };
   }
@@ -107,6 +138,18 @@ class EditorStateService {
     return allowed;
   }
 
+  isValidEdgeConnection(sourceId: string, targetId: string): boolean {
+    const sourceNode = this.getNodeById(sourceId);
+    const targetNode = this.getNodeById(targetId);
+
+    if (!sourceNode || !targetNode) return false;
+
+    const rule = rules.find((r) => r.type === sourceNode.type);
+    if (!rule) return false;
+
+    return rule.possibleConnectionTypes.includes(targetNode.type?? "");
+  }
+
   private getConnectedNodeDataByType(
     selectedNode: Node,
     targetType: string
@@ -141,7 +184,7 @@ class EditorStateService {
     return this.getConnectedNodeDataByType(selectedNode, "service");
   }
 
-  private formatAppName = (name: string) => {
+  private formatName = (name: string) => {
     const lowercased = name.toLowerCase();
     const formatted = lowercased.replace(/\s/g, "");
     return formatted;
@@ -149,7 +192,7 @@ class EditorStateService {
 
   exportAppDto(): CreateAppDto {
     const appNode = this.nodes.find((n) => n.type === "app");
-    const appName = this.formatAppName(appNode?.data.name);
+    const appName = this.formatName(appNode?.data.name);
 
     const services = this.nodes
       .filter((n) => n.type === "service")
@@ -162,32 +205,49 @@ class EditorStateService {
         );
 
         const volumes = this.nodes
-          .filter((n) => connectedIds.includes(n.id) && n.type === "volume")
-          .map((vNode) => {
-            const containerPath = vNode.data?.containerPath || "/data";
-            const localPath = vNode.data?.localPath || "/";
-            return `${localPath}:${containerPath}`;
-          });
+        .filter((n) => connectedIds.includes(n.id) && n.type === "volume")
+        .map((vNode) => {
+          const containerPath = vNode.data?.containerPath || "";
+          const localPath = vNode.data?.localPath || "";
+          const vType = vNode.data?.type || "volume";
 
+         return vType === "bind"
+          ? { path: `${localPath}:${containerPath}` }
+          : { path: `${containerPath}`, size: vNode.data?.size || "1GB" };
+        });
+        
         const networks = this.nodes
           .filter((n) => connectedIds.includes(n.id) && n.type === "network")
-          .map(
-            (net) =>
-              net.data?.name || net.data?.address || net.id || "net-crane"
-          );
-
+          .map((netNode) => ({
+            name: this.formatName(netNode.data.name),
+            driver: netNode.data.driver,
+            address: netNode.data.address,
+            mask: netNode.data.mask,
+            gateway: netNode.data.gateway,
+          }));
+  
         return {
-          name: svc.data?.image || "",
+          name: this.formatName(svc.data?.name),
           image: svc.data?.image || "",
           ports: Array.isArray(svc.data?.ports)
             ? svc.data.ports
             : typeof svc.data?.ports === "string" && svc.data?.ports.length
             ? svc.data.ports.split(",").map((p: string) => p.trim())
             : [],
-          labels: Array.isArray(svc.data?.labels) ? svc.data.labels : [],
+          labels: Array.isArray(svc.data?.labels) ? svc.data.labels.map((l: string) => l.trim()) : [],
           volumes: volumes,
           networks,
           environment: svc.data?.environment || {},
+                    
+          // Comando (CMD) de Docker
+          command: svc.data?.command || null,
+          
+          // Política de reinicio (ej: "unless-stopped", "always")
+          restart_policy: svc.data?.restartPolicy || "unless-stopped",
+
+          // Array de archivos/scripts de arranque cargados. Estructura: [{ name: string, content: string, type: string }]
+          startup_scripts: svc.data?.startupScripts || []
+
         } as any;
       });
       
@@ -196,10 +256,15 @@ class EditorStateService {
       services,
       hosts: appNode?.data?.hosts ?? [""],
       current_scale: appNode?.data?.actuales ?? 1,
+      environment: appNode?.data?.environment ?? {},
       min_scale: appNode?.data?.minimas ?? 1,
       max_scale: appNode?.data?.maximas ?? 2,
       user_id: appNode?.data?.user_id ?? null,
     };
+
+    if (this.alerts.length > 0) {
+      payload.alerts = this.alerts;
+    }
 
     return payload;
   }

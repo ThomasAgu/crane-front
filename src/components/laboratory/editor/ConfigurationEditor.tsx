@@ -1,46 +1,141 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { editorService } from "@/app/services/EditorService";
 import { AppService } from "@/lib/api/appService";
+import { AppDto } from "@/lib/dto/AppDto";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
-import { useUserId } from "@/hooks/useUserId";
 import styles from "./ConfigurationEditor.module.css";
 import { FileText, Copy, PlusCircle, Save } from "lucide-react";
+import CreationModal from "../CreationModal";
 
-const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
+const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; selectedApp?: AppDto | null }> = ({ appId,  isSaved, selectedApp }) => {
   const [showMakefile, setShowMakefile] = useState(false);
   const [makefileContent, setMakefileContent] = useState("");
+  const [isTemplate, setIsTemplate] = useState<boolean>(selectedApp?.is_template ?? false);
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
-  const userId = useUserId();
+
+  const [isCreating, setIsCreating] = useState(false);
+
+  const prepareAndValidateApp = (): any | null => {
+  const payload = editorService.exportAppDto();
+
+  if (!payload.name) {
+    showAlert("No se detectó un nombre de aplicación", "error", "Validación Requerida");
+    return null;
+  }
+  
+  if (!payload.services || payload.services.length === 0) {
+    showAlert("No se detectaron servicios en el diagrama. Agrega al menos un servicio para crear la aplicación.", "error", "Validación Requerida");
+    return null;
+  }
+
+  if (payload.services.some((s) => !s.name || s.name.trim() === "")) {
+    showAlert("Todos los servicios deben tener un nombre definido.", "error", "Validación Requerida");
+    return null;
+  }
+
+  if (payload.services.some((s) => !s.image)) {
+    showAlert("Todos los servicios deben tener una imagen definida.", "error", "Validación Requerida");
+    return null;
+  }
+
+  // Volúmenes
+  const allVolumes = payload.services.flatMap((s) => s.volumes || []);
+  for (const v of allVolumes) {
+    const errors = validateVolume(v);
+    if (errors.length > 0) {
+      showAlert(errors.join("\n"), "error", "Validación Requerida");
+      return null;
+    }
+  }
+
+  // Redes
+  const allNetworks = payload.services.flatMap((s) => s.networks || []);
+  for (const net of allNetworks) {
+    if (typeof net.name !== "string" || net.name.trim() === "") {
+      showAlert("Todas las redes deben tener un nombre definido.", "error", "Validación Requerida");
+      return null;
+    }
+  }
+
+  const alerts = editorService.getAlerts();
+  if (alerts.length > 0) {
+    const invalidAlert = alerts.find(
+      (alert) =>
+        !alert.alert?.trim() ||
+        !alert.expr?.trim() ||
+        !alert.for_time?.toString().trim() ||
+        !alert.summary?.trim()
+    );
+
+    if (invalidAlert) {
+      showAlert(
+        "Hay alertas incompletas. Revisa nombre, expresión, duración y resumen de cada alerta.",
+        "error",
+        "Validación de Alertas"
+      );
+      return null;
+    }
+    payload.alerts = alerts;
+  }
+
+  return payload;
+};
+  
+  useEffect(() => {
+    setIsTemplate(selectedApp?.is_template ?? false);
+  }, [selectedApp]);
 
   const handleCreateApp = async () => {
+    const payload = prepareAndValidateApp();
+    if (!payload) return;
+
+    setIsCreating(true);
     try {
-      const payload = editorService.exportAppDto();
-      debugger
-      if (!payload.name || (payload.services?.length ?? 0) === 0) {
-        showAlert(
-          "No se detectó un nombre de aplicación o no hay servicios en el diagrama.",
-          "warning",
-          "Validación Requerida"
-        );
-        return;
-      }
-      await AppService.create(payload as any);
-      showAlert(
-        "La aplicación se ha creado con éxito.",
-        "success",
-        "Creación Exitosa"
-      );
+      payload["is_template"] = isTemplate;
+
+      await AppService.create(payload);
+      showAlert("La aplicación se ha creado con éxito.", "success", "Creación Exitosa");
     } catch (err) {
-      console.error(err);
-      showAlert(
-        "Hubo un error al intentar crear la aplicación.",
-        "error",
-        "Error en la Creación"
-      );
+      if (err instanceof Error && err.message.includes("App with this name already exists")) {
+        showAlert("Ya tienes una aplicación con ese nombre. Por favor, elige un nombre diferente.", "error", "Nombre de Aplicación Duplicado");
+      } else {
+        showAlert("Hubo un error al intentar crear la aplicación.", "error", "Error en la Creación");
+      }
+    } finally {
+      setIsCreating(false);
     }
   };
+
+  const handleUpdateApp = async () => {
+    const payload = prepareAndValidateApp();
+    if (!payload) return;
+
+    setIsCreating(true);
+    try {
+      payload["id"] = appId;
+      payload["is_template"] = isTemplate;
+      await AppService.update(payload); 
+      showAlert("La aplicación se ha actualizado con éxito.", "success", "Actualización Exitosa");
+    } catch (err) {
+      showAlert("Hubo un error al intentar actualizar la aplicación.", "error", "Error en la Actualización");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  function validateVolume(v: any) {
+    const errors = [];
+    const pathRegex = /^\/:(\/[A-Za-z0-9._-]+)+$/;
+
+    if (typeof v.path !== "string" || !pathRegex.test(v.path)) {
+      errors.push(
+        `El path '${v.path}' no es válido. Debe tener forma '/:/folder/subfolder'.`
+      );
+    }
+    return errors;
+  }
 
   const handleSeeMakefile = () => {
     const payload = editorService.exportAppDto();
@@ -73,19 +168,26 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
     <div>
       <div className={styles.wrapper}>
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Aplicación</h3>
+          <h2 className={styles.sectionTitle}>Aplicación</h2>
 
-          {isSaved ? (
-            <button className={styles.mainButton} onClick={handleCreateApp}>
-              <Save size={20} />
-              <span>Guardar</span>
-            </button>
-          ) : (
-            <button className={styles.mainButton} onClick={handleCreateApp}>
-              <PlusCircle size={20} />
-              <span>Crear</span>
-            </button>
-          )}
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={isTemplate}
+              onChange={(event) => setIsTemplate(event.target.checked)}
+            />
+            Guardar como plantilla
+          </label>
+          <p className={styles.templateNote}>
+            Esta opción guarda el diseño como plantilla. Las plantillas guardan la estructura del proyecto, pero no pueden iniciarse, detenerse, reiniciarse ni escalarse. Las alertas definidas sobre la template no seran creadas
+          </p>
+
+          <button className={styles.mainButton} onClick={isSaved ? handleUpdateApp : handleCreateApp}>
+            <Save size={20} />
+            <span>
+              {isCreating ? "Creando..." : isSaved ? "Guardar" : "Crear"}
+            </span>
+          </button>
         </div>
 
         <div className={styles.section}>
@@ -117,7 +219,7 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
 
       {showMakefile && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 text-darkest"
           onClick={() => setShowMakefile(false)}
         >
           <div
@@ -129,7 +231,7 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
 
               <div className="flex gap-2">
                 <button
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-white bg-primary-blue hover:bg-light-blue-grey transition"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-white bg-[var(--primary-blue)] border hover:bg-blue-700 transition"
                   onClick={async () => {
                     await navigator.clipboard.writeText(makefileContent);
                     showAlert("Makefile copiado al portapapeles.", "success");
@@ -140,7 +242,7 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
                 </button>
 
                 <button
-                  className="px-4 py-2 rounded-lg text-white bg-error hover:bg-red-700 transition"
+                  className="px-4 py-2 rounded-lg text-darkest border hover:bg-gray-500 hover:text-white transition"
                   onClick={() => setShowMakefile(false)}
                 >
                   Cancelar
@@ -154,8 +256,9 @@ const ConfurationEditor: React.FC<{ isSaved: boolean }> = ({ isSaved }) => {
           </div>
         </div>
       )}
+      <CreationModal open={isCreating} />
     </div>
   );
 };
 
-export default ConfurationEditor;
+export default ConfigurationEditor;

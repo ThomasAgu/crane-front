@@ -3,15 +3,29 @@ export interface ServiceDto {
   image: string
   command?: string
   ports?: string[]
-  volumes?: string[]
-  networks?: string[]
+  volumes?: Array<VolumeDto | string>
+  networks?: Array<NetworkDto | string>
   labels?: string[]
   environment?: Record<string, string>
-  startupScripts?: string[] // Array of file names or paths
+  restart_policy?: string;
+  startupScripts?: string[]
+}
+
+export interface VolumeDto {
+  path: string
+  size?: number | null
+}
+
+export interface NetworkDto {
+  name: string
+  driver?: string | null
+  address?: string | null
+  mask?: number | string | null
+  gateway?: string | null
 }
 
 export interface StartupScript {
   name: string
-  content: string // Base64 or file content
-  type: string // File type (e.g., 'sql', 'sh', 'js')
+  content: string
+  type: string
 }

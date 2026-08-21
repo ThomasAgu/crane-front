@@ -34,8 +34,9 @@ export default function LoginForm() {
       const result = await AuthService.login(data);
       localStorage.setItem("access_token", result.access_token);
       localStorage.setItem("token_type", result.token_type);
-        await refreshPermissions();
-        router.push("/home");
+      //Setear el expiration time
+      await refreshPermissions();
+      router.push("/home");
     } catch (err) {
       setApiError("Error al iniciar sesión");
     } finally {

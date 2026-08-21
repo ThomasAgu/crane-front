@@ -7,7 +7,7 @@ export interface UserDto {
 }
 
 export interface UserDataDto {
-    id: string;
+    id: number;
     full_name: string;
     email: string;
     username: string;

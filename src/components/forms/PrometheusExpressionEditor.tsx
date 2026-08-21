@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './PrometheusExpressionEditor.module.css';
 import { AlertCircle, Info } from 'lucide-react';
+import { prometheusExpressionValidator } from '@/lib/validators/PrometheusExpressionValidator';
 
 interface PrometheusExpressionEditorProps {
   value: string;
@@ -82,7 +83,11 @@ export default function PrometheusExpressionEditor({
         {value && value.trim() && (
           <div className={styles.validationInfo}>
             <AlertCircle size={16} />
-            <span>La expresión será validada por el servidor</span>
+            <span>
+              {prometheusExpressionValidator.isValid(value)
+                ? 'La expresión se ve válida sintácticamente. Se validará también en el servidor.'
+                : prometheusExpressionValidator.message}
+            </span>
           </div>
         )}
       </div>

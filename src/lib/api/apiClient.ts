@@ -26,8 +26,9 @@ async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ message: "Error desconocido" }));
-    throw new Error(errorData.message || `Error ${response.status}: ${endpoint}`);
+    const errorData = await response.json().catch(() => null);
+    const errorMessage = errorData?.detail || errorData?.message || `Error ${response.status}: ${endpoint}`;
+    throw new Error(errorMessage);
   }
   
   return response.json();

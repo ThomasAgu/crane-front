@@ -1,0 +1,14 @@
+.list { display: grid; gap: 10px; }
+.network { overflow: hidden; border: 1px solid #d9e4f0; border-radius: 8px; background: #f8fbff; }
+.network header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid #e1eaf4; }
+.icon { color: #0ea5e9; font-size: 1.1rem; }
+.network strong { color: #2b405d; font-size: .85rem; overflow-wrap: anywhere; }
+.driver { margin-left: auto; padding: 3px 7px; border-radius: 4px; color: #1769aa; background: #e0f2fe; font-family: var(--font-geist-mono), monospace; font-size: .65rem; text-transform: uppercase; }
+.network dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; padding: 10px 12px; }
+.network dl div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.network dt { color: #8795a8; font-size: .63rem; font-weight: 700; text-transform: uppercase; }
+.network dd { margin: 0; color: #465974; font-family: var(--font-geist-mono), monospace; font-size: .72rem; overflow-wrap: anywhere; }
+.network footer { padding: 8px 12px; border-top: 1px solid #e1eaf4; color: #687990; font-size: .7rem; overflow-wrap: anywhere; }
+.compact .network dl { display: none; }
+.empty { margin: 0; color: #94a3b8; font-size: .8rem; font-style: italic; }
+@media (max-width: 520px) { .network dl { grid-template-columns: 1fr; } }

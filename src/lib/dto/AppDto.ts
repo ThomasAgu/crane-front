@@ -1,10 +1,12 @@
 import type { ServiceDto } from './ServiceDto'
+import type { AlertDto, AlertCreateDto } from './AlertDto'
 
 export interface AppDto {
   id: number
   name: string
   services: ServiceDto[]
   hosts?: Record<string, unknown>[] | null
+  environment?: Record<string, string> | null
   min_scale?: number | null
   current_scale?: number | null
   max_scale?: number | null
@@ -14,16 +16,24 @@ export interface AppDto {
   deleted_at: string
   user_id: number
   status: string
+  is_uploaded: boolean
+  is_template: boolean
+  repository_state?: 'pending' | 'approved' | 'rejected' | null
+  repository_updated_at?: string | null
+  alerts?: AlertDto[]
 }
 
 export interface CreateAppDto {
   name: string
   services?: ServiceDto[]
   hosts?: Record<string, unknown>[] | null
+  environment?: Record<string, string> | null
   current_scale: number
   min_scale: number
   max_scale: number
   user_id: number
+  is_template: boolean
+  alerts?: AlertCreateDto[]
 }
 
 export interface StoreAppDto {

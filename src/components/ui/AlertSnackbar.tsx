@@ -1,4 +1,3 @@
-// AlertSnackbar.tsx
 import React, { useState, useCallback } from "react";
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';

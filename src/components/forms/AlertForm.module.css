@@ -6,7 +6,7 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  
 }
 
 .formHeader {
@@ -75,6 +75,7 @@
   font-size: 0.95rem;
   font-family: inherit;
   transition: border-color 0.2s;
+  color: var(--darker)
 }
 
 .select:focus,
@@ -129,9 +130,11 @@
 
 .fieldHelper {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--primary-blue);
   margin-top: 2px;
-}
+  display: flex;
+  align-items: center;
+  gap: 4px;}
 
 .formFooter {
   display: flex;

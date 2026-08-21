@@ -1,15 +1,14 @@
-"use client";
-import { useApps } from "@/hooks/useApps";
+// src/app/documentacion/page.tsx
 import NavBar from "../../components/layout/NavBar";
-import Loader from "@/components/ui/Loader";
+import DocsClient from "./DocsClient";
+import { getDocsSections } from "./docsRegistry";
 
-export default function HomePage() {
-  
+export default function DocumentationPage() {
+  const sections = getDocsSections();
+
   return (
-    <main >
-      <NavBar>
-        <h1>Documentation</h1>
-      </NavBar>
-    </main>
+    <NavBar>
+      <DocsClient sections={sections} />
+    </NavBar>
   );
 }
