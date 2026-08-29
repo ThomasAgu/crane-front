@@ -120,7 +120,7 @@ export default function ContextMenu({ position, addNode, nodes, onDeleteNode }: 
                   onClick={() => onDeleteNode(position.nodeId!)}
                 >
                   {Icons.trash}
-                  <span>Eliminar Recurso</span>
+                  <span>Eliminar Nodo</span>
                 </button>
               </div>
             )}

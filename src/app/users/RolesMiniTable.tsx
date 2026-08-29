@@ -1,35 +1,37 @@
-// RolesMiniTable.tsx
 import { RolesDto } from "@/lib/dto/RolesDto";
+import type { AlertSeverity } from "@/components/ui/AlertSnackbar";
+import styles from "./users.module.css";
 
 interface RolesMiniTableProps {
   roles: RolesDto[];
   onDelete: (id: number) => void;
   canDelete: (id: number) => boolean;
+  onShowAlert?: (message: string, severity: AlertSeverity, title?: string) => void;
 }
 
-export const RolesMiniTable: React.FC<RolesMiniTableProps> = ({ roles, onDelete, canDelete }) => {
+export const RolesMiniTable: React.FC<RolesMiniTableProps> = ({ roles, onDelete, canDelete, onShowAlert }) => {
   return (
-    <table className="admin-table">
+    <table className={styles.roleTable}>
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th className="text-right">Acciones</th>
+          <th className={styles.roleTableHead}>Nombre</th>
+          <th className={`${styles.roleTableHead} ${styles.roleTableAction}`}>Acciones</th>
         </tr>
       </thead>
       <tbody>
         {roles.map((role) => (
-          <tr key={role.id}>
-            <td>{role.id}</td>
-            <td className="font-medium">{role.name}</td>
-            <td className="text-right">
+          <tr key={role.id} className={styles.roleRow}>
+            <td className={`${styles.roleTableCell} ${styles.roleName}`}>{role.name}</td>
+            <td className={`${styles.roleTableCell} ${styles.roleTableAction}`}>
               <button
-                onClick={() => onDelete(role.id)}
+                onClick={() => {
+                  if (!canDelete(role.id)) return;
+                  onDelete(role.id);
+                  onShowAlert?.("El rol ha sido eliminado exitosamente.", "error", "Rol Eliminado");
+                }}
                 disabled={!canDelete(role.id)}
-                className={`text-xs px-3 py-1 rounded-md transition-all ${
-                  canDelete(role.id) 
-                    ? "text-[var(--error)] hover:bg-red-50 border border-[var(--error)]/20" 
-                    : "text-gray-300 cursor-not-allowed italic"
+                className={`${styles.roleActionButton} ${
+                  canDelete(role.id) ? styles.roleActionButtonEnabled : styles.roleActionButtonDisabled
                 }`}
               >
                 {canDelete(role.id) ? "Eliminar" : role.built_in ? "Built-in" : "En uso"}

@@ -5,6 +5,7 @@
   background: #fff;
   box-shadow: 0 4px 14px rgba(37, 57, 91, 0.05);
   transition: border-color 0.2s, box-shadow 0.2s;
+  z-index: 99999999;
 }
 
 .card:hover { border-color: #93b4ee; box-shadow: 0 8px 20px rgba(37, 57, 91, 0.09); }
