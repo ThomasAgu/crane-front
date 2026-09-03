@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import style from "styled-jsx/style";
 import Loader from "@/components/ui/Loader";
 
 interface KPICardProps {
@@ -20,7 +19,7 @@ interface KPICardProps {
  * Clean, stats-focused design without visualizations
  */
 export const KPICard: FC<KPICardProps> = ({ title, value, stats, color, loading }) => (
-    <div className="flex flex-col rounded-xl p-4 shadow-sm border border-gray-200 relative" style={stats?.avg !== undefined? { justifyContent: "space-between" }: {justifyContent: "center"}}>
+    <div className="relative flex flex-col rounded-xl border border-slate-200 bg-[var(--surface)] p-4 shadow-sm" style={stats?.avg !== undefined? { justifyContent: "space-between" }: {justifyContent: "center"}}>
     
 
     {loading && (

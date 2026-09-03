@@ -7,6 +7,7 @@ import Image from "next/image";
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useUserId } from '@/hooks/useUserId';
 
 interface ProfileDropdownProps {
   expanded: boolean;
@@ -15,6 +16,8 @@ interface ProfileDropdownProps {
 
 const ProfileDropdown = ({ expanded, handleLogout }: ProfileDropdownProps) => {
   const [profileOpen, setProfileOpen] = useState(false);
+  const userId = useUserId();
+  const profileHref = userId ? `/profile/${userId}` : '/profile';
 
   return (
     <div className="mt-auto w-full relative pt-4 border-t border-white/10 shrink-0">
@@ -58,7 +61,7 @@ const ProfileDropdown = ({ expanded, handleLogout }: ProfileDropdownProps) => {
             ${expanded ? "bottom-14 left-0 w-full" : "bottom-0 left-16"}
           `}
         >
-          <Link href="/profile" onClick={() => setProfileOpen(false)}>
+          <Link href={profileHref} onClick={() => setProfileOpen(false)}>
             <button className="w-full text-left text-sm text-gray-200 hover:bg-slate-700 px-3 py-2 rounded transition-colors">
               Perfil
             </button>

@@ -11,7 +11,7 @@ const formatDate = (dateStr: string) => {
 
 export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appStatus }) => {
   return (
-    <div className="pl-6 text-slate-800 bg-white rounded-lg">
+    <div className="rounded-2xl border border-slate-200 bg-[var(--surface)] p-6 text-slate-800 shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <section className="space-y-4">
           <div>
@@ -49,7 +49,7 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
         </section>
 
           {/* Timestamps */}
-        <section className="space-y-4 bg-slate-50 p-4 rounded-md">
+        <section className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <div>
             <label className="text-xs font-semibold text-slate-500 italic">Creado el</label>
             <p className="text-sm">{formatDate(app.created_at)}</p>
@@ -61,22 +61,22 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
         </section>
       </div>
 
-      <hr className="my-8 text-gray-200" />
+      <hr className="my-8 border-slate-200" />
       <div className="grid grid-cols-1 gap-8">
         <div>
-          <h3 className="text-lg font-semibold mb-3">Servicios ({app.services.length})</h3>
+          <h3 className="mb-3 text-lg font-semibold text-slate-900">Servicios ({app.services.length})</h3>
           <div className="grid grid-cols-1 gap-4">
             {app.services.map((service, index) => <ServiceCard key={`${service.name}-${index}`} service={service} index={index} />)}
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold mb-3">Redes</h3>
+          <h3 className="mb-3 text-lg font-semibold text-slate-900">Redes</h3>
           <NetworkList networks={app.services.flatMap((service) => service.networks ?? [])} services={app.services} />
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold mb-3">Hosts</h3>
+          <h3 className="mb-3 text-lg font-semibold text-slate-900">Hosts</h3>
           <ul className="list-disc list-inside space-y-1">
             {app.hosts?.map((host: any, index) => (
               <li key={index} className="text-blue-500 hover:underline cursor-default font-mono text-sm">
@@ -87,7 +87,7 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold mb-3">Variables de entorno</h3>
+          <h3 className="mb-3 text-lg font-semibold text-slate-900">Variables de entorno</h3>
           <EnvironmentVariables variables={app.environment} />
         </div>
       </div>

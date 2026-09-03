@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { UserDataDto } from '@/lib/dto/UserDto';
 import { UserService } from '@/lib/api/userService';
@@ -133,7 +134,9 @@ export default function GroupMemberManager({
                 <li key={member.id} className={styles.memberItem}>
                   <div className={styles.memberInfoWrapper}>
                     <div className={styles.avatarFallback}>{initial}</div>
-                    <span className={styles.memberEmail}>{member.email}</span>
+                    <Link href={`/profile/${member.id}`} className={styles.memberEmail}>
+                      {member.email}
+                    </Link>
                   </div>
                   <RequirePermission object="GROUPS" action="DELETE">
                     <button

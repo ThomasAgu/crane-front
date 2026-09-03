@@ -6,23 +6,25 @@
     flex-direction: column;
     justify-content: top;
     align-items: center;
-    background-color: var(--white);
+    background-color: var(--background);
 }
 
 .noAppsContainer {
-    background-color: white;
+    background-color: var(--background);
     text-align: center;
     padding: 10px 90px;
 }
 
 .appsContainer {
-    background-color: white;
+    background-color: var(--background);
     text-align: center;
     padding: 10px 90px;
     width: 80vw;
 }
 
 .homeDetailPage {
-    background-color: white;
-    padding: 10px 90px;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--background);
+    padding: 32px clamp(20px, 6vw, 90px) 56px;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Check, X } from "lucide-react";
@@ -107,7 +108,14 @@ export default function StoreItemDetail() {
             <dl className={styles.infoList}>
               <div><dt>ID</dt><dd>{app.id}</dd></div>
               <div><dt>Estado</dt><dd>{app.status}</dd></div>
-              <div><dt>Usuario</dt><dd>{app.user_id}</dd></div>
+              <div>
+                <dt>Usuario</dt>
+                <dd>
+                  <Link href={`/profile/${app.user_id}`} className="text-blue-300 hover:text-blue-200 underline">
+                    #{app.user_id}
+                  </Link>
+                </dd>
+              </div>
               <div><dt>Plantilla</dt><dd>{app.is_template ? "Sí" : "No"}</dd></div>
               <div><dt>Subida</dt><dd>{app.is_uploaded ? "Sí" : "No"}</dd></div>
               <div><dt>Creada</dt><dd>{formatDate(app.created_at)}</dd></div>

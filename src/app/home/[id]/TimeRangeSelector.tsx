@@ -17,7 +17,7 @@ interface Props {
 export default function TimeRangeSelector({ timeRange, setTimeRange, appStatus }: Props) {
   return (
     <div>
-      <div className="text-gray-700 mt-1 gap-2 flex items-center">
+      <div className="mt-1 flex flex-wrap items-center gap-2">
         {ranges.map((r) => {
           const isActive = timeRange === r.value;
           
@@ -31,12 +31,12 @@ export default function TimeRangeSelector({ timeRange, setTimeRange, appStatus }
               onClick={() => setTimeRange(r.value as TimeRange)}
               title={isDisabled ? "Tiempo real solo disponible si la app está activa" : ""}
               className={`
-                px-3 py-1 rounded-xl transition text-sm font-medium
+                rounded-lg border px-3 py-2 text-sm font-semibold transition
                 ${isDisabled 
-                  ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" 
+                  ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400" 
                   : isActive
-                    ? "bg-blue-600 text-white shadow-md cursor-pointer" 
-                    : "bg-transparent text-blue-500 border border-blue-500 hover:bg-blue-50 cursor-pointer"
+                    ? "cursor-pointer border-blue-600 bg-blue-600 text-white shadow-sm" 
+                    : "cursor-pointer border-slate-300 bg-white text-blue-700 hover:border-blue-400 hover:bg-blue-50"
                 }               
               `}
             >

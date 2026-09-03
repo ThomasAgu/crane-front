@@ -1,15 +1,15 @@
 "use client";
-import { useApps } from "@/hooks/useApps";
-import NavBar from "../../components/layout/NavBar";
-import Loader from "@/components/ui/Loader";
 
-export default function HomePage() {
-  
+import NavBar from "../../components/layout/NavBar";
+import ProfileView from "@/components/profile/ProfileView";
+import { useUserId } from "@/hooks/useUserId";
+
+export default function ProfilePage() {
+  const userId = useUserId() ?? "1";
+
   return (
-    <main >
-      <NavBar>
-        <h1>Profile</h1>
-      </NavBar>
-    </main>
+    <NavBar>
+      <ProfileView userId={userId} />
+    </NavBar>
   );
 }

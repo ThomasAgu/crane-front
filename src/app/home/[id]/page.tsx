@@ -70,21 +70,21 @@ const AppDetailView: FC = () => {
     }
   };
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return <div className="min-h-screen bg-[var(--background)] p-8 text-slate-500">Cargando aplicación...</div>;
 
   return (
     <NavBar>
       <div className={styles.homeDetailPage} >
-        <div className="flex gap-2 mb-4 border-b">
-          <button className={`px-4 py-2 ${activeTab === "general" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("general")}>General</button>
+        <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white/80 p-1 shadow-sm">
+          <button className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === "general" ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`} onClick={() => setActiveTab("general")}>General</button>
           {!isTemplate && (
-            <button className={`px-4 py-2 ${activeTab === "stats" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("stats")}>Stats</button>
+            <button className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === "stats" ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`} onClick={() => setActiveTab("stats")}>Stats</button>
           )}
           {!isTemplate && (
-              <button className={`px-4 py-2 ${activeTab === "logs" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("logs")}>Logs</button>
+              <button className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === "logs" ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`} onClick={() => setActiveTab("logs")}>Logs</button>
           )}
           {!isTemplate && (
-            <button className={`px-4 py-2 ${activeTab === "alertas" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600"}`} onClick={() => setActiveTab("alertas")}>Alertas</button>
+            <button className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === "alertas" ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`} onClick={() => setActiveTab("alertas")}>Alertas</button>
           )}
         </div>
 
