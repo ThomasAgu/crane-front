@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TaskDto, TaskGroupCreateDto, TaskDetailsDto } from '@/lib/dto/TaskDto';
 import { TaskService } from '@/lib/api/taskService';
 import { Plus, Trash2, Calendar } from 'lucide-react';
@@ -32,6 +32,7 @@ export default function GroupTaskManager({
   const [error, setError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedTaskToDelete, setSelectedTaskToDelete] = useState<TaskDetailsDto | null>(null);
+  const userId = useUserId();
 
   // Obtener la fecha de hoy en formato local YYYY-MM-DD libre de desfases UTC
   const getTodayString = () => {
@@ -110,13 +111,12 @@ export default function GroupTaskManager({
     setError(null);
 
     try {
-      TaskService.removeTaskFromGroup(selectedTaskToDelete.id);
+      await TaskService.removeTaskFromGroup(selectedTaskToDelete.id);
       setShowDeleteModal(false);
       setSelectedTaskToDelete(null);
       onTaskUnassigned?.();
     } catch (err) {
       setError('Error al desasignar la tarea');
-      console.error('Error unassigning task:', err);
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +132,7 @@ export default function GroupTaskManager({
   const shouldShowTask = (task: any) => {
     const publishTime = new Date(task.publish_date + 'Z').getTime();
     const currentTime = Date.now();
-    return task.task.created_by === useUserId() || publishTime <= currentTime
+    return task.task.created_by === userId || publishTime <= currentTime;
   }
 
   return (

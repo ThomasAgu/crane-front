@@ -38,6 +38,7 @@ export default function StoreItemDetail() {
     try {
       setLoading(true);
       const repositoryData = await RepositoryService.getRepository(params.id);
+      debugger;
       const appData = await AppService.get(repositoryData.app_id.toString());
       setRepository(repositoryData);
       setApp(appData);
