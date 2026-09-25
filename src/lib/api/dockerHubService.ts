@@ -16,7 +16,12 @@ const searchDockerImages = (query: string) => {
 }
 
 const getImageDetails = (imageName: string) => {
-  return apiRequest<ImageDetails>(`/docker-hub/${imageName}/details`, "GET", undefined, false);
+  const encodedImageName = imageName
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/");
+
+  return apiRequest<ImageDetails>(`/docker-hub/${encodedImageName}/details`, "GET", undefined, false);
 };
 
 export const DockerHubService = {

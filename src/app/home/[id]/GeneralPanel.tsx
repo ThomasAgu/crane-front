@@ -3,6 +3,7 @@ import { AppDto } from "@/lib/dto/AppDto";
 import ServiceCard from "@/components/ui/ServiceCard";
 import NetworkList from "@/components/ui/NetworkList";
 import EnvironmentVariables from "@/components/ui/EnvironmentVariables";
+import AppHostLinks from "@/components/ui/AppHostLinks";
 
 // Helper to format dates cleanly
 const formatDate = (dateStr: string) => {
@@ -73,17 +74,6 @@ export const GeneralPanel: FC<{ app: AppDto; appStatus: string }> = ({ app, appS
         <div>
           <h3 className="mb-3 text-lg font-semibold text-slate-900">Redes</h3>
           <NetworkList networks={app.services.flatMap((service) => service.networks ?? [])} services={app.services} />
-        </div>
-
-        <div>
-          <h3 className="mb-3 text-lg font-semibold text-slate-900">Hosts</h3>
-          <ul className="list-disc list-inside space-y-1">
-            {app.hosts?.map((host: any, index) => (
-              <li key={index} className="text-blue-500 hover:underline cursor-default font-mono text-sm">
-                {host}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div>

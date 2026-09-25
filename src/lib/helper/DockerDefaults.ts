@@ -4,17 +4,17 @@
 export const dockerDefaults: Record<string, any> = {
   node: {
     ports: ["3000"],
-    volumes: ["/app"],
+    volumes: ["/:/app"],
   },
 
   nginx: {
     ports: ["80", "443"],
-    volumes: ["/usr/share/nginx/html"],
+    volumes: ["/:/usr/share/nginx/html"],
   },
 
   mysql: {
     ports: ["3306"],
-    volumes: ["/var/lib/mysql"],
+    volumes: ["/:/var/lib/mysql"],
     environment: {
       MYSQL_ROOT_PASSWORD: "rootpass",
       MYSQL_DATABASE: "mydb",
@@ -25,7 +25,7 @@ export const dockerDefaults: Record<string, any> = {
 
   postgres: {
     ports: ["5432"],
-    volumes: ["/var/lib/postgresql/data"],
+    volumes: ["/:/var/lib/postgresql/data"],
     environment: {
       POSTGRES_USER: "postgres",
       POSTGRES_PASSWORD: "password",
@@ -48,7 +48,7 @@ export const dockerDefaults: Record<string, any> = {
 
   mariadb: {
     ports: ["3306"],
-    volumes: ["/var/lib/mysql"],
+    volumes: ["/:/var/lib/mysql"],
     environment: {
       MARIADB_ROOT_PASSWORD: "rootpass",
       MARIADB_DATABASE: "mydb",
@@ -57,7 +57,7 @@ export const dockerDefaults: Record<string, any> = {
 
   rabbitmq: {
     ports: ["5672", "15672"],
-    volumes: ["/var/lib/rabbitmq"],
+    volumes: ["/:/var/lib/rabbitmq"],
     environment: {
       RABBITMQ_DEFAULT_USER: "admin",
       RABBITMQ_DEFAULT_PASS: "admin",
@@ -75,7 +75,7 @@ export const dockerDefaults: Record<string, any> = {
 
   elasticsearch: {
     ports: ["9200", "9300"],
-    volumes: ["/usr/share/elasticsearch/data"],
+    volumes: ["/:/usr/share/elasticsearch/data"],
     environment: {
       discoveryType: "single-node",
       ES_JAVA_OPTS: "-Xms512m -Xmx512m",
@@ -88,7 +88,7 @@ export const dockerDefaults: Record<string, any> = {
 
   grafana: {
     ports: ["3000"],
-    volumes: ["/var/lib/grafana"],
+    volumes: ["/:/var/lib/grafana"],
     environment: {
       GF_SECURITY_ADMIN_USER: "admin",
       GF_SECURITY_ADMIN_PASSWORD: "admin",
@@ -97,28 +97,28 @@ export const dockerDefaults: Record<string, any> = {
 
   prometheus: {
     ports: ["9090"],
-    volumes: ["/prometheus"],
+    volumes: ["/:/prometheus"],
   },
 
   jenkins: {
     ports: ["8080", "50000"],
     volumes: [
-      "/var/jenkins_home",
+      "/:/var/jenkins_home",
     ],
   },
 
   sonarqube: {
     ports: ["9000"],
     volumes: [
-      "/opt/sonarqube/data",
-      "/opt/sonarqube/extensions",
-      "/opt/sonarqube/logs",
+      "/:/opt/sonarqube/data",
+      "/:/opt/sonarqube/extensions",
+      "/:/opt/sonarqube/logs",
     ],
   },
 
   wordpress: {
     ports: ["80"],
-    volumes: ["/var/www/html"],
+    volumes: ["/:/var/www/html"],
     environment: {
       WORDPRESS_DB_HOST: "mysql",
       WORDPRESS_DB_USER: "user",
@@ -137,7 +137,7 @@ export const dockerDefaults: Record<string, any> = {
 
   minio: {
     ports: ["9000", "9001"],
-    volumes: ["/data"],
+    volumes: ["/:/data"],
     environment: {
       MINIO_ROOT_USER: "admin",
       MINIO_ROOT_PASSWORD: "password123",

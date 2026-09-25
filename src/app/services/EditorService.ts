@@ -55,6 +55,21 @@ class EditorStateService {
     return this.nodes.find((n) => n.id === nodeId);
   }
 
+  getNodeByServiceName(serviceName: string) {
+    const normalizedName = this.formatName(serviceName || "");
+    return this.nodes.find(
+      (node) => node.type === "service" && this.formatName(node.data?.name || "") === normalizedName
+    );
+  }
+
+  getServiceNodeByIndex(index: number) {
+    return this.nodes.filter((node) => node.type === "service")[index];
+  }
+
+  getAppNode() {
+    return this.nodes.find((node) => node.type === "app");
+  }
+
   setNodeData(nodeId: string, partialData: Record<string, any>) {
     this.nodes = this.nodes.map((node) => {
       if (node.id !== nodeId) return node;
@@ -213,7 +228,7 @@ class EditorStateService {
 
          return vType === "bind"
           ? { path: `${localPath}:${containerPath}` }
-          : { path: `${containerPath}`, size: vNode.data?.size || "1GB" };
+          : { path: `${containerPath}`};
         });
         
         const networks = this.nodes
@@ -260,6 +275,7 @@ class EditorStateService {
       min_scale: appNode?.data?.minimas ?? 1,
       max_scale: appNode?.data?.maximas ?? 2,
       user_id: appNode?.data?.user_id ?? null,
+      is_template: false,
     };
 
     if (this.alerts.length > 0) {

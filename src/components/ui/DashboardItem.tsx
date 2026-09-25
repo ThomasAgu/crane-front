@@ -11,7 +11,8 @@ import {
   Trash,
   Layers2,
   UploadCloud,
-  LayoutTemplate
+  LayoutTemplate,
+  FlaskConical,
 } from 'lucide-react'
 import { AppService } from '@/lib/api/appService'
 import { RepositoryService } from '@/lib/api/repositoryService'
@@ -19,6 +20,7 @@ import DeleteModal from './DeleteModal'
 import RepositoryForm, {RepositoryFormData} from '../forms/RepositoryForm'
 import Loader from './Loader'
 import style from './DashboardItem.module.css'
+import AppHostLinks from './AppHostLinks'
 
 interface DashboardItemProps {
   app: AppDto
@@ -89,6 +91,11 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     stopClick(e)
     setUploadModal(true);
+  }
+
+  const handleLaboratoryClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    stopClick(e)
+    router.push(`/laboratory?appId=${app.id}`)
   }
 
   const handleUploadSubmit = async (formData: RepositoryFormData) => {
@@ -198,6 +205,14 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
             <span className="text-gray-700 font-semibold">No publicado</span>
           )}
         </p>
+        <div className="pt-2">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Accesos publicados</p>
+          {active ? (
+            <AppHostLinks hosts={app.hosts} compact />
+          ) : (
+            <p className="text-xs italic text-slate-400">Inicia la aplicación para ver sus accesos.</p>
+          )}
+        </div>
       </div>
 
       <div className="mt-auto flex gap-3 pt-2">
@@ -234,6 +249,15 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
             </button>
           )
         )}
+
+        <button
+          onClick={handleLaboratoryClick}
+          className="p-2 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition"
+          title="Abrir en el laboratorio"
+          aria-label="Abrir en el laboratorio"
+        >
+          <FlaskConical size={20} />
+        </button>
 
         <button
           onClick={handleUploadClick}

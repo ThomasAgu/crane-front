@@ -19,6 +19,7 @@ interface EditorBaseProps {
   nodes?: any[];
   edges?: any[];
   selectedApp?: any;
+  onFocusEditorIssue: (nodeId: string, field: string) => void;
 }
 
 const EditorBase: React.FC<EditorBaseProps> = ({
@@ -29,6 +30,7 @@ const EditorBase: React.FC<EditorBaseProps> = ({
   nodes = [],
   edges = [],
   selectedApp,
+  onFocusEditorIssue,
 }) => {
   const [active, setActive] = useState(false);
   const [actualEditor, setActualEditor] = useState("Edicion");
@@ -44,6 +46,22 @@ const EditorBase: React.FC<EditorBaseProps> = ({
       setActualEditor("Edicion");
     }
   }, [selectedNode]);
+
+  useEffect(() => {
+    const handleFocusEditorField = (event: Event) => {
+      const field = (event as CustomEvent<{ field?: string }>).detail?.field;
+      if (!field) return;
+
+      setActive(true);
+      setActualEditor("Edicion");
+      window.setTimeout(() => {
+        document.querySelector<HTMLElement>(`[data-editor-field="${field}"]`)?.focus();
+      }, 50);
+    };
+
+    window.addEventListener("editor:focus-field", handleFocusEditorField);
+    return () => window.removeEventListener("editor:focus-field", handleFocusEditorField);
+  }, []);
 
   return (
     <div
@@ -126,6 +144,7 @@ const EditorBase: React.FC<EditorBaseProps> = ({
             appId={appId} 
             isSaved={!!selectedApp}
             selectedApp={selectedApp}
+            onFocusEditorIssue={onFocusEditorIssue}
           />
         </div>
       )}

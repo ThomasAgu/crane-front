@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { searchDockerImages } from "@/app/services/DockerHubService";
 
 export default function DockerImageSelector({ 
@@ -14,12 +14,12 @@ export default function DockerImageSelector({
   const [results, setResults] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const hasInteracted = useRef(false);
 
   useEffect(() => {
-    if (query === value) return;
-    if (!query) {
+    if (!hasInteracted.current || !query) {
       setResults([]);
-      setIsOpen(false);
+      if (!query) setIsOpen(false);
       return;
     }
     const timeout = setTimeout(async () => {
@@ -30,9 +30,20 @@ export default function DockerImageSelector({
       setIsOpen(true);
     }, 400);
     return () => clearTimeout(timeout);
-  }, [query, value]);
+  }, [query]);
 
-  useEffect(() => setQuery(value || ""), [value]);
+  useEffect(() => {
+    if (value || !hasInteracted.current) {
+      setQuery(value || "");
+      if (value) hasInteracted.current = false;
+    }
+  }, [value]);
+
+  const handleInputChange = (nextValue: string) => {
+    hasInteracted.current = true;
+    setQuery(nextValue);
+    onChange("");
+  };
 
   return (
     <div className="relative mb-3">
@@ -40,11 +51,12 @@ export default function DockerImageSelector({
         Imagen <span className="text-red-500">*</span>
       </label>
       <input
+        data-editor-field="service-image"
         className={`w-full border p-2 rounded transition-colors ${
           !query ? "border-red-500 bg-red-50 focus:outline-red-500" : "border-gray-300"
         }`}
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => handleInputChange(e.target.value)}
         placeholder="Buscar imagen en Docker Hub"
       />
       {!query && (
@@ -57,10 +69,14 @@ export default function DockerImageSelector({
             <li
               key={img.name}
               onClick={() => {
-                onChange(img.name);
-                if (onPickImage) onPickImage(img.name);
                 setQuery(img.name);
+                hasInteracted.current = false;
                 setIsOpen(false);
+                if (onPickImage) {
+                  onPickImage(img.name);
+                } else {
+                  onChange(img.name);
+                }
               }}
               className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
             >

@@ -8,6 +8,7 @@ import { AuthService } from "@/lib/api/authService";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { setToken } from '@/app/services/JWTService';
 
 type GoogleButtonProps = {
   text: string;
@@ -31,10 +32,8 @@ export default function GoogleButton({ text }: GoogleButtonProps) {
       const result = await AuthService.googleLogin({
         access_token: googleToken
       });
-
-      localStorage.setItem("access_token", result.access_token);
-      localStorage.setItem("token_type", result.token_type);
-
+      setToken(result.access_token, result.token_type);
+      
       await refreshPermissions();
       router.push("/home");
     } 

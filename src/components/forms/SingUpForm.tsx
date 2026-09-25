@@ -5,6 +5,7 @@ import { AuthService } from '@/lib/api/authService';
 import { requiredValidator } from '@/lib/validators/RequiredValidator';
 import { emailValidator } from '@/lib/validators/EmailValidator';
 import { matchPasswordValidator } from '@/lib/validators/MatchPasswordValidator';
+import { setToken } from '@/app/services/JWTService';
 
 import InputText from './InputText';
 import Loader from '../ui/Loader';
@@ -13,9 +14,12 @@ import styles from './LoginForm.module.css';
 import person from '../../public/person.svg';
 import lock from '../../public/lock.svg';
 import mail from '../../public/mail.svg';
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function SingUpForm() {
   const router = useRouter();
+  const { refreshPermissions } = usePermissions();
+  
 
   const {
     data, updateField, updateValidity,
@@ -38,8 +42,8 @@ export default function SingUpForm() {
     setLoading(true);
     try {
       const result = await AuthService.create(data);
-      localStorage.setItem("access_token", result.access_token);
-      localStorage.setItem("token_type", result.token_type);
+      setToken(result.access_token, result.token_type);
+      await refreshPermissions();
       router.push('/home');
     } catch (err: any) {
       setApiError(err.message || "Error al crear la cuenta");

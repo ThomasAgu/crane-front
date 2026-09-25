@@ -5,7 +5,7 @@ import { DockerHubService as DockerHubAPI } from "@/lib/api/dockerHubService";
  */
 export async function searchDockerImages(query: string) {
   if (!query) return [];
-
+  
   try {
     return await DockerHubAPI.searchDockerImages(query);
   } catch (error) {

@@ -19,6 +19,7 @@ export default function Sidebar({
   nodes = [],
   edges = [],
   selectedApp,
+  onFocusEditorIssue,
 }: {
   appId?: number | null;
   selectedNode: any;
@@ -26,6 +27,7 @@ export default function Sidebar({
   nodes?: any[];
   edges?: any[];
   selectedApp?: any;
+  onFocusEditorIssue: (nodeId: string, field: string) => void;
 }) {
   const Editor = editorMap[selectedNode?.type || "app"];
 
@@ -39,6 +41,7 @@ export default function Sidebar({
         nodes={nodes}
         edges={edges}
         selectedApp={selectedApp}
+        onFocusEditorIssue={onFocusEditorIssue}
       />
     </div>
   );

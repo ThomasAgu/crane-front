@@ -6,7 +6,6 @@ import { editorService } from "@/app/services/EditorService";
 interface VolumeNodeData {
   name?: string;
   label?: string;
-  size?: number;
   type?: "volume" | "bind";
   containerPath?: string;
   localPath?: string;
@@ -48,12 +47,6 @@ export const Volume = ({ data, selected, dragging }: NodeProps<VolumeNodeData>) 
             </span>
           </div>
         </div>
-
-        {!isBind && (
-          <span className="bg-purple-950 text-purple-300 font-mono text-[11px] font-bold px-2 py-0.5 rounded-lg border border-purple-800/40 shrink-0">
-            {data.size || 20} GB
-          </span>
-        )}
       </div>
 
       <div className="bg-gray-950/60 border border-gray-800 rounded-lg p-2 space-y-1.5 text-xs font-mono">

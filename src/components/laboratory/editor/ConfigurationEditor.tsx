@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { editorService } from "@/app/services/EditorService";
+import { getImageDetails } from "@/app/services/DockerHubService";
 import { AppService } from "@/lib/api/appService";
 import { AppDto } from "@/lib/dto/AppDto";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
@@ -8,7 +9,12 @@ import styles from "./ConfigurationEditor.module.css";
 import { FileText, Copy, PlusCircle, Save } from "lucide-react";
 import CreationModal from "../CreationModal";
 
-const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; selectedApp?: AppDto | null }> = ({ appId,  isSaved, selectedApp }) => {
+const ConfigurationEditor: React.FC<{
+  appId?: number | null;
+  isSaved: boolean;
+  selectedApp?: AppDto | null;
+  onFocusEditorIssue: (nodeId: string, field: string) => void;
+}> = ({ appId, isSaved, selectedApp, onFocusEditorIssue }) => {
   const [showMakefile, setShowMakefile] = useState(false);
   const [makefileContent, setMakefileContent] = useState("");
   const [isTemplate, setIsTemplate] = useState<boolean>(selectedApp?.is_template ?? false);
@@ -17,11 +23,25 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const prepareAndValidateApp = (): any | null => {
+  const focusEditorField = (field: string, serviceName?: string) => {
+    if (serviceName) {
+      const node = editorService.getNodeByServiceName(serviceName);
+      if (node) onFocusEditorIssue(node.id, field);
+    }
+    window.setTimeout(() => {
+      const element = document.querySelector<HTMLElement>(`[data-editor-field="${field}"]`);
+      element?.focus();
+    }, 0);
+  };
+
+  const prepareAndValidateApp = async (): Promise<any | null> => {
   const payload = editorService.exportAppDto();
 
   if (!payload.name) {
     showAlert("No se detectó un nombre de aplicación", "error", "Validación Requerida");
+    const appNode = editorService.getAppNode();
+    if (appNode) onFocusEditorIssue(appNode.id, "app-name");
+    focusEditorField("app-name");
     return null;
   }
   
@@ -32,13 +52,49 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
 
   if (payload.services.some((s) => !s.name || s.name.trim() === "")) {
     showAlert("Todos los servicios deben tener un nombre definido.", "error", "Validación Requerida");
+    focusEditorField("service-name", payload.services.find((service) => !service.name?.trim())?.name);
     return null;
   }
 
   if (payload.services.some((s) => !s.image)) {
     showAlert("Todos los servicios deben tener una imagen definida.", "error", "Validación Requerida");
+    focusEditorField("service-image", payload.services.find((service) => !service.image)?.name);
     return null;
   }
+
+  const imageDetails = await Promise.all(
+    payload.services.map(async (service, index) => ({
+      image: service.image,
+      index,
+      details: await getImageDetails(service.image),
+    }))
+  );
+
+  if (imageDetails.some(({ details }) => !details)) {
+    showAlert(
+      "Una o más imágenes no existen en Docker Hub. Selecciona una imagen válida.",
+      "error",
+      "Imagen Inválida"
+    );
+    const invalidImage = imageDetails.find(({ details }) => !details);
+    const invalidImageNode = invalidImage
+      ? editorService.getServiceNodeByIndex(invalidImage.index)
+      : undefined;
+    if (invalidImageNode) onFocusEditorIssue(invalidImageNode.id, "service-image");
+    focusEditorField("service-image");
+    return null;
+  }
+
+  const warnings = payload.services.flatMap((service) => {
+    const serviceWarnings: string[] = [];
+    if (!service.startupScripts?.length) {
+      serviceWarnings.push(`${service.name}: no tiene scripts de arranque.`);
+    }
+    if (!service.networks?.length) {
+      serviceWarnings.push(`${service.name}: no tiene redes asociadas.`);
+    }
+    return serviceWarnings;
+  });
 
   // Volúmenes
   const allVolumes = payload.services.flatMap((s) => s.volumes || []);
@@ -46,6 +102,7 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
     const errors = validateVolume(v);
     if (errors.length > 0) {
       showAlert(errors.join("\n"), "error", "Validación Requerida");
+      focusEditorField("service-volume");
       return null;
     }
   }
@@ -53,8 +110,10 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
   // Redes
   const allNetworks = payload.services.flatMap((s) => s.networks || []);
   for (const net of allNetworks) {
-    if (typeof net.name !== "string" || net.name.trim() === "") {
+    const networkName = typeof net === "string" ? net : net.name;
+    if (typeof networkName !== "string" || networkName.trim() === "") {
       showAlert("Todas las redes deben tener un nombre definido.", "error", "Validación Requerida");
+      focusEditorField("network-name");
       return null;
     }
   }
@@ -80,7 +139,7 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
     payload.alerts = alerts;
   }
 
-  return payload;
+  return { ...payload, __warnings: warnings };
 };
   
   useEffect(() => {
@@ -88,20 +147,29 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
   }, [selectedApp]);
 
   const handleCreateApp = async () => {
-    const payload = prepareAndValidateApp();
-    if (!payload) return;
+    const prepared = await prepareAndValidateApp();
+    if (!prepared) return;
+    const { __warnings, ...payload } = prepared;
 
     setIsCreating(true);
     try {
       payload["is_template"] = isTemplate;
 
       await AppService.create(payload);
-      showAlert("La aplicación se ha creado con éxito.", "success", "Creación Exitosa");
+      showAlert(
+        __warnings.length ? `La aplicación se creó, pero revisa: ${__warnings.join(" ")}` : "La aplicación se ha creado con éxito.",
+        __warnings.length ? "warning" : "success",
+        __warnings.length ? "Creación con advertencias" : "Creación Exitosa"
+      );
     } catch (err) {
       if (err instanceof Error && err.message.includes("App with this name already exists")) {
         showAlert("Ya tienes una aplicación con ese nombre. Por favor, elige un nombre diferente.", "error", "Nombre de Aplicación Duplicado");
       } else {
-        showAlert("Hubo un error al intentar crear la aplicación.", "error", "Error en la Creación");
+        showAlert(
+          err instanceof Error ? err.message : "Hubo un error al intentar crear la aplicación.",
+          "error",
+          "Error en la Creación"
+        );
       }
     } finally {
       setIsCreating(false);
@@ -109,17 +177,26 @@ const ConfigurationEditor: React.FC<{ appId?: number | null; isSaved: boolean; s
   };
 
   const handleUpdateApp = async () => {
-    const payload = prepareAndValidateApp();
-    if (!payload) return;
+    const prepared = await prepareAndValidateApp();
+    if (!prepared) return;
+    const { __warnings, ...payload } = prepared;
 
     setIsCreating(true);
     try {
       payload["id"] = appId;
       payload["is_template"] = isTemplate;
       await AppService.update(payload); 
-      showAlert("La aplicación se ha actualizado con éxito.", "success", "Actualización Exitosa");
+      showAlert(
+        __warnings.length ? `La aplicación se actualizó, pero revisa: ${__warnings.join(" ")}` : "La aplicación se ha actualizado con éxito.",
+        __warnings.length ? "warning" : "success",
+        __warnings.length ? "Actualización con advertencias" : "Actualización Exitosa"
+      );
     } catch (err) {
-      showAlert("Hubo un error al intentar actualizar la aplicación.", "error", "Error en la Actualización");
+      showAlert(
+        err instanceof Error ? err.message : "Hubo un error al intentar actualizar la aplicación.",
+        "error",
+        "Error en la Actualización"
+      );
     } finally {
       setIsCreating(false);
     }

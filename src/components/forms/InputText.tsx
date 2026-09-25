@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import type { Ref } from 'react';
 import { Validator } from '@/lib/validators/ValidatorInterface';
 import styles from './InputText.module.css'
 import { requiredValidator } from '@/lib/validators/RequiredValidator';
@@ -20,6 +21,8 @@ interface props {
     setShowError: Function,
     onValidityChange?: (isValid: boolean) => void;
     disabled?: boolean;
+    inputRef?: Ref<HTMLInputElement>;
+    inputId?: string;
 }
 
 const InputText: React.FC<props> = ({
@@ -35,7 +38,9 @@ const InputText: React.FC<props> = ({
     showErrors = false,
     setShowError,
     onValidityChange,
-    disabled = false
+    disabled = false,
+    inputRef,
+    inputId
 }) => {
     const [error, setError] = useState<string | null>(null);
 
@@ -114,6 +119,9 @@ const InputText: React.FC<props> = ({
                     className={styles.inputIcon}
                 />}
                 <input
+                    id={inputId}
+                    data-editor-field={inputId}
+                    ref={inputRef}
                     type={type}
                     disabled={disabled}
                     placeholder={placeholder}

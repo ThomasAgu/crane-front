@@ -8,12 +8,12 @@ export interface ServiceDto {
   labels?: string[]
   environment?: Record<string, string>
   restart_policy?: string;
-  startupScripts?: string[]
+  startupScripts?: StartupScript[]
+  startup_scripts?: StartupScript[]
 }
 
 export interface VolumeDto {
   path: string
-  size?: number | null
 }
 
 export interface NetworkDto {

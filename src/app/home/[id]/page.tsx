@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import type { AppDto } from "@/lib/dto/AppDto";
 import { AppService } from "@/lib/api/appService";
 import { useSearchParams } from "next/navigation";
@@ -18,6 +18,7 @@ const AppDetailView: FC = () => {
   const searchParams = useSearchParams();
   const status = searchParams.get("status") || "unknown";
   const appId = params?.id ?? "";
+  const router = useRouter();
 
   const [appStatus, setAppStatus] = useState<string>(status === 'Running' ? "Activo": "Inactivo");
   const [app, setApp] = useState<AppDto>({} as AppDto);
@@ -28,6 +29,7 @@ const AppDetailView: FC = () => {
 
     const fetchApp = useCallback(async () => {
     const res = await AppService.get(appId);
+    debugger
     setIsTemplate(res?.is_template);
     setApp(res ?? {} as AppDto);
   }, [appId]);
@@ -88,10 +90,21 @@ const AppDetailView: FC = () => {
           )}
         </div>
 
-        <AppBase app={app} appStatus={appStatus} onAppAction={onAppAction} />
+        <AppBase
+          app={app}
+          appStatus={appStatus}
+          onAppAction={onAppAction}
+          onOpenLaboratory={() => router.push(`/laboratory?appId=${app.id}`)}
+        />
         {activeTab === "general" && <GeneralPanel app={app} appStatus={appStatus} />}
         {activeTab === "stats" && <StatsPanel appId={appId} appStatus={appStatus} />}
-        {activeTab === "logs" && <LogsPanel logs={logs} onRefresh={fetchLogs} appStatus={appStatus} />}
+        {activeTab === "logs" && (
+          <LogsPanel
+            logs={logs}
+            onRefresh={fetchLogs}
+            appStatus={appStatus}
+          />
+        )}
         {activeTab === "alertas" && <AlertsPanel appId={appId} />}
       </div>
     </NavBar>

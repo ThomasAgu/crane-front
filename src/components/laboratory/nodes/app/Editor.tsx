@@ -78,6 +78,7 @@ export default function AppEditorForm({
 
       {/* CAMPO NOMBRE */}
       <InputText
+        inputId="app-name"
         label="Nombre"
         type="text"
         placeholder="Nombre de la aplicación"

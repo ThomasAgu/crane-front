@@ -16,7 +16,6 @@ export const PermissionsProvider = ({ children }: { children: React.ReactNode })
         setLoading(false);
         return;
       }
-      debugger
       const payload = JSON.parse(atob(token.split('.')[1]));
       const roles = await RoleService.getUserRoles(payload.user_id);
 

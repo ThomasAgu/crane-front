@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export interface EnvironmentVariable {
   key: string;
@@ -17,6 +17,25 @@ export default function EnvironmentVariablesEditor({
   const [envVars, setEnvVars] = useState<EnvironmentVariable[]>(
     Object.entries(variables || {}).map(([key, value]) => ({ key, value }))
   );
+
+  useEffect(() => {
+    const incomingVars = Object.entries(variables || {}).map(([key, value]) => ({ key, value }));
+    const currentCompleteVars = envVars.reduce((record, env) => {
+      if (env.key.trim() && env.value.trim()) {
+        record[env.key.trim()] = env.value;
+      }
+      return record;
+    }, {} as Record<string, string>);
+
+    const incomingRecord = incomingVars.reduce((record, env) => {
+      record[env.key] = env.value;
+      return record;
+    }, {} as Record<string, string>);
+
+    if (JSON.stringify(currentCompleteVars) !== JSON.stringify(incomingRecord)) {
+      setEnvVars(incomingVars);
+    }
+  }, [variables, envVars]);
 
   // Helper para procesar y enviar al padre
   const notifyParent = (updatedVars: EnvironmentVariable[]) => {
@@ -101,6 +120,7 @@ export default function EnvironmentVariablesEditor({
   </div>
 
   <button
+    type="button"
     onClick={handleAddVariable}
     disabled={hasIncompleteVar}
     className={`px-3 py-1 text-white text-sm rounded transition-colors ${
@@ -176,6 +196,7 @@ export default function EnvironmentVariablesEditor({
             </div>
 
             <button
+              type="button"
               onClick={() => handleRemoveVariable(index)}
               className="px-3 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
             >

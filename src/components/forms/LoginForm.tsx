@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { AuthService } from '@/lib/api/authService';
 import { emailValidator } from '@/lib/validators/EmailValidator';
 import { requiredValidator } from '@/lib/validators/RequiredValidator';
+import { setToken } from '@/app/services/JWTService';
 import InputText from './InputText';
 import Loader from '../ui/Loader';
 import mail from '../../public/mail.svg';
@@ -32,8 +33,7 @@ export default function LoginForm() {
     setLoading(true);
     try {
       const result = await AuthService.login(data);
-      localStorage.setItem("access_token", result.access_token);
-      localStorage.setItem("token_type", result.token_type);
+      setToken(result.access_token, result.token_type);
       //Setear el expiration time
       await refreshPermissions();
       router.push("/home");

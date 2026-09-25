@@ -30,7 +30,7 @@ export default function ServiceCard({ service, index }: ServiceCardProps) {
 
         <div className={styles.subsection}>
           <h4>Volúmenes ({volumes.length})</h4>
-          {volumes.length ? <div className={styles.chipList}>{volumes.map((volume, volumeIndex) => <span className={styles.chip} key={`${String(volume)}-${volumeIndex}`}>{typeof volume === "string" ? volume : `${volume.path} (${volume.size ?? "-"} GB)`}</span>)}</div> : <p className={styles.empty}>Sin volúmenes configurados</p>}
+          {volumes.length ? <div className={styles.chipList}>{volumes.map((volume, volumeIndex) => <span className={styles.chip} key={`${String(volume)}-${volumeIndex}`}>{typeof volume === "string" ? volume : `${volume.path} `}</span>)}</div> : <p className={styles.empty}>Sin volúmenes configurados</p>}
         </div>
 
         <div className={styles.subsection}>

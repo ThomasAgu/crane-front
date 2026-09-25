@@ -92,6 +92,7 @@ export function validateStartupScriptFile(file: File): {
     "sh",
     "bash",
     "js",
+    "json",
     "py",
     "dockerfile",
     "txt",

@@ -5,7 +5,6 @@ import { PathValidator } from "@/lib/validators/PathValidator";
 
 export type VolumeData = {
   name: string;
-  size: number;
   type: "volume" | "bind";
   containerPath: string;
   localPath: string;
@@ -25,7 +24,6 @@ export default function VolumeEditor({ data, onChange }: VolumeEditorProps) {
   
   const getInitialState = (): VolumeData => ({
     name: data?.name || "",
-    size: data?.size || 20,
     type: data?.type || "volume",
     containerPath: data?.containerPath || "",
     localPath: data?.localPath || "",
@@ -91,31 +89,11 @@ export default function VolumeEditor({ data, onChange }: VolumeEditorProps) {
         </div>
       </div>
 
-      {form.type === "volume" && (
-        <div className="p-3 border border-gray-200 rounded-lg bg-gray-50/50">
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">
-            Asignación de Espacio Max
-          </label>
-          <div className="flex items-center space-x-4">
-            <input
-              type="range"
-              min={1}
-              max={500}
-              value={form.size}
-              onChange={(e) => updateField("size", Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-            />
-            <span className="text-sm font-bold bg-white px-2.5 py-1 border rounded shadow-xs text-blue-600 whitespace-nowrap">
-              {form.size} GB
-            </span>
-          </div>
-        </div>
-      )}
-
       <div className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm space-y-4">
         <h3 className="text-sm font-semibold text-gray-800 border-b pb-1.5">Puntos de Montaje</h3>
         
         <InputText
+          inputId="service-volume"
           label="Ruta destino en el Contenedor (Container Path)"
           type="text"
           placeholder="ej: /var/lib/mysql, /app/storage"

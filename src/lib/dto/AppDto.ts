@@ -1,11 +1,25 @@
 import type { ServiceDto } from './ServiceDto'
 import type { AlertDto, AlertCreateDto } from './AlertDto'
 
+export interface AppHostDto {
+  name: string
+  type: 'service' | 'traefik' | 'traefik-dashboard' | string
+  container_port?: string | null
+  url: string
+}
+
+export interface TraefikDto {
+  url?: string | null
+  dashboard_url?: string | null
+  ports?: Record<string, Array<{ HostIp: string; HostPort: string }>> | null
+}
+
 export interface AppDto {
   id: number
   name: string
   services: ServiceDto[]
-  hosts?: Record<string, unknown>[] | null
+  hosts?: AppHostDto[] | null
+  traefik?: TraefikDto | null
   environment?: Record<string, string> | null
   min_scale?: number | null
   current_scale?: number | null
@@ -26,7 +40,7 @@ export interface AppDto {
 export interface CreateAppDto {
   name: string
   services?: ServiceDto[]
-  hosts?: Record<string, unknown>[] | null
+  hosts?: Array<string | Record<string, unknown>> | null
   environment?: Record<string, string> | null
   current_scale: number
   min_scale: number
@@ -40,7 +54,7 @@ export interface StoreAppDto {
   id: number
   name: string
   services?: ServiceDto[] | null
-  hosts?: Record<string, unknown>[] | null
+  hosts?: Array<string | Record<string, unknown>> | null
   min_scale?: number | null
   current_scale?: number | null
   max_scale?: number | null

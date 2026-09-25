@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AppService } from '@/lib/api/appService';
 import { AppDto } from '@/lib/dto/AppDto';
 
 export function useLaboratory() {
+    const searchParams = useSearchParams();
+    const appId = searchParams.get('appId');
     const [apps, setApps] = useState<AppDto[]>([]);
     const [popUp, setPopUp] = useState(true);
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -14,6 +17,13 @@ export function useLaboratory() {
             try {
                 const data = await AppService.getAll();
                 setApps(data);
+                if (appId) {
+                    const requestedApp = data.find((app) => String(app.id) === appId);
+                    if (requestedApp) {
+                        setSelectedApp(requestedApp);
+                        setPopUp(false);
+                    }
+                }
             } catch (err) {
                 console.error("Error cargando las apps:", err);
             } finally {
@@ -21,7 +31,7 @@ export function useLaboratory() {
             }
         }
         fetchData();
-    }, []);
+    }, [appId]);
 
     const closePopUp = () => setPopUp(false);
 

@@ -170,6 +170,16 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
     setContextMenu(null);
   };
 
+  const focusEditorIssue = (nodeId: string, field: string) => {
+    const node = editorService.getNodeById(nodeId);
+    if (!node) return;
+
+    setSelectedNode({ ...node });
+    window.setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("editor:focus-field", { detail: { field } }));
+    }, 0);
+  };
+
   const onUpdateNode = (id: string, newData: any) => {
   const previousNode = editorService.getNodeById(id);
   const previousImage = previousNode?.data?.image;
@@ -211,7 +221,6 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
               name: `vol_${newData.image}_data`,
               label: "volume nuevo",
               type: "volume",
-              size: 20,
               containerPath: volumePath,
               localPath: "",
             },
@@ -288,6 +297,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
       edges={edges}
       selectedApp={selectedApp}
       onUpdateNode={onUpdateNode} 
+      onFocusEditorIssue={focusEditorIssue}
     />
     <AlertSnackbar
         alertState={alertState}

@@ -70,7 +70,7 @@ const PrivateLayoutContent = ({ children }: PrivateLayoutProps) => {
             <NavItem href="/store" icon={store} iconActive={store_active} alt="Repositorio" expanded={expanded} />
           </RequirePermission>
                     
-          <RequirePermission object="USERS" action="GET">
+          <RequirePermission object="PERMISSIONS" action="GET">
             <NavItem href="/users" icon={user} iconActive={user_active} alt="Administración" expanded={expanded}/>
           </RequirePermission>
 

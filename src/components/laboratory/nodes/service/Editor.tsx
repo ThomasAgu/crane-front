@@ -150,6 +150,7 @@ export default function ServiceEditor({
 
       {/* CAMPO NOMBRE: Validado en vivo y al guardar */}
       <InputText
+        inputId="service-name"
         label="Nombre del Servicio"
         type="text"
         placeholder="ej: api-gateway, worker-node"
@@ -231,13 +232,13 @@ export default function ServiceEditor({
               <InputText
                 label="Comando de Inicio (CMD)"
                 type="text"
-                placeholder="ej: npm run start, python app.py, -g 'daemon off;'"
+                placeholder="ej: npm install && node server.js"
                 value={form.command || ""}
                 setValue={(val: string) => updateField("command", val)}
                 setShowError={setTriggerErrors}
               />
               <p className="text-[10px] text-gray-400 mt-1 italic">
-                * Sobrescribe el comando original de ejecución de la imagen (CMD). Si está vacío se usará el predeterminado.
+                * Para Node.js con package.json y server.js usa <code>npm install && node server.js</code>. Si las dependencias ya están en la imagen, usa <code>node server.js</code>.
               </p>
             </div>
 
@@ -277,12 +278,17 @@ export default function ServiceEditor({
             {/* SCRIPTS DE INICIO */}
             <div>
               <h3 className="text-sm font-semibold mb-2 text-gray-800">Scripts de Arranque (Entrypoints)</h3>
+              {(form.startupScripts || []).length === 0 && (
+                <p className="mb-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                  Este servicio no tiene scripts de arranque. Si necesita preparar la base de datos o archivos al iniciar, agrega un script aquí.
+                </p>
+              )}
               <div className="border rounded-lg p-4 bg-gray-50 space-y-3">
                 <div>
                   <input
                     type="file"
                     multiple
-                    accept=".sql,.sh,.js,.py,.sql.gz"
+                    accept=".json,.sql,.sh,.js,.py,.sql.gz"
                     onChange={handleStartupScriptUpload}
                     className="block w-full text-xs text-gray-500
                       file:mr-4 file:py-1.5 file:px-3
@@ -292,7 +298,7 @@ export default function ServiceEditor({
                       hover:file:bg-blue-100 cursor-pointer"
                   />
                   <p className="text-[10px] text-gray-400 mt-1">
-                    Extensiones válidas: .sql, .sh, .js, .py, .sql.gz
+                    Extensiones válidas: .json, .sql, .sh, .js, .py, .sql.gz
                   </p>
                 </div>
 
@@ -333,6 +339,11 @@ export default function ServiceEditor({
       {/* SECCIÓN REDES (Calculada de forma reactiva por conexiones del grafo) */}
       <div>
         <h3 className="text-sm font-semibold mb-2 text-gray-800">Redes Asociadas</h3>
+        {connectedNetworks.length === 0 && (
+          <p className="mb-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+            Este servicio no tiene redes asociadas. Conecta un nodo de red si necesita comunicarse con otros servicios o acceder a una red específica.
+          </p>
+        )}
         <div className="border rounded-lg p-3 bg-gray-50 max-h-40 overflow-y-auto">
           {connectedNetworks.length > 0 ? (
             <ul className="space-y-2">

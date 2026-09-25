@@ -77,6 +77,7 @@ export default function NetworkEditor({
 
       {/* CAMPO NOMBRE */}
       <InputText
+        inputId="network-name"
         label="Nombre de la Red"
         type="text"
         placeholder="ej: frontend-net, db-cluster"

@@ -140,7 +140,7 @@ export class ReactFlowService {
           command: service?.command || "",
           restartPolicy: service?.restart_policy || "",
           environment: service.environment ?? {},
-          //Falta startup script
+          startupScripts: service.startupScripts ?? service.startup_scripts ?? [],
         },
       });
 
@@ -209,7 +209,6 @@ export class ReactFlowService {
             name: `Volumen ${volumeIndex + 1}`,
             containerPath: volume?.path || '',
             localPath: `/data/${volumeIndex}`,
-            size: volume?.size || 20,
           },
         });
 

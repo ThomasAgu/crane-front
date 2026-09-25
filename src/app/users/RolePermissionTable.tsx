@@ -59,7 +59,7 @@ export const RolePermissionsTable = ({ roles }: Props) => {
   };
 
   const removePermission = async (permissionId: number) => {
-    if (!selectedRoleId) return;
+    if (!selectedRoleId || isAdminRole) return;
 
     try {
       await RoleService.removePermissionToRole(selectedRoleId, permissionId);
@@ -85,6 +85,7 @@ export const RolePermissionsTable = ({ roles }: Props) => {
   const unassignedPermissions = allPermissions.filter(
     (p) => !rolePermissions.some((rp) => rp.id === p.id)
   );
+  const isAdminRole = roles.find((role) => role.id === selectedRoleId)?.name.toLowerCase() === 'admin';
 
   return (
     <div className={styles.permissionsCard}>
@@ -111,7 +112,11 @@ export const RolePermissionsTable = ({ roles }: Props) => {
                   <span className={styles.permissionText}>
                     {perm.object} <b className={styles.permissionMeta}>({perm.action})</b> | <i>{perm.description}</i>
                   </span>
-                  <button onClick={() => addPermission(perm.id)} className={styles.permissionActionButton}>
+                  <button
+                    onClick={() => addPermission(perm.id)}
+                    className={styles.permissionActionButton}
+                    aria-label="Agregar permiso"
+                  >
                     <PlusIcon size={18} />
                   </button>
                 </div>
@@ -127,7 +132,12 @@ export const RolePermissionsTable = ({ roles }: Props) => {
                   <span className={styles.permissionText}>
                     {perm.object} <b className={styles.permissionMeta}>({perm.action})</b> | <i>{perm.description}</i>
                   </span>
-                  <button onClick={() => removePermission(perm.id)} className={styles.permissionRemoveButton}>
+                  <button
+                    onClick={() => removePermission(perm.id)}
+                    className={styles.permissionRemoveButton}
+                    disabled={isAdminRole}
+                    aria-label="Quitar permiso"
+                  >
                     <TrashIcon size={18} />
                   </button>
                 </div>
@@ -135,7 +145,10 @@ export const RolePermissionsTable = ({ roles }: Props) => {
             </div>
           </div>
 
-          <button className={styles.updateButton} onClick={handleClickActualizarPermisos}>
+          <button
+            className={styles.updateButton}
+            onClick={handleClickActualizarPermisos}
+          >
             Actualizar
           </button>
         </div>

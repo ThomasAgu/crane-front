@@ -39,7 +39,6 @@ export default function GroupDetail({ groupId }: GroupDetailProps) {
         const tasks = await TaskService.getTasks();
         setGroup(data);
         setGroupMembers(data.user_groups.map((el) => el.user));
-        debugger
         setTaskOptions(tasks);
         setGroupTasks(data.tasks || []);
       } catch (err) {
