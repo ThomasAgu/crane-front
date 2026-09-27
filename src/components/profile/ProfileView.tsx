@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
-import { UserService } from '@/lib/api/userService';
-import type { UserDataDtoDetails } from '@/lib/dto/UserDto';
+import { useMemo } from 'react';
+import { useProfile } from '@/hooks/useProfile';
 
 interface ProfileViewProps {
   userId: string;
@@ -18,32 +17,7 @@ const formatDate = (value?: string | Date | null) => {
 };
 
 export default function ProfileView({ userId }: ProfileViewProps) {
-  const [user, setUser] = useState<UserDataDtoDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!userId) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError('');
-        const profile = await UserService.get(userId);
-        setUser(profile);
-      } catch (requestError) {
-        console.error('Error al cargar el perfil:', requestError);
-        setError('No se pudo cargar el perfil del usuario.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [userId]);
+  const { user, loading, error } = useProfile(userId);
 
   const repositories = useMemo(
     () => user?.repositories ?? user?.publishedRepositories ?? [],

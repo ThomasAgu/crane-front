@@ -1,9 +1,8 @@
 'use client'
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { UserDataDto } from '@/lib/dto/UserDto';
-import { UserService } from '@/lib/api/userService';
 import { Plus, Trash2 } from 'lucide-react';
 import DeleteModal from '@/components/ui/DeleteModal';
 import styles from './GroupMemberManager.module.css';
@@ -12,6 +11,7 @@ import { RequirePermission } from '../layout/RequirePermission';
 interface GroupMemberManagerProps {
   groupId: number;
   groupMembers: UserDataDto[];
+  allUsers: UserDataDto[];
   onAddMember: (userId: number, groupId: number) => Promise<void>;
   onRemoveMember: (userId: number, groupId: number) => Promise<void>;
   isLoading?: boolean;
@@ -20,30 +20,16 @@ interface GroupMemberManagerProps {
 export default function GroupMemberManager({
   groupId,
   groupMembers,
+  allUsers,
   onAddMember,
   onRemoveMember,
   isLoading = false,
 }: GroupMemberManagerProps) {
-  const [allUsers, setAllUsers] = useState<UserDataDto[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMemberToDelete, setSelectedMemberToDelete] = useState<UserDataDto | null>(null);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const users = await UserService.getAll();
-        setAllUsers(users);
-      } catch (err) {
-        console.error('Error loading users:', err);
-        setError('Error al cargar los usuarios');
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   // Get users available to add (not already in group)
   const availableUsers = allUsers.filter(

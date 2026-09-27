@@ -10,8 +10,8 @@ import GroupGrid from "@/components/groups/GroupGrid";
 import GroupForm from "@/components/groups/GroupForm";
 import TaskForm from "@/components/tasks/TaskForm";
 import TaskGrid from "@/components/groups/TaskGrid";
-import { TaskService } from "@/lib/api/taskService";
-import { TaskDto, TaskCreateDto } from "@/lib/dto/TaskDto";
+import type { TaskCreateDto } from "@/lib/dto/TaskDto";
+import type { GroupCreateDto } from "@/lib/dto/GroupDto";
 import DeleteModal from "@/components/ui/DeleteModal";
 import styles from "@/components/groups/groups.module.css";
 
@@ -19,7 +19,6 @@ export default function GroupsPage() {
   const [activeTab, setActiveTab] = useState<"groups" | "tasks">("groups");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showCreateTaskForm, setShowCreateTask] = useState(false);
-  const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [deleteModal, setDeleteModal] = useState<{
     active: boolean;
     groupId?: number;
@@ -32,33 +31,25 @@ export default function GroupsPage() {
   const {
     groups,
     loading,
-    error,
     fetchGroups,
+    fetchTasks,
     createGroup,
+    createTask,
     deleteGroup,
+    deleteTask,
+    tasks,
+    tasksLoading,
   } = useGroups();
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
   const router = useRouter();
 
   useEffect(() => {
-    const initializeData = async () => {
-      await fetchGroups();
-      await fetchTasks();
-    };
-    initializeData();
-  }, []);
+    void fetchGroups();
+    void fetchTasks();
+  }, [fetchGroups, fetchTasks]);
 
-  const fetchTasks = async () => {
-    try {
-      const tasks = await TaskService.getTasks();
-      setTasks(tasks);
-    } catch (err) {
-      console.error("Error loading tasks:", err);
-    }
-  };
-
-  const handleCreateGroup = async (formData: any) => {
+  const handleCreateGroup = async (formData: GroupCreateDto) => {
     setFormLoading(true);
     try {
       await createGroup(formData);
@@ -68,7 +59,6 @@ export default function GroupsPage() {
         "success",
         "Grupo Creado"
       );
-      await fetchGroups();
     } catch (err) {
       showAlert(
         "Error al crear el grupo",
@@ -83,14 +73,13 @@ export default function GroupsPage() {
   const handleCreateTask = async(formData: TaskCreateDto) => {
     setTaskLoading(true);
     try {
-      await TaskService.createTask(formData);
+      await createTask(formData);
       setShowCreateTask(false);
       showAlert(
         "La tarea se creo con exito",
         "success",
         "Tarea Creada"
       )
-      await fetchTasks();
     } catch (err) {
       showAlert(
         "Error al crear la tarea",
@@ -128,8 +117,7 @@ export default function GroupsPage() {
           "Grupo Eliminado"
         );
       } else if (deleteModal.type === "task" && deleteModal.taskId) {
-        await TaskService.deleteTask(String(deleteModal.taskId));
-        setTasks(tasks.filter(t => t.id !== deleteModal.taskId));
+        await deleteTask(String(deleteModal.taskId));
         showAlert(
           "La tarea ha sido eliminada.",
           "success",
@@ -157,7 +145,7 @@ export default function GroupsPage() {
     return task?.name || "Tarea";
   };
 
-  if (loading) {
+  if (loading || tasksLoading) {
     return <Loader />;
   }
 

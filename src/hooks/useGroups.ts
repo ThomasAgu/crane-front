@@ -1,148 +1,177 @@
-import { useState, useEffect } from 'react';
-import { GroupDto, GroupCreateDto, UserGroupDto } from '@/lib/dto/GroupDto';
+import { useCallback, useMemo, useState } from 'react';
 import { GroupService } from '@/lib/api/groupService';
-import { UserDataDto } from '@/lib/dto/UserDto';
+import { TaskService } from '@/lib/api/taskService';
 import { UserService } from '@/lib/api/userService';
+import type { GroupCreateDto, GroupDto, GroupDtoDetails, UserGroupDto } from '@/lib/dto/GroupDto';
+import type { TaskCreateDto, TaskDetailsDto, TaskDto } from '@/lib/dto/TaskDto';
+import type { UserDataDto } from '@/lib/dto/UserDto';
 
 export function useGroups() {
   const [groups, setGroups] = useState<GroupDto[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<GroupDto | null>(null);
-  const [groupMembers, setGroupMembers] = useState<UserDataDto[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<GroupDtoDetails | null>(null);
   const [allUsers, setAllUsers] = useState<UserDataDto[]>([]);
+  const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all groups
-  const fetchGroups = async () => {
+  const groupMembers = useMemo(
+    () => selectedGroup?.user_groups.map((relation) => relation.user) ?? [],
+    [selectedGroup],
+  );
+  const groupTasks: TaskDetailsDto[] = selectedGroup?.tasks ?? [];
+
+  const fetchGroups = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await GroupService.getGroupsForUser();
       setGroups(data);
-    } catch (err) {
+      return data;
+    } catch (requestError) {
       setError('Error al cargar los grupos');
-      console.error('Error loading groups:', err);
+      console.error('Error loading groups:', requestError);
+      return [];
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Fetch specific group
-  const fetchGroup = async (id: string) => {
+  const fetchGroup = useCallback(async (id: string) => {
     setLoading(true);
     setError(null);
     try {
       const data = await GroupService.getGroup(id);
-      if (Array.isArray(data) && data.length > 0) {
-        setSelectedGroup(data[0]);
-        return data[0];
-      }
-    } catch (err) {
+      setSelectedGroup(data);
+      return data;
+    } catch (requestError) {
+      setSelectedGroup(null);
       setError('Error al cargar el grupo');
-      console.error('Error loading group:', err);
+      console.error('Error loading group:', requestError);
+      return null;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Fetch all users
-  const fetchAllUsers = async () => {
+  const fetchAllUsers = useCallback(async () => {
     try {
       const users = await UserService.getAll();
       setAllUsers(users);
-    } catch (err) {
-      console.error('Error loading users:', err);
+      return users;
+    } catch (requestError) {
+      console.error('Error loading users:', requestError);
+      return [];
     }
-  };
+  }, []);
 
-  // Fetch group members
-  const fetchGroupMembers = async (groupId: number) => {
+  const fetchGroupMembers = useCallback(async (groupId: number) => {
+    const group = selectedGroup?.id === groupId
+      ? selectedGroup
+      : await fetchGroup(String(groupId));
+    return group?.user_groups.map((relation) => relation.user) ?? [];
+  }, [fetchGroup, selectedGroup]);
+
+  const fetchTasks = useCallback(async () => {
+    setTasksLoading(true);
     try {
-      // This would need to be implemented in the backend
-      // For now, we'll use allUsers and filter based on group
-      setGroupMembers([]);
-    } catch (err) {
-      console.error('Error loading group members:', err);
+      const data = await TaskService.getTasks();
+      setTasks(data);
+      return data;
+    } catch (requestError) {
+      console.error('Error loading tasks:', requestError);
+      return [];
+    } finally {
+      setTasksLoading(false);
     }
-  };
+  }, []);
 
-  // Create a new group
-  const createGroup = async (data: GroupCreateDto) => {
+  const createGroup = useCallback(async (data: GroupCreateDto) => {
     setError(null);
     try {
       const newGroup = await GroupService.createGroup(data);
-      setGroups([...groups, newGroup]);
+      setGroups((currentGroups) => [...currentGroups, newGroup]);
       return newGroup;
-    } catch (err) {
+    } catch (requestError) {
       setError('Error al crear el grupo');
-      console.error('Error creating group:', err);
-      throw err;
+      console.error('Error creating group:', requestError);
+      throw requestError;
     }
-  };
+  }, []);
 
-  // Add user to group
-  const addUserToGroup = async (userId: number, groupId: number) => {
+  const addUserToGroup = useCallback(async (userId: number, groupId: number) => {
     setError(null);
     try {
       const data: UserGroupDto = { user_id: userId, group_id: groupId, role_id: 1 };
       await GroupService.addUserFromGroup(data);
-      if (selectedGroup) {
-        await fetchGroup(String(selectedGroup.id));
-      }
-    } catch (err) {
+      await fetchGroup(String(groupId));
+    } catch (requestError) {
       setError('Error al agregar usuario al grupo');
-      console.error('Error adding user to group:', err);
-      throw err;
+      console.error('Error adding user to group:', requestError);
+      throw requestError;
     }
-  };
+  }, [fetchGroup]);
 
-  // Remove user from group
-  const removeUserFromGroup = async (userId: number, groupId: number) => {
+  const removeUserFromGroup = useCallback(async (userId: number, groupId: number) => {
     setError(null);
     try {
-      const data: UserGroupDto = { user_id: userId, group_id: groupId, role_id: 1 };
+      const data: UserGroupDto = { user_id: userId, group_id: groupId, role_id: 0 };
       await GroupService.removeUserFromGroup(data);
-      if (selectedGroup) {
-        await fetchGroup(String(selectedGroup.id));
-      }
-    } catch (err) {
+      await fetchGroup(String(groupId));
+    } catch (requestError) {
       setError('Error al eliminar usuario del grupo');
-      console.error('Error removing user from group:', err);
-      throw err;
+      console.error('Error removing user from group:', requestError);
+      throw requestError;
     }
-  };
+  }, [fetchGroup]);
 
-  // Delete group
-  const deleteGroup = async (id: string) => {
+  const deleteGroup = useCallback(async (id: string) => {
     setError(null);
     try {
       await GroupService.deleteGroup(id);
-      setGroups(groups.filter(g => g.id !== parseInt(id)));
-      if (selectedGroup && selectedGroup.id === parseInt(id)) {
-        setSelectedGroup(null);
-      }
-    } catch (err) {
+      const groupId = Number(id);
+      setGroups((currentGroups) => currentGroups.filter((group) => group.id !== groupId));
+      setSelectedGroup((currentGroup) => currentGroup?.id === groupId ? null : currentGroup);
+    } catch (requestError) {
       setError('Error al eliminar el grupo');
-      console.error('Error deleting group:', err);
-      throw err;
+      console.error('Error deleting group:', requestError);
+      throw requestError;
     }
-  };
+  }, []);
+
+  const createTask = useCallback(async (data: TaskCreateDto) => {
+    const newTask = await TaskService.createTask(data);
+    setTasks((currentTasks) => [...currentTasks, newTask]);
+    return newTask;
+  }, []);
+
+  const deleteTask = useCallback(async (id: string) => {
+    await TaskService.deleteTask(id);
+    const taskId = Number(id);
+    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== taskId));
+  }, []);
 
   return {
-    groups,
-    selectedGroup,
-    groupMembers,
     allUsers,
-    loading,
-    error,
-    fetchGroups,
-    fetchGroup,
-    fetchAllUsers,
-    fetchGroupMembers,
-    createGroup,
     addUserToGroup,
-    removeUserFromGroup,
+    createGroup,
+    createTask,
     deleteGroup,
+    deleteTask,
+    error,
+    fetchAllUsers,
+    fetchGroup,
+    fetchGroupMembers,
+    fetchGroups,
+    fetchTasks,
+    groupMembers,
+    groupTasks,
+    groups,
+    loading,
+    selectedGroup,
     setSelectedGroup,
+    tasks,
+    tasksLoading,
+    removeUserFromGroup,
   };
 }

@@ -1,17 +1,12 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GroupDto, UserGroupDto } from '@/lib/dto/GroupDto';
-import { UserDataDto } from '@/lib/dto/UserDto';
-import { TaskDetailsDto, TaskDto } from '@/lib/dto/TaskDto';
-import { GroupService } from '@/lib/api/groupService';
-import { UserService } from '@/lib/api/userService';
+import { useGroups } from '@/hooks/useGroups';
 import { ArrowLeft } from 'lucide-react';
 import GroupMemberManager from './GroupMemberManager';
 import GroupTaskManager from './GroupTaskManager';
 import Loader from '@/components/ui/Loader';
 import styles from './GroupDetail.module.css';
-import { TaskService } from '@/lib/api/taskService';
 import { AlertSnackbar } from '../ui/AlertSnackbar';
 import { useAlert } from '../ui/AlertSnackbar';
 
@@ -23,45 +18,30 @@ export default function GroupDetail({ groupId }: GroupDetailProps) {
   const router = useRouter();
   const { alertState, showAlert, handleCloseAlert } = useAlert();
 
-  const [group, setGroup] = useState<GroupDto | null>(null);
-  const [groupMembers, setGroupMembers] = useState<UserDataDto[]>([]);
-  const [taskOptions, setTaskOptions] = useState<TaskDto[]>([]);
-  const [groupTasks, setGroupTasks] = useState<TaskDetailsDto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    addUserToGroup,
+    allUsers,
+    fetchAllUsers,
+    fetchGroup,
+    fetchTasks,
+    groupMembers,
+    groupTasks,
+    loading,
+    selectedGroup: group,
+    tasks: taskOptions,
+    error,
+    removeUserFromGroup,
+  } = useGroups();
 
   useEffect(() => {
-    const fetchGroupData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await GroupService.getGroup(groupId);
-        const tasks = await TaskService.getTasks();
-        setGroup(data);
-        setGroupMembers(data.user_groups.map((el) => el.user));
-        setTaskOptions(tasks);
-        setGroupTasks(data.tasks || []);
-      } catch (err) {
-        setError('Error al cargar el grupo');
-        console.error('Error loading group:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGroupData();
-  }, [groupId]);
+    void fetchGroup(groupId);
+    void fetchTasks();
+    void fetchAllUsers();
+  }, [fetchAllUsers, fetchGroup, fetchTasks, groupId]);
 
   const handleAddMember = async (userId: number, gId: number) => {
     try {
-      const data: UserGroupDto = { user_id: userId, group_id: gId, role_id: 1 };
-      await GroupService.addUserFromGroup(data);
-
-      const users = await UserService.getAll();
-      const newMember = users.find(u => u.id === userId);
-      if (newMember) {
-        setGroupMembers([...groupMembers, newMember]);
-      }
+      await addUserToGroup(userId, gId);
        showAlert(
         "Se agrego al usuario del grupo",
         "info",
@@ -75,10 +55,7 @@ export default function GroupDetail({ groupId }: GroupDetailProps) {
 
   const handleRemoveMember = async (userId: number, gId: number) => {
     try {
-      const data: UserGroupDto = { user_id: userId, group_id: gId, role_id: 0 };
-      await GroupService.removeUserFromGroup(data);
-      const result = groupMembers.filter(m => m.id !== userId);
-      setGroupMembers(result);
+      await removeUserFromGroup(userId, gId);
       showAlert(
         "Se removio al usuario del grupo",
         "error",
@@ -93,8 +70,7 @@ export default function GroupDetail({ groupId }: GroupDetailProps) {
   const handleTaskAssigned = async () => {
     // Refresh group data to get updated tasks
     try {
-      const data = await GroupService.getGroup(groupId);
-      setGroupTasks(data.tasks || []);
+      await fetchGroup(groupId);
       showAlert(
         "Se agrego la tarea al grupo",
         "info",
@@ -107,8 +83,7 @@ export default function GroupDetail({ groupId }: GroupDetailProps) {
 
   const handleTaskUnassigned = async () => {
     try {
-      const data = await GroupService.getGroup(groupId);
-      setGroupTasks(data.tasks || []);
+      await fetchGroup(groupId);
       showAlert(
         "Se removio la tarea del grupo",
         "error",
@@ -185,6 +160,7 @@ export default function GroupDetail({ groupId }: GroupDetailProps) {
         <GroupMemberManager
           groupId={group.id}
           groupMembers={groupMembers}
+          allUsers={allUsers}
           onAddMember={handleAddMember}
           onRemoveMember={handleRemoveMember}
         />
