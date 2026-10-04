@@ -205,14 +205,6 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
             <span className="text-gray-700 font-semibold">No publicado</span>
           )}
         </p>
-        <div className="pt-2">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Accesos publicados</p>
-          {active ? (
-            <AppHostLinks hosts={app.hosts} compact />
-          ) : (
-            <p className="text-xs italic text-slate-400">Inicia la aplicación para ver sus accesos.</p>
-          )}
-        </div>
       </div>
 
       <div className="mt-auto flex gap-3 pt-2">
