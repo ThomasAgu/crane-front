@@ -32,7 +32,6 @@ export default function LoginForm() {
 
     setLoading(true);
     try {
-      debugger
       const result = await AuthService.login(data);
       setToken(result.access_token, result.token_type, result.expiration_time);
       await refreshPermissions();

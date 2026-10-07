@@ -150,8 +150,8 @@ export const AlertDashboard: FC<{ appId: string; timeRange: TimeRange }> = ({
       </div>
 
       {loading && alertData && (
-        <div className="absolute inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center rounded-xl">
-          <Loader loading={loading} width={30} height={30} />
+        <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+              <Loader loading={loading} width={50} height={50} />
         </div>
       )}
     </div>

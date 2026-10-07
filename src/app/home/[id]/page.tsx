@@ -11,7 +11,10 @@ import { StatsPanel } from "./StatsPanel";
 import LogsPanel from "./LogsPanel";
 import AlertsPanel from "./AlertsPanel";
 import styles from '../home.module.css'
+import Loader from "@/components/ui/Loader";
 import { GeneralPanel } from "./GeneralPanel";
+import DeleteModal from "@/components/ui/DeleteModal";
+import { AlertSnackbar, useAlert } from "@/components/ui/AlertSnackbar";
 
 const AppDetailView: FC = () => {
   const params = useParams<{ id: string }>();
@@ -26,6 +29,8 @@ const AppDetailView: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"general" | "stats" | "logs" | "alertas">("general");
   const [isTemplate, setIsTemplate] = useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { alertState, showAlert, handleCloseAlert } = useAlert();
 
     const fetchApp = useCallback(async () => {
     const res = await AppService.get(appId);
@@ -69,10 +74,31 @@ const AppDetailView: FC = () => {
       await fetchApp();
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[var(--background)] p-8 text-slate-500">Cargando aplicación...</div>;
+  const handleConfirmDelete = async () => {
+    setDeleteModalOpen(false);
+    try {
+      await AppService.delete(appId);
+      router.push("/home");
+    } catch (error) {
+      console.error(error);
+      showAlert(
+        error instanceof Error ? error.message : "No se pudo eliminar la aplicación.",
+        "error",
+        "Error al eliminar la aplicación"
+      );
+    }
+  };
+
+  if (loading)
+  return (
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <Loader loading={loading} width={50} height={50} />
+    </div>
+  );
 
   return (
     <NavBar>
@@ -95,6 +121,7 @@ const AppDetailView: FC = () => {
           appStatus={appStatus}
           onAppAction={onAppAction}
           onOpenLaboratory={() => router.push(`/laboratory?appId=${app.id}`)}
+          onDeleteRequest={() => setDeleteModalOpen(true)}
         />
         {activeTab === "general" && <GeneralPanel app={app} appStatus={appStatus} />}
         {activeTab === "stats" && <StatsPanel appId={appId} appStatus={appStatus} />}
@@ -106,6 +133,15 @@ const AppDetailView: FC = () => {
           />
         )}
         {activeTab === "alertas" && <AlertsPanel appId={appId} />}
+        {deleteModalOpen && (
+          <DeleteModal
+            itemName={app.name}
+            itemType="aplicación"
+            deleteFunction={handleConfirmDelete}
+            setActive={setDeleteModalOpen}
+          />
+        )}
+        <AlertSnackbar alertState={alertState} handleCloseAlert={handleCloseAlert} />
       </div>
     </NavBar>
   );

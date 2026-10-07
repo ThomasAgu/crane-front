@@ -12,16 +12,15 @@ export default function HomePage() {
   const render = () => {
     if (loading) {
       return (
-        <div className="mt-6">
-          <Loader loading={loading} width={80} height={80} />
-        </div>
-      );
+          <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+            <Loader loading={loading} width={50} height={50} />
+          </div>
+        );
     }
 
     if (apps.length === 0) {
       return (
         <div className={styles.noAppsContainer}>
-          <h1 className="text-3xl font-bold mt-6 text-darkest">Inicio</h1>
           <EmptyHomeDashboard />
         </div>
       );

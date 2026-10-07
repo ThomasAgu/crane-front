@@ -146,7 +146,11 @@ export default function GroupsPage() {
   };
 
   if (loading || tasksLoading) {
-    return <Loader />;
+    return (
+        <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+          <Loader loading={loading || tasksLoading} width={50} height={50} />
+        </div>
+      );
   }
 
   return (

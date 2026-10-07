@@ -1,85 +1,220 @@
-/* Nuevo CSS para un diseño más profesional y amigable */
+.emptyDashboard {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
 
+.welcome {
+  max-width: 720px;
+  margin-bottom: 36px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--primary-blue);
+  font-weight: 500;
+  font-family: var(--font-montserrat);
+  letter-spacing: 0.1em;
+}
+
+.welcome h1 {
+  margin: 0;
+  color: var(--darkest);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+}
+
+.welcomeDescription {
+  max-width: 620px;
+  margin: 16px 0 0;
+  color: #5b6475;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.sectionTitle {
+  margin: 0 0 16px;
+  color: var(--darkest);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
 
 .dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 12px; 
-  max-width: 800px; 
-  margin: 32px auto;
-  padding: 0 20px;
-}
-
-.laboratorio {
-  grid-column: span 3; 
-}
-
-.inicio {
-  grid-column: 1 / 2;
-}
-.repositorio {
-  grid-column: span 2;
-}
-
-.perfil {
-  grid-column: span 2;
-}
-.configuracion {
-  grid-column: span 1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
 }
 
 .dashboardCard {
-  border: 1px solid var(--light-grey);
-  border-radius: 12px; 
-  padding: 24px; 
-  width: 100%;
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  border: 1px solid #e1e7f0;
+  border-radius: 16px;
   background-color: var(--white);
+  box-shadow: 0 3px 12px rgba(27, 43, 76, 0.04);
+  color: inherit;
   text-align: left;
-  transition: all 0.3s ease; 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .dashboardCard:hover {
-  border-color: var(--primary-blue); 
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); 
+  transform: translateY(-3px);
+  border-color: rgba(50, 89, 230, 0.45);
+  box-shadow: 0 14px 30px rgba(27, 43, 76, 0.1);
+}
+
+.logo {
+  display: inline-block;
+  background-color: var(--primary-blue);
+  height: 40px;
+  width: 40px;
+  padding: 5px;
+  margin-top: 10px;
+
+  transform: rotate(45deg);
+  border-radius: 10px; /* Ajusta este valor para más o menos redondeo */
+}
+
+.logoImage {
+  transform: rotate(-45deg); /* Rota la imagen de vuelta para que se vea derecha */
+  width: 100%;
+  height: 100%;
+}
+
+.dashboardCard:focus-visible {
+  outline: 3px solid rgba(50, 89, 230, 0.35);
+  outline-offset: 3px;
+}
+
+.featuredCard {
+  grid-column: span 2;
+  min-height: 258px;
+  justify-content: center;
+  padding: 32px;
+  border-color: rgba(50, 89, 230, 0.16);
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(50, 89, 230, 0.11), transparent 48%),
+    linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%);
 }
 
 .headerContent {
   display: flex;
   align-items: center;
-  margin-bottom: 16px; 
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .iconContainer {
-  background-color: var(--secondary-blue); 
-  color: var(--primary-blue);
-  border-radius: 50%;
-  padding: 12px;
-  margin-right: 16px;
   display: flex;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
   align-items: center;
   justify-content: center;
-}
-
-.dashboardCard h2 {
-    font-size: 1.5rem;
-}
-
-.dasboardCardLink {
-  display: inline-block;
-  margin-top: 20px;
+  border-radius: 14px;
+  background: #eef2ff;
   color: var(--primary-blue);
-  font-weight: 600; 
-  text-decoration: none; 
 }
 
-@media (max-width: 768px) {
+.headerContent h2 {
+  margin: 0;
+  color: var(--darkest);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cardDescription {
+  flex: 1;
+  margin: 0 0 20px;
+  color: #5b6475;
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.dashboardCardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--primary-blue);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.featuredCard .iconContainer {
+  width: 56px;
+  height: 56px;
+  flex-basis: 56px;
+  border-radius: 16px;
+  background: var(--primary-blue);
+  color: var(--white);
+}
+
+.featuredCard .headerContent h2 {
+  font-size: 1.35rem;
+}
+
+.featuredCard .cardDescription {
+  max-width: 560px;
+  font-size: 1rem;
+}
+
+.featuredCard .dashboardCardLink {
+  padding: 11px 16px;
+  border-radius: 9px;
+  background: var(--primary-blue);
+  color: var(--white);
+}
+
+@media (max-width: 1024px) {
   .dashboardGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .laboratorio, .inicio, .repositorio, .perfil, .configuracion {
-    grid-column: span 1; 
+}
+
+@media (max-width: 640px) {
+  .emptyDashboard {
+    padding: 32px 0 44px;
+  }
+
+  .welcome {
+    margin-bottom: 26px;
+  }
+
+  .welcomeDescription {
+    font-size: 0.98rem;
+  }
+
+  .dashboardGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .dashboardCard,
+  .featuredCard {
+    grid-column: auto;
+    min-height: 0;
+    padding: 22px;
+  }
+
+  .featuredCard {
+    padding: 26px 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboardCard {
+    transition: none;
+  }
+
+  .dashboardCard:hover {
+    transform: none;
   }
 }

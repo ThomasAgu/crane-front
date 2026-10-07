@@ -20,7 +20,6 @@ import DeleteModal from './DeleteModal'
 import RepositoryForm, {RepositoryFormData} from '../forms/RepositoryForm'
 import Loader from './Loader'
 import style from './DashboardItem.module.css'
-import AppHostLinks from './AppHostLinks'
 
 interface DashboardItemProps {
   app: AppDto
@@ -39,6 +38,21 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const [uploadModal, setUploadModal] = useState(false);
   const isTemplate = app.is_template ?? false;
   const repositoryPending = app.repository_state === 'pending';
+
+  const REPOSITORY_STATUS_MAP = {
+    pending: { label: 'Pendiente de aprobación', className: 'text-amber-600' },
+    approved: { label: 'Publicado', className: 'text-emerald-600' },
+    rejected: { label: 'Rechazado', className: 'text-red-600' },
+  } as const;
+
+  const repositoryState = app.repository_state as keyof typeof REPOSITORY_STATUS_MAP | undefined;
+
+  const currentStatus = repositoryState && repositoryState in REPOSITORY_STATUS_MAP
+    ? REPOSITORY_STATUS_MAP[repositoryState]
+    : {
+        label: 'No publicado',
+        className: 'text-gray-500',
+      };
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
   
@@ -128,7 +142,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         );
       }
       
-      onUpdate(); // Refresca los datos del dashboard para capturar el nuevo estado `is_uploaded`
+      onUpdate();
     } catch (error) {
       showAlert(
         error instanceof Error ? error.message : "Ocurrió un error al intentar procesar la solicitud.",
@@ -197,13 +211,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
         <p>Creado: {createdAtText}</p>
         <p>Última actualización del repositorio: {repositoryUpdatedAtText}</p>
         <p className="text-xs mt-1">
-          Estado Repo: {repositoryPending ? (
-            <span className="text-grey-600 font-semibold">Pendiente de aprobacion</span>
-          ) : app.is_uploaded ? (
-            <span className="text-blue-600 font-semibold">Publicado</span>
-          ) : (
-            <span className="text-gray-700 font-semibold">No publicado</span>
-          )}
+          Estado Repo: <span className={`font-semibold ${currentStatus.className}`}>{currentStatus.label}</span>
         </p>
       </div>
 
@@ -213,21 +221,21 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
             <>
               <button
                 onClick={handleStop}
-                className="p-2 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition"
+                className="p-2 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 cursor-pointer transition"
               >
                 <Pause size={20} />
               </button>
 
               <button
                 onClick={handleRestart}
-                className="p-2 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 transition"
+                className="p-2 rounded-lg bg-green-100  text-green-700 hover:bg-green-200 cursor-pointer transition"
               >
                 <RefreshCcw size={20} />
               </button>
 
               <button
                 onClick={handleScale}
-                className="p-2 rounded-lg bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition"
+                className="p-2 rounded-lg bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer transition"
               >
                 <Layers2 size={20} />
               </button>
@@ -235,7 +243,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
           ) : (
             <button
               onClick={handleStart}
-              className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+              className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer transition"
             >
               <Play size={20} />
             </button>
@@ -244,7 +252,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
 
         <button
           onClick={handleLaboratoryClick}
-          className="p-2 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition"
+          className="p-2 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 cursor-pointer transition"
           title="Abrir en el laboratorio"
           aria-label="Abrir en el laboratorio"
         >
@@ -258,8 +266,8 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
             repositoryPending
               ? 'bg-gray-100 text-gray-700 cursor-not-allowed'
               : app.is_uploaded 
-              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-              : 'bg-blue-100 text-gray-700 hover:bg-blue-200' 
+              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
+              : 'bg-blue-100 text-gray-700 hover:bg-blue-200 cursor-pointer' 
           }`}
           title={repositoryPending
             ? "Solicitud pendiente de aprobación"
@@ -270,7 +278,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
 
         <button
           onClick={handleDelete}
-          className="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition ml-auto"
+          className="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer transition ml-auto"
         >
           <Trash size={20} />
         </button>

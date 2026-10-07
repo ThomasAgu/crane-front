@@ -44,7 +44,6 @@ const ProfileDropdown = ({ expanded, handleLogout }: ProfileDropdownProps) => {
                   />
         </div>
 
-        {/* Texto del perfil - Solo visible si el Nav está expandido */}
         {expanded && (
           <div className="flex flex-col text-left leading-tight overflow-hidden">
             <span className="text-sm font-medium truncate">Mi Perfil</span>
@@ -53,7 +52,6 @@ const ProfileDropdown = ({ expanded, handleLogout }: ProfileDropdownProps) => {
         )}
       </div>
 
-      {/* Menú Desplegable (Dropdown Popup) */}
       {profileOpen && (
         <div 
           className={`

@@ -11,8 +11,12 @@
 
 .noAppsContainer {
     background-color: var(--background);
-    text-align: center;
-    padding: 10px 90px;
+    text-align: start;
+    width: 100%;
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 6vw, 72px);
+    box-sizing: border-box;
 }
 
 .appsContainer {
