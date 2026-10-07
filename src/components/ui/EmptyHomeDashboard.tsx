@@ -27,8 +27,6 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ icon, title, description,
   </Link>
 );
 
-
-// Reordenado para que 'Laboratorio' sea el primero, seguido de 'Inicio', etc.
 const dashboardItems: DashboardCardProps[] = [
   {
     icon: <FlaskConical />, 

@@ -16,7 +16,12 @@ export function useForm<T extends Record<string, unknown>>(initialData: T) {
   };
 
   const updateValidity = (key: keyof T, isValid: boolean) => {
-    setInputValidity(prev => ({ ...prev, [key]: isValid }));
+    setInputValidity(prev => {
+      if (prev[key] === isValid) {
+        return prev;
+      }
+      return { ...prev, [key]: isValid };
+    });
   };
 
   const isFormValid = Object.values(inputValidity).every(Boolean);

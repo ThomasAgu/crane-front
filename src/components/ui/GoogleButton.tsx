@@ -32,7 +32,7 @@ export default function GoogleButton({ text }: GoogleButtonProps) {
       const result = await AuthService.googleLogin({
         access_token: googleToken
       });
-      setToken(result.access_token, result.token_type);
+      setToken(result.access_token, result.token_type, result.expiration_time);
       
       await refreshPermissions();
       router.push("/home");

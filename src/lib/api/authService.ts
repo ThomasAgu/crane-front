@@ -1,17 +1,18 @@
 import apiRequest from "./apiClient";
-import { UserLoginDto, UserLoginResponseDto } from "../dto/UserLoginDto";
-import { UserCreateDto, UserCreateResponseDto } from "../dto/UserCreateDto";
-import { GoogleLoginDto, GoogleLoginResponseDto } from "../dto/GoogleLoginDto";
+import { UserLoginDto } from "../dto/UserLoginDto";
+import { UserCreateDto } from "../dto/UserCreateDto";
+import { GoogleLoginDto } from "../dto/GoogleLoginDto";
+import { AuthResponseDto } from "../dto/AuthDto";
 
 //POST
 const loginUser = (credentials: UserLoginDto) =>
-  apiRequest<UserLoginResponseDto>("/auth/login", "POST", credentials, false);
+  apiRequest<AuthResponseDto>("/auth/login", "POST", credentials, false);
 
 const createUser = (newUser: UserCreateDto) =>
-  apiRequest<UserCreateResponseDto>("/auth/register", "POST", newUser, false);
+  apiRequest<AuthResponseDto>("/auth/register", "POST", newUser, false);
 
-const googleLogin = (googleData: GoogleLoginDto): Promise<GoogleLoginResponseDto> => {
-  return apiRequest<GoogleLoginResponseDto>("/auth/google", "POST", googleData, false);
+const googleLogin = (googleData: GoogleLoginDto): Promise<AuthResponseDto> => {
+  return apiRequest<AuthResponseDto>("/auth/google", "POST", googleData, false);
 }
   
 

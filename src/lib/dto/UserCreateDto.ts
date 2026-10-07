@@ -3,8 +3,3 @@ export interface UserCreateDto {
   email: string;
   password: string;
 }
-
-export interface UserCreateResponseDto {
-  access_token: string;
-  token_type: string;
-}

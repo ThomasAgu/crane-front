@@ -44,15 +44,6 @@ const InputText: React.FC<props> = ({
 }) => {
     const [error, setError] = useState<string | null>(null);
 
-    const isValid = (): boolean => {
-        for (const validator of [...liveValidators, ...submitValidators]) {
-            if (!validator.isValid(value)) {
-                return false;
-            }
-        }
-        return true;
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setValue(val);
@@ -68,38 +59,19 @@ const InputText: React.FC<props> = ({
     };
 
     useEffect(() => {
-        const checkIsValid = () => {
-            for (const validator of [...liveValidators, ...submitValidators]) {
-                if (!validator.isValid(value)) {
-                    
-                    if (showErrors || liveValidators.includes(validator)) {
-                        setError(validator.message);
-                        return false;
-                    }
-                }
-            }
-            setError(null);
-            return true;
-        };
+        const invalidValidator = [...liveValidators, ...submitValidators]
+            .find(validator => !validator.isValid(value));
+        const valid = !invalidValidator;
 
-        const valid = checkIsValid();
-        
+        if (invalidValidator && (showErrors || liveValidators.includes(invalidValidator))) {
+            setError(invalidValidator.message);
+        } else {
+            setError(null);
+        }
         if (onValidityChange) {
             onValidityChange(valid);
         }
-    }, [value, showErrors]);
-
-    useEffect(() => {
-        if (showErrors && submitValidators.length > 0) {
-            for (const validator of submitValidators) {
-                if (!validator.isValid(value)) {
-                    setError(validator.message);
-                    return;
-                }
-            }
-            setError(null);
-        }
-    }, [showErrors]);
+    }, [value, showErrors, liveValidators, submitValidators, onValidityChange]);
 
     const hasRequiredValidator = () => {
         const validators = [...liveValidators, ...submitValidators];

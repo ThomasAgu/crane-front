@@ -32,13 +32,13 @@ export default function LoginForm() {
 
     setLoading(true);
     try {
+      debugger
       const result = await AuthService.login(data);
-      setToken(result.access_token, result.token_type);
-      //Setear el expiration time
+      setToken(result.access_token, result.token_type, result.expiration_time);
       await refreshPermissions();
       router.push("/home");
     } catch (err) {
-      setApiError("Error al iniciar sesión");
+      setApiError("Nombre de usuario o contraseña incorrectos");
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ export default function LoginForm() {
         setShowError={setShowErrors}
       />
 
-      {apiError && <div className={styles.errorMessage}>{apiError}</div>}
+      {apiError && <div className={styles.apiErrorMessage}>{apiError}</div>}
 
       <div className="flex justify-center">
         <Loader loading={loading} />

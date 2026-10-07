@@ -36,13 +36,12 @@ export default function SingUpForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowErrors(true);
-
     if (!isFormValid) return;
 
     setLoading(true);
     try {
       const result = await AuthService.create(data);
-      setToken(result.access_token, result.token_type);
+      setToken(result.access_token, result.token_type, result.expiration_time);
       await refreshPermissions();
       router.push('/home');
     } catch (err: any) {
@@ -111,7 +110,7 @@ export default function SingUpForm() {
         onValidityChange={(valid) => updateValidity('repeatedPassword', valid)}
       />
 
-      {apiError && <div className={styles.errorMessage}>{apiError}</div>}
+      {apiError && <div className={styles.apiErrorMessage}>{apiError}</div>}
 
       <div className="flex justify-center">
         <Loader loading={loading} />
