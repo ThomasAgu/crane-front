@@ -13,6 +13,7 @@ import {
   UploadCloud,
   LayoutTemplate,
   FlaskConical,
+  AppWindow,
 } from 'lucide-react'
 import { AppService } from '@/lib/api/appService'
 import { RepositoryService } from '@/lib/api/repositoryService'
@@ -40,9 +41,9 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const repositoryPending = app.repository_state === 'pending';
 
   const REPOSITORY_STATUS_MAP = {
-    pending: { label: 'Pendiente de aprobación', className: 'text-amber-600' },
-    approved: { label: 'Publicado', className: 'text-emerald-600' },
-    rejected: { label: 'Rechazado', className: 'text-red-600' },
+    pending: { label: 'Pendiente de aprobación', className: style.repositoryPending },
+    approved: { label: 'Publicado', className: style.repositoryApproved },
+    rejected: { label: 'Rechazado', className: style.repositoryRejected },
   } as const;
 
   const repositoryState = app.repository_state as keyof typeof REPOSITORY_STATUS_MAP | undefined;
@@ -51,7 +52,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
     ? REPOSITORY_STATUS_MAP[repositoryState]
     : {
         label: 'No publicado',
-        className: 'text-gray-500',
+        className: style.repositoryNotPublished,
       };
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
@@ -177,45 +178,47 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   return (
     <div
       onClick={() => router.push(`/home/${app.id}/?status=${app.status}`)}
-      className="
-        bg-white rounded-2xl border border-gray-200 shadow-sm
-        hover:shadow-md hover:border-blue-300
-        transition-all cursor-pointer p-5 flex flex-col gap-4
-        relative
-      "
+      className={`${style.card} ${isTemplate ? style.templateCard : ''}`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-medium text-gray-800">
-            {app.name}
-          </h2>
-          {isTemplate && (
-            <span className="inline-flex items-center gap-1 mt-1 rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-700">
-              <LayoutTemplate size={12} /> Plantilla
+      <div className={style.cardHeader}>
+        <div className={style.projectIdentity}>
+          <span className={`${style.projectIcon} ${isTemplate ? style.templateIcon : style.applicationIcon}`}>
+            {isTemplate ? <LayoutTemplate size={21} /> : <AppWindow size={21} />}
+          </span>
+          <div className={style.projectHeading}>
+            <h2 className={style.title}>{app.name}</h2>
+            <span className={`${style.typeBadge} ${isTemplate ? style.templateBadge : style.applicationBadge}`}>
+              {isTemplate ? 'Plantilla' : 'Aplicación'}
             </span>
-          )}
+          </div>
         </div>
 
-        <span
-          className={`
-            px-3 py-0.5 rounded-full text-xs font-semibold 
-            ${active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}
-          `}
-        >
+        <span className={`${style.state} ${active ? style.active : style.inactive}`}>
+          <span className={style.stateDot} />
           {active ? 'Activo' : 'Inactivo'}
         </span>
       </div>
 
-      <div className="text-sm text-gray-600 flex flex-col gap-1">
-        <p>Escala actual: {app.current_scale}</p>
-        <p>Creado: {createdAtText}</p>
-        <p>Última actualización del repositorio: {repositoryUpdatedAtText}</p>
-        <p className="text-xs mt-1">
-          Estado Repo: <span className={`font-semibold ${currentStatus.className}`}>{currentStatus.label}</span>
-        </p>
-      </div>
+      <dl className={style.metadata}>
+        <div className={style.metadataItem}>
+          <dt>Escala actual</dt>
+          <dd>{app.current_scale}</dd>
+        </div>
+        <div className={style.metadataItem}>
+          <dt>Creado</dt>
+          <dd>{createdAtText}</dd>
+        </div>
+        <div className={style.metadataItem}>
+          <dt>Actualización del repositorio</dt>
+          <dd>{repositoryUpdatedAtText}</dd>
+        </div>
+        <div className={style.metadataItem}>
+          <dt>Estado del repositorio</dt>
+          <dd className={currentStatus.className}>{currentStatus.label}</dd>
+        </div>
+      </dl>
 
-      <div className="mt-auto flex gap-3 pt-2">
+      <div className={style.actions}>
         {!isTemplate && (
           active ? (
             <>
