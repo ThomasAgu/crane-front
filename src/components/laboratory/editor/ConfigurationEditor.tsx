@@ -6,7 +6,7 @@ import { AppService } from "@/lib/api/appService";
 import { AppDto } from "@/lib/dto/AppDto";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
 import styles from "./ConfigurationEditor.module.css";
-import { FileText, Copy, PlusCircle, Save } from "lucide-react";
+import { FileText, Copy, Save } from "lucide-react";
 import CreationModal from "../CreationModal";
 
 const ConfigurationEditor: React.FC<{

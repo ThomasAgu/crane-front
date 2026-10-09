@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { AlertCircle, Plus, X } from "lucide-react";
+import style from "./EnvironmentVariablesEditor.module.css";
 
 export interface EnvironmentVariable {
   key: string;
@@ -14,6 +16,7 @@ export default function EnvironmentVariablesEditor({
   variables,
   onChange,
 }: EnvironmentVariablesEditorProps) {
+  const editorId = useId();
   const [envVars, setEnvVars] = useState<EnvironmentVariable[]>(
     Object.entries(variables || {}).map(([key, value]) => ({ key, value }))
   );
@@ -95,137 +98,129 @@ export default function EnvironmentVariablesEditor({
   }).length;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
-  <div>
-    <h3 className="font-semibold text-gray-800">
-      Variables de Entorno
-    </h3>
-
-    {(incompleteCount > 0 || invalidKeyCount > 0) && (
-      <div className="mt-1 space-y-1">
-        {incompleteCount > 0 && (
-          <p className="text-xs text-red-500">
-            {incompleteCount} variable(s) incompleta(s)
+    <section className={style.editor} aria-labelledby="environment-variables-title">
+      <div className={style.header}>
+        <div className={style.heading}>
+          <h3 id="environment-variables-title" className={style.title}>
+            Variables de entorno
+          </h3>
+          <p className={style.description}>
+            Configura los valores disponibles para este servicio.
           </p>
-        )}
+        </div>
 
-        {invalidKeyCount > 0 && (
-          <p className="text-xs text-amber-600">
-            {invalidKeyCount} clave(s) con formato inválido
-          </p>
-        )}
+        <button
+          type="button"
+          onClick={handleAddVariable}
+          disabled={hasIncompleteVar}
+          className={style.addButton}
+          title={hasIncompleteVar ? "Completa o elimina la variable pendiente para agregar otra" : undefined}
+        >
+          <Plus size={16} aria-hidden="true" />
+          Agregar
+        </button>
       </div>
-    )}
-  </div>
 
-  <button
-    type="button"
-    onClick={handleAddVariable}
-    disabled={hasIncompleteVar}
-    className={`px-3 py-1 text-white text-sm rounded transition-colors ${
-      hasIncompleteVar
-        ? "bg-gray-300 cursor-not-allowed opacity-60"
-        : "bg-blue-500 hover:bg-blue-600"
-    }`}
-  >
-    + Agregar
-  </button>
-</div>
-
-      <div className="space-y-2">
-        {envVars.length > 0 ? (
-    envVars.map((env, index) => {
-      const key = env.key.trim();
-      const value = env.value.trim();
-
-      const isKeyEmpty = key === "";
-      const isValueEmpty = value === "";
-
-      const isIncomplete =
-        (key && !value) ||
-        (!key && value);
-
-      const envKeyRegex = /^[A-Z_][A-Z0-9_]*$/;
-
-      const hasInvalidKey =
-        key !== "" &&
-        !envKeyRegex.test(key);
-
-      return (
-        <div key={index}>
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="MYSQL_PASSWORD"
-                value={env.key}
-                onChange={(e) =>
-                  handleUpdateVariable(
-                    index,
-                    "key",
-                    e.target.value
-                  )
-                }
-                className={`w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 transition-colors ${
-                  (isIncomplete && isKeyEmpty) || hasInvalidKey
-                    ? "border-red-500 focus:ring-red-300"
-                    : "border-gray-300 focus:ring-blue-500"
-                }`}
-              />
-            </div>
-
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Valor"
-                value={env.value}
-                onChange={(e) =>
-                  handleUpdateVariable(
-                    index,
-                    "value",
-                    e.target.value
-                  )
-                }
-                className={`w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 transition-colors ${
-                  isIncomplete && isValueEmpty
-                    ? "border-red-500 focus:ring-red-300"
-                    : "border-gray-300 focus:ring-blue-500"
-                }`}
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={() => handleRemoveVariable(index)}
-              className="px-3 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
-            >
-              ✕
-            </button>
-          </div>
-
-          {isIncomplete && (
-            <p className="mt-1 text-xs text-red-500">
-              Debes completar tanto la clave como el valor.
+      {(incompleteCount > 0 || invalidKeyCount > 0) && (
+        <div className={style.validationSummary} role="status" aria-live="polite">
+          {incompleteCount > 0 && (
+            <p className={`${style.validationMessage} ${style.errorMessage}`}>
+              <AlertCircle size={15} aria-hidden="true" />
+              {incompleteCount} variable(s) incompleta(s)
             </p>
           )}
-
-          {!isIncomplete && hasInvalidKey && (
-            <p className="mt-1 text-xs text-amber-600">
-              La clave debe contener únicamente letras
-              mayúsculas, números y guiones bajos
-              (ej: MYSQL_PASSWORD, DB_HOST, API_KEY).
+          {invalidKeyCount > 0 && (
+            <p className={`${style.validationMessage} ${style.warningMessage}`}>
+              <AlertCircle size={15} aria-hidden="true" />
+              {invalidKeyCount} clave(s) con formato inválido
             </p>
           )}
         </div>
-      );
-  })
-) : (
-  <p className="text-gray-400 text-sm italic">
-    No hay variables de entorno definidas
-  </p>
-)}
+      )}
+
+      <div className={style.variableList}>
+        {envVars.length > 0 ? (
+          envVars.map((env, index) => {
+            const key = env.key.trim();
+            const value = env.value.trim();
+            const isKeyEmpty = key === "";
+            const isValueEmpty = value === "";
+            const isIncomplete = Boolean((key && !value) || (!key && value));
+            const hasInvalidKey = key !== "" && !/^[A-Z_][A-Z0-9_]*$/.test(key);
+            const rowId = `${editorId}-environment-variable-${index}`;
+
+            return (
+              <div key={index} className={style.variableRow}>
+                <div className={style.fields}>
+                  <label className={style.field}>
+                    <span className={style.fieldLabel}>Clave</span>
+                    <input
+                      type="text"
+                      placeholder="MYSQL_PASSWORD"
+                      value={env.key}
+                      onChange={(e) =>
+                        handleUpdateVariable(index, "key", e.target.value)
+                      }
+                      aria-invalid={(isIncomplete && isKeyEmpty) || hasInvalidKey}
+                      aria-describedby={isIncomplete || hasInvalidKey ? `${rowId}-message` : undefined}
+                      className={`${style.input} ${
+                        (isIncomplete && isKeyEmpty) || hasInvalidKey
+                          ? style.invalidInput
+                          : ""
+                      }`}
+                    />
+                  </label>
+
+                  <label className={style.field}>
+                    <span className={style.fieldLabel}>Valor</span>
+                    <input
+                      type="text"
+                      placeholder="Ingresa un valor"
+                      value={env.value}
+                      onChange={(e) =>
+                        handleUpdateVariable(index, "value", e.target.value)
+                      }
+                      aria-invalid={isIncomplete && isValueEmpty}
+                      aria-describedby={isIncomplete ? `${rowId}-message` : undefined}
+                      className={`${style.input} ${
+                        isIncomplete && isValueEmpty ? style.invalidInput : ""
+                      }`}
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveVariable(index)}
+                    className={style.removeButton}
+                    aria-label={`Eliminar variable ${env.key || index + 1}`}
+                    title="Eliminar variable"
+                  >
+                    <X size={18} aria-hidden="true" />
+                  </button>
+                </div>
+
+                {isIncomplete && (
+                  <p id={`${rowId}-message`} className={`${style.fieldMessage} ${style.errorMessage}`}>
+                    <AlertCircle size={14} aria-hidden="true" />
+                    Completa tanto la clave como el valor.
+                  </p>
+                )}
+
+                {!isIncomplete && hasInvalidKey && (
+                  <p id={`${rowId}-message`} className={`${style.fieldMessage} ${style.warningMessage}`}>
+                    <AlertCircle size={14} aria-hidden="true" />
+                    Usa solo mayúsculas, números y guiones bajos (ej.: DB_HOST).
+                  </p>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <p className={style.emptyState}>
+            Aún no hay variables de entorno. Agrega una para comenzar.
+          </p>
+        )}
       </div>
-    </div>
+    </section>
   );
-} 
+}

@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 interface AppNodeData {
   name: string;
   label?: string;
-  description?: string;
   actuales: number;
   minimas: number;
   maximas: number;
@@ -42,14 +41,11 @@ export const App = ({ data, selected, dragging }: NodeProps<AppNodeData>) => {
         <h2 className="font-bold text-xl mb-2">
           {data.name || "Nombre de aplicación"}
         </h2>
-        <p className="text-sm text-gray-300 mb-3">{data.description}</p>
-        
+
         <div className="flex justify-between items-center">
-          <span className="font-semibold text-sm">Instancias</span>
+          <span className="font-semibold text-sm">Instancias iniciales</span>
           <div className="flex items-center gap-2">
-            <button className="px-2 py-0.5 bg-gray-700 rounded hover:bg-gray-600 transition-colors">-</button>
-            <span className="font-mono">{data.actuales || 1}</span>
-            <button className="px-2 py-0.5 bg-blue-600 rounded hover:bg-blue-500 transition-colors">+</button>
+            <span className="bg-purple-300 text-white px-2 py-0.5 rounded font-mono">{data.actuales || 1}</span>
           </div>
         </div>
       </div>

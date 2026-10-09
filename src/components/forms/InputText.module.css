@@ -62,7 +62,8 @@
 }
 
 .input:focus{
-  border-color: var(--darker);
+  border-color: var(--darker-blue);
+  outline: none;
 }
 
 

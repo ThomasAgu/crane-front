@@ -36,7 +36,7 @@ export default function InstanceControls({ actuales, minimas, maximas, onChange 
 
   const rows: { key: keyof InstanceVals; label: string; value: number }[] = [
     { key: "minimas", label: "Mínimas", value: minimas },
-    { key: "actuales", label: "Actuales", value: actuales },
+    { key: "actuales", label: "Iniciales", value: actuales },
     { key: "maximas", label: "Máximas", value: maximas },
   ];
 
@@ -45,7 +45,7 @@ export default function InstanceControls({ actuales, minimas, maximas, onChange 
       {rows.map(({ key, label, value }) => (
         <div
           key={key}
-          className="flex items-center justify-between bg-blue-50 border border-blue-100 rounded-xl px-3 py-2 shadow-sm"
+          className="flex items-center justify-between bg-blue-50 border border-blue-100 rounded-sm px-3 py-2 shadow-sm"
         >
           <span className="font-medium text-gray-700">{label}</span>
 

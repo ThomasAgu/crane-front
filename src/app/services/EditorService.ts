@@ -253,16 +253,9 @@ class EditorStateService {
           volumes: volumes,
           networks,
           environment: svc.data?.environment || {},
-                    
-          // Comando (CMD) de Docker
           command: svc.data?.command || null,
-          
-          // Política de reinicio (ej: "unless-stopped", "always")
           restart_policy: svc.data?.restartPolicy || "unless-stopped",
-
-          // Array de archivos/scripts de arranque cargados. Estructura: [{ name: string, content: string, type: string }]
           startup_scripts: svc.data?.startupScripts || []
-
         } as any;
       });
       

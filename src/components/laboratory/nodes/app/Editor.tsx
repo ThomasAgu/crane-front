@@ -7,7 +7,6 @@ import EnvironmentVariablesEditor from "../service/EnvironmentVariablesEditor";
 
 export type AppData = {
   name?: string;
-  description?: string;
   actuales?: number;
   minimas?: number;
   maximas?: number;
@@ -34,7 +33,6 @@ export default function AppEditorForm({
 
   const [localState, setLocalState] = useState<AppData>(() => ({
     name: data?.name ?? editorService.getNodeNewNamesByType('app'),
-    description: data?.description ?? "",
     actuales: data?.actuales ?? 1,
     minimas: data?.minimas ?? 0,
     maximas: data?.maximas ?? 2,
@@ -45,7 +43,6 @@ export default function AppEditorForm({
     if (data) {
       setLocalState({
         name: data.name ?? "",
-        description: data.description ?? "",
         actuales: data.actuales ?? 1,
         minimas: data.minimas ?? 0,
         maximas: data.maximas ?? 2,
@@ -73,7 +70,7 @@ export default function AppEditorForm({
     <div className="text-darkest space-y-4">
       <div>
         <h2 className="text-lg font-bold">Aplicación</h2>
-        <p className="text-xs text-gray-500">Define configuracion basica de la aplicación base.</p>
+        <p className="text-xs text-gray-500">Define la configuración básica de la aplicación.</p>
       </div>
 
       {/* CAMPO NOMBRE */}
@@ -90,21 +87,6 @@ export default function AppEditorForm({
         setShowError={setTriggerErrors}
         onValidityChange={(isValid) => setIsNameValid(isValid)}
       />
-
-      {/* CAMPO DESCRIPCIÓN */}
-      <div>
-        <label className="block text-sm font-medium text-gray-800">Descripción</label>
-        <textarea
-          className="w-full border border-gray-300 p-2 rounded mt-1.5 text-sm text-black focus:outline-none focus:border-blue-500 transition-colors"
-          maxLength={200}
-          rows={3}
-          value={localState.description || ""}
-          onChange={(e) => updateField("description", e.target.value)}
-        />
-        <p className="text-right text-[10px] text-gray-400 mt-1">
-          {(localState.description?.length || 0)}/200
-        </p>
-      </div>
 
       {/* SECCIÓN AJUSTES AVANZADOS CON ANIMACIÓN SLIDE */}
       <div className="pt-2 border-t border-gray-200">
