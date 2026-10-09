@@ -30,7 +30,6 @@ export default function AppEditorForm({
   const [isNameValid, setIsNameValid] = useState(true);
   const [triggerErrors, setTriggerErrors] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
-
   const [localState, setLocalState] = useState<AppData>(() => ({
     name: data?.name ?? editorService.getNodeNewNamesByType('app'),
     actuales: data?.actuales ?? 1,
@@ -50,6 +49,18 @@ export default function AppEditorForm({
       });
     }
   }, [selectedNode?.id]);
+
+  useEffect(() => {
+    const handleFocusField = (event: Event) => {
+      const field = (event as CustomEvent<{ field?: string }>).detail?.field;
+      if (field?.startsWith("app-environment-")) {
+        setShowAdvanced(true);
+      }
+    };
+
+    window.addEventListener("editor:focus-field", handleFocusField);
+    return () => window.removeEventListener("editor:focus-field", handleFocusField);
+  }, []);
 
   useEffect(() => {
     if (selectedNode) {
@@ -110,6 +121,7 @@ export default function AppEditorForm({
               <EnvironmentVariablesEditor
                 variables={localState.environment || {}}
                 onChange={(val) => updateField("environment", val)}
+                fieldPrefix="app-environment"
               />
             </div>
           </div>
@@ -149,7 +161,7 @@ export default function AppEditorForm({
               {connectedServices.map((service: any, index) => (
                 <li
                   key={service.id || index}
-                  className="flex items-center justify-between bg-white shadow-xs border border-gray-150 rounded-md px-3 py-2 hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between bg-white shadow-xs border border-gray-200 rounded-md px-3 py-2 hover:bg-gray-50 transition-colors"
                 >
                   <div>
                     <p className="font-medium text-xs text-gray-700">{service.name}</p>

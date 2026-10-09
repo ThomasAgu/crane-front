@@ -37,7 +37,7 @@ const deleteApp = (id: string) =>
   apiRequest<string>(`/apps/${id}`, "DELETE");
 
 //PATCH
-const updateApp = (data: AppDto) =>
+const updateApp = (data: Partial<CreateAppDto> & Pick<AppDto, "id">) =>
   apiRequest<AppDto>(`/apps/${data.id}`, "PATCH", data);
 
 export const AppService = {

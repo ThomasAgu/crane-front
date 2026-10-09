@@ -10,11 +10,13 @@ export interface EnvironmentVariable {
 interface EnvironmentVariablesEditorProps {
   variables: Record<string, string>;
   onChange: (variables: Record<string, string>) => void;
+  fieldPrefix?: "app-environment" | "service-environment";
 }
 
 export default function EnvironmentVariablesEditor({
   variables,
   onChange,
+  fieldPrefix = "service-environment",
 }: EnvironmentVariablesEditorProps) {
   const editorId = useId();
   const [envVars, setEnvVars] = useState<EnvironmentVariable[]>(
@@ -23,10 +25,8 @@ export default function EnvironmentVariablesEditor({
 
   useEffect(() => {
     const incomingVars = Object.entries(variables || {}).map(([key, value]) => ({ key, value }));
-    const currentCompleteVars = envVars.reduce((record, env) => {
-      if (env.key.trim() && env.value.trim()) {
-        record[env.key.trim()] = env.value;
-      }
+    const currentRecord = envVars.reduce((record, env) => {
+      record[env.key.trim()] = env.value;
       return record;
     }, {} as Record<string, string>);
 
@@ -35,17 +35,14 @@ export default function EnvironmentVariablesEditor({
       return record;
     }, {} as Record<string, string>);
 
-    if (JSON.stringify(currentCompleteVars) !== JSON.stringify(incomingRecord)) {
+    if (JSON.stringify(currentRecord) !== JSON.stringify(incomingRecord)) {
       setEnvVars(incomingVars);
     }
   }, [variables, envVars]);
 
-  // Helper para procesar y enviar al padre
   const notifyParent = (updatedVars: EnvironmentVariable[]) => {
     const envRecord = updatedVars.reduce((acc, env) => {
-      if (env.key.trim() && env.value.trim()) {
-        acc[env.key.trim()] = env.value;
-      }
+      acc[env.key.trim()] = env.value;
       return acc;
     }, {} as Record<string, string>);
     onChange(envRecord);
@@ -54,6 +51,7 @@ export default function EnvironmentVariablesEditor({
   const handleAddVariable = () => {
     const newVars = [...envVars, { key: "", value: "" }];
     setEnvVars(newVars);
+    notifyParent(newVars);
   };
 
   const handleUpdateVariable = (
@@ -80,13 +78,10 @@ export default function EnvironmentVariablesEditor({
   );
 
     const incompleteCount = envVars.filter((env) => {
-    const key = env.key.trim();
-    const value = env.value.trim();
+      const key = env.key.trim();
+      const value = env.value.trim();
 
-    return (
-      (key && !value) ||
-      (!key && value)
-    );
+      return !key || !value;
   }).length;
 
   const invalidKeyCount = envVars.filter((env) => {
@@ -145,7 +140,7 @@ export default function EnvironmentVariablesEditor({
             const value = env.value.trim();
             const isKeyEmpty = key === "";
             const isValueEmpty = value === "";
-            const isIncomplete = Boolean((key && !value) || (!key && value));
+            const isIncomplete = isKeyEmpty || isValueEmpty;
             const hasInvalidKey = key !== "" && !/^[A-Z_][A-Z0-9_]*$/.test(key);
             const rowId = `${editorId}-environment-variable-${index}`;
 
@@ -158,6 +153,7 @@ export default function EnvironmentVariablesEditor({
                       type="text"
                       placeholder="MYSQL_PASSWORD"
                       value={env.key}
+                      data-editor-field={`${fieldPrefix}-${index}-key`}
                       onChange={(e) =>
                         handleUpdateVariable(index, "key", e.target.value)
                       }
@@ -177,6 +173,7 @@ export default function EnvironmentVariablesEditor({
                       type="text"
                       placeholder="Ingresa un valor"
                       value={env.value}
+                      data-editor-field={`${fieldPrefix}-${index}-value`}
                       onChange={(e) =>
                         handleUpdateVariable(index, "value", e.target.value)
                       }

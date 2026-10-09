@@ -63,6 +63,18 @@ export default function ServiceEditor({
   }, [data, selectedNode?.id]);
 
   useEffect(() => {
+    const handleFocusField = (event: Event) => {
+      const field = (event as CustomEvent<{ field?: string }>).detail?.field;
+      if (field?.startsWith("service-environment-")) {
+        setShowAdvanced(true);
+      }
+    };
+
+    window.addEventListener("editor:focus-field", handleFocusField);
+    return () => window.removeEventListener("editor:focus-field", handleFocusField);
+  }, []);
+
+  useEffect(() => {
     if (selectedNode) {
       const networks = editorService.getNetworkDataBySelectedNode(selectedNode);
       const volumes = editorService.getVolumeNamesBySelectedNode(selectedNode);
@@ -200,16 +212,16 @@ export default function ServiceEditor({
         
         <div 
           className={`grid transition-all duration-300 ease-in-out ${
-            showAdvanced ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0 mt-0"
+            showAdvanced ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0 mt-0"
           }`}
         >
           <div className="overflow-hidden">
-            <div className="mt-4 space-y-5 pl-2 border-l-2 border-gray-100 animate-fadeIn">
+            <div className="space-y-2 pl-2 border-l-2 border-gray-100 animate-fadeIn">
             
             {/* INFORMACIÓN SOBRE LA RED POR DEFECTO */}
             <div className="p-3 bg-blue-50/60 border border-blue-100 rounded-lg">
               <p className="text-[11px] text-blue-700 leading-normal">
-                💡 <strong>Nota:</strong> Si no se modifica las opciones avanzadas se usaran las opciones por default segun la imagen seleccionada
+                <strong>Nota:</strong> Si no se modifica las opciones avanzadas se usaran las opciones por default segun la imagen seleccionada
               </p>
             </div>
             {/* CAMPO PUERTOS */}
@@ -222,9 +234,6 @@ export default function ServiceEditor({
                 setValue={(val: string) => updateField("ports", val)}
                 setShowError={setTriggerErrors}
               />
-              <p className="text-[10px] text-gray-400 mt-1 italic">
-                * Si se deja vacío, el contenedor mapeará o expondrá el puerto nativo definido por la imagen de Docker (ej: 80 en Nginx).
-              </p>
             </div>
 
             {/* CAMPO COMMAND (CMD) */}
@@ -237,9 +246,6 @@ export default function ServiceEditor({
                 setValue={(val: string) => updateField("command", val)}
                 setShowError={setTriggerErrors}
               />
-              <p className="text-[10px] text-gray-400 mt-1 italic">
-                * Para Node.js con package.json y server.js usa <code>npm install && node server.js</code>. Si las dependencias ya están en la imagen, usa <code>node server.js</code>.
-              </p>
             </div>
 
             {/* RESTART POLICY */}
@@ -268,10 +274,11 @@ export default function ServiceEditor({
             </div>
 
             {/* VARIABLES DE ENTORNO */}
-            <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
+            <div className="p-4 mt-4 mb-4 border border-gray-200 rounded-lg bg-white shadow-sm">
               <EnvironmentVariablesEditor
                 variables={form.environment || {}}
                 onChange={(val) => updateField("environment", val)}
+                fieldPrefix="service-environment"
               />
             </div>
 
@@ -280,7 +287,7 @@ export default function ServiceEditor({
               <h3 className="text-sm font-semibold mb-2 text-gray-800">Scripts de Arranque (Entrypoints)</h3>
               {(form.startupScripts || []).length === 0 && (
                 <p className="mb-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
-                  Este servicio no tiene scripts de arranque. Si necesita preparar la base de datos o archivos al iniciar, agrega un script aquí.
+                  <strong>Advertencia:</strong> Este servicio no tiene scripts de arranque.
                 </p>
               )}
               <div className="border rounded-lg p-4 bg-gray-50 space-y-3">
@@ -338,25 +345,24 @@ export default function ServiceEditor({
 
       {/* SECCIÓN REDES (Calculada de forma reactiva por conexiones del grafo) */}
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-gray-800">Redes Asociadas</h3>
+        <h3 className="text-sm font-semibold mb-2 text-gray-800">Redes Conectadas</h3>
         {connectedNetworks.length === 0 && (
-          <p className="mb-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
-            Este servicio no tiene redes asociadas. Conecta un nodo de red si necesita comunicarse con otros servicios o acceder a una red específica.
+          <p className="mb-2 rounded border border-gray-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+            <strong>Advertencia:</strong> Este servicio no tiene redes conectadas. Conecta un nodo de red si necesita comunicarse con otros servicios.
           </p>
         )}
-        <div className="border rounded-lg p-3 bg-gray-50 max-h-40 overflow-y-auto">
+        <div className="border rounded-lg p-3 bg-gray-50 border-gray-200 max-h-40 overflow-y-auto">
           {connectedNetworks.length > 0 ? (
             <ul className="space-y-2">
               {connectedNetworks.map((network: any, idx) => (
                 <li
                   key={network.name || idx}
-                  className="flex items-center justify-between bg-white shadow-sm border rounded-md px-3 py-1.5"
+                  className="flex items-center justify-between bg-white shadow-sm border border-gray-200 rounded-md px-3 py-2"
                 >
                   <div>
-                    <p className="font-medium text-sm text-gray-700">{network.name}</p>
-                    <p className="text-xs text-gray-400">🌐 Subnet: {network.address || "Propia de Red"} </p>
+                    <p className="font-medium text-sm text-gray-700">🌐 {network.name}</p>
                   </div>
-                  <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">Conectado</span>
+                  <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">Conectado</span>
                 </li>
               ))}
             </ul>
@@ -371,17 +377,17 @@ export default function ServiceEditor({
       {/* SECCIÓN VOLÚMENES (Calculada de forma reactiva por conexiones del grafo) */}
       <div>
         <h3 className="text-sm font-semibold mb-2 text-gray-800">Volúmenes Montados</h3>
-        <div className="border rounded-lg p-3 bg-gray-50 max-h-40 overflow-y-auto">
+        <div className="border rounded-lg p-3 bg-gray-50 border-gray-200 max-h-40 overflow-y-auto">
           {connectedVolumes.length > 0 ? (
             <ul className="space-y-2">
               {connectedVolumes.map((volume: any, idx) => (
                 <li
                   key={volume.name || idx}
-                  className="bg-white shadow-sm border rounded-md px-3 py-2"
+                  className="bg-white shadow-sm border border-gray-200 rounded-md px-3 py-2"
                 >
                   <div className="flex justify-between items-center mb-1">
                     <p className="font-medium text-sm text-gray-700">💾 {volume.name}</p>
-                    <span className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full">Active</span>
+                    <span className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full">Activo</span>
                   </div>
                   {volume.containerPath && (
                     <p className="text-xs text-gray-500 truncate font-mono bg-gray-50 p-1 rounded">

@@ -92,3 +92,286 @@
   line-height: 1.4;
   max-width: 520px;
 }
+
+.makefileOverlay {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgb(15 23 42 / 68%);
+  backdrop-filter: blur(5px);
+  animation: overlayAppear 160ms ease-out;
+}
+
+.makefileModal {
+  display: flex;
+  width: min(1180px, 100%);
+  max-height: min(92vh, 1000px);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  color: #e2e8f0;
+  background: #0f172a;
+  box-shadow: 0 28px 80px rgb(2 6 23 / 45%);
+  animation: modalAppear 180ms ease-out;
+}
+
+.makefileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #253247;
+  background: #111c30;
+}
+
+.makefileHeading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.makefileIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border: 1px solid rgb(96 165 250 / 22%);
+  border-radius: 12px;
+  color: var(--primary-blue);
+  background: rgb(37 99 235 / 14%);
+}
+
+.makefileTitle {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.makefileSubtitle {
+  margin: 3px 0 0;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.makefileClose {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #94a3b8;
+  background: transparent;
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+
+.makefileClose:hover {
+  border-color: #334155;
+  color: #f8fafc;
+  background: #1e293b;
+  cursor: pointer;
+}
+
+.codeToolbar {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #253247;
+  background: #0b1322;
+}
+
+.fileIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-family: var(--font-geist-mono, monospace), monospace;
+  font-size: 0.75rem;
+}
+
+.fileDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-blue);
+}
+
+.lineCount {
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.makefileCode {
+  min-height: 55vh;
+  max-height: 68vh;
+  flex: 1;
+  overflow: auto;
+  margin: 0;
+  padding: 24px 28px;
+  color: #dbeafe;
+  background:
+    linear-gradient(90deg, rgb(30 41 59 / 55%) 0, rgb(30 41 59 / 55%) 1px, transparent 1px) 0 0 / 52px 100%,
+    #0b1322;
+  font-family: var(--font-geist-mono, "Cascadia Code"), "Cascadia Code", Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.75;
+  tab-size: 2;
+  white-space: pre;
+}
+
+.makefileCode code {
+  color: inherit;
+  font: inherit;
+}
+
+.makefileCode::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.makefileCode::-webkit-scrollbar-track {
+  background: #0b1322;
+}
+
+.makefileCode::-webkit-scrollbar-thumb {
+  border: 2px solid #0b1322;
+  border-radius: 999px;
+  background: #334155;
+}
+
+.makefileFooter {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  border-top: 1px solid #253247;
+  background: #111c30;
+}
+
+.footerHint {
+  color: #94a3b8;
+  font-size: 0.76rem;
+}
+
+.makefileActions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.copyMakefileButton,
+.closeMakefileButton {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.copyMakefileButton {
+  border-color: #3b82f6;
+  color: #fff;
+  background: #2563eb;
+}
+
+.copyMakefileButton:hover {
+  border-color: #60a5fa;
+  background: #1d4ed8;
+  cursor: pointer;
+}
+
+.closeMakefileButton {
+  border-color: #334155;
+  color: #cbd5e1;
+  background: #1e293b;
+}
+
+.closeMakefileButton:hover {
+  border-color: #475569;
+  color: #fff;
+  background: #293548;
+  cursor: pointer;
+}
+
+.makefileClose:focus-visible,
+.copyMakefileButton:focus-visible,
+.closeMakefileButton:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+@keyframes overlayAppear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: translateY(8px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .makefileOverlay {
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .makefileModal {
+    max-height: 100%;
+    border-radius: 13px;
+  }
+
+  .makefileHeader {
+    padding: 16px;
+  }
+
+  .codeToolbar {
+    padding: 0 16px;
+  }
+
+  .makefileCode {
+    min-height: 0;
+    max-height: none;
+    padding: 18px 16px;
+    font-size: 0.75rem;
+    line-height: 1.65;
+  }
+
+  .makefileFooter {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+
+  .makefileActions > button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .makefileOverlay,
+  .makefileModal {
+    animation: none;
+  }
+}

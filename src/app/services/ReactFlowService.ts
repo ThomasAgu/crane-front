@@ -121,6 +121,8 @@ export class ReactFlowService {
         name: appDto.name,
         description: "Aplicación personalizada",
         actuales: appDto.current_scale,
+        minimas: appDto.min_scale,
+        maximas: appDto.max_scale,
         environment: appDto.environment || []
       },
     });
@@ -200,7 +202,7 @@ export class ReactFlowService {
     appDto.services?.forEach((service, serviceIndex) => {
       service.volumes?.forEach((volume, volumeIndex) => {
         const volumeId = `volume-${serviceIndex}-${volumeIndex}`;
-        debugger
+
         nodes.push({
           id: volumeId,
           type: "volume",

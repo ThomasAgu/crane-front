@@ -1,8 +1,9 @@
 import { Node, Edge } from "reactflow";
 import { rules } from "../../lib/helper/EditorRules";
 import { dockerDefaults } from "../../lib/helper/DockerDefaults";
-import { CreateAppDto } from "../../lib/dto/AppDto";
-import { AlertCreateDto, AlertDto } from "../../lib/dto/AlertDto";
+import type { CreateAppDto } from "../../lib/dto/AppDto";
+import type { AlertCreateDto, AlertDto } from "../../lib/dto/AlertDto";
+import type { ServiceDto } from "../../lib/dto/ServiceDto";
 
 class EditorStateService {
   private nodes: Node[] = [];
@@ -171,6 +172,12 @@ class EditorStateService {
   ): any[] {
     if (!selectedNode) return [];
 
+    return this.getConnectedNodes(selectedNode)
+      .filter((node) => node.type === targetType)
+      .map((node) => node.data);
+  }
+
+  private getConnectedNodes(selectedNode: Node): Node[] {
     const connectedEdges = this.edges.filter(
       (edge) =>
         edge.source === selectedNode.id || edge.target === selectedNode.id
@@ -180,11 +187,7 @@ class EditorStateService {
       edge.source === selectedNode.id ? edge.target : edge.source
     );
 
-    return this.nodes
-      .filter(
-        (node) => neighborIds.includes(node.id) && node.type === targetType
-      )
-      .map((connectedNode) => connectedNode.data);
+    return this.nodes.filter((node) => neighborIds.includes(node.id));
   }
 
   getNetworkDataBySelectedNode(selectedNode: Node): any[] {
@@ -205,59 +208,61 @@ class EditorStateService {
     return formatted;
   };
 
+  private exportServiceDto(serviceNode: Node): ServiceDto {
+    const connectedNodes = this.getConnectedNodes(serviceNode);
+    const volumes = connectedNodes
+      .filter((node) => node.type === "volume")
+      .map((volumeNode) => {
+        const containerPath = volumeNode.data?.containerPath || "";
+        const localPath = volumeNode.data?.localPath || "";
+        const volumeType = volumeNode.data?.type || "volume";
+
+        return {
+          path: volumeType === "bind"
+            ? `${localPath}:${containerPath}`
+            : containerPath,
+        };
+      });
+
+    const networks = connectedNodes
+      .filter((node) => node.type === "network")
+      .map((networkNode) => ({
+        name: this.formatName(String(networkNode.data?.name ?? "")),
+        driver: networkNode.data?.driver,
+        address: networkNode.data?.address,
+        mask: networkNode.data?.mask,
+        gateway: networkNode.data?.gateway,
+      }));
+
+    const ports = serviceNode.data?.ports;
+    const labels = serviceNode.data?.labels;
+
+    return {
+      name: this.formatName(String(serviceNode.data?.name ?? "")),
+      image: serviceNode.data?.image || "",
+      ports: Array.isArray(ports)
+        ? ports
+        : typeof ports === "string" && ports.length
+          ? ports.split(",").map((port: string) => port.trim())
+          : [],
+      labels: Array.isArray(labels)
+        ? labels.map((label: string) => label.trim())
+        : [],
+      volumes,
+      networks,
+      environment: serviceNode.data?.environment || {},
+      command: serviceNode.data?.command || null,
+      restart_policy: serviceNode.data?.restartPolicy || "unless-stopped",
+      startup_scripts: serviceNode.data?.startupScripts || [],
+    };
+  }
+
   exportAppDto(): CreateAppDto {
     const appNode = this.nodes.find((n) => n.type === "app");
-    const appName = this.formatName(appNode?.data.name);
-
+    const appName = this.formatName(String(appNode?.data?.name ?? ""));
     const services = this.nodes
-      .filter((n) => n.type === "service")
-      .map((svc) => {
-        const connectedEdges = this.edges.filter(
-          (e) => e.source === svc.id || e.target === svc.id
-        );
-        const connectedIds = connectedEdges.map((e) =>
-          e.source === svc.id ? e.target : e.source
-        );
-
-        const volumes = this.nodes
-        .filter((n) => connectedIds.includes(n.id) && n.type === "volume")
-        .map((vNode) => {
-          const containerPath = vNode.data?.containerPath || "";
-          const localPath = vNode.data?.localPath || "";
-          const vType = vNode.data?.type || "volume";
-
-         return vType === "bind"
-          ? { path: `${localPath}:${containerPath}` }
-          : { path: `${containerPath}`};
-        });
-        
-        const networks = this.nodes
-          .filter((n) => connectedIds.includes(n.id) && n.type === "network")
-          .map((netNode) => ({
-            name: this.formatName(netNode.data.name),
-            driver: netNode.data.driver,
-            address: netNode.data.address,
-            mask: netNode.data.mask,
-            gateway: netNode.data.gateway,
-          }));
-  
-        return {
-          name: this.formatName(svc.data?.name),
-          image: svc.data?.image || "",
-          ports: Array.isArray(svc.data?.ports)
-            ? svc.data.ports
-            : typeof svc.data?.ports === "string" && svc.data?.ports.length
-            ? svc.data.ports.split(",").map((p: string) => p.trim())
-            : [],
-          labels: Array.isArray(svc.data?.labels) ? svc.data.labels.map((l: string) => l.trim()) : [],
-          volumes: volumes,
-          networks,
-          environment: svc.data?.environment || {},
-          command: svc.data?.command || null,
-          restart_policy: svc.data?.restartPolicy || "unless-stopped",
-          startup_scripts: svc.data?.startupScripts || []
-        } as any;
-      });
+      .filter((node) => node.type === "service")
+      .map((serviceNode) => this.exportServiceDto(serviceNode));
       
     const payload: CreateAppDto = {
       name: appName,

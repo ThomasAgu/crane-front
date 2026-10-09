@@ -34,7 +34,6 @@ const AppDetailView: FC = () => {
 
     const fetchApp = useCallback(async () => {
     const res = await AppService.get(appId);
-    debugger
     setIsTemplate(res?.is_template);
     setApp(res ?? {} as AppDto);
   }, [appId]);

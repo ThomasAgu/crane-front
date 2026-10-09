@@ -1,7 +1,7 @@
 export interface ServiceDto {
   name: string
   image: string
-  command?: string
+  command?: string | null
   ports?: string[]
   volumes?: Array<VolumeDto | string>
   networks?: Array<NetworkDto | string>

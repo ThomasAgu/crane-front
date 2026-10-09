@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import { editorService } from "@/app/services/EditorService";
 import { getImageDetails } from "@/app/services/DockerHubService";
 import { AppService } from "@/lib/api/appService";
-import { AppDto } from "@/lib/dto/AppDto";
+import type { AppDto, CreateAppDto } from "@/lib/dto/AppDto";
+import { validateAppConfiguration } from "@/lib/validators/AppConfigurationValidator";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
 import styles from "./ConfigurationEditor.module.css";
-import { FileText, Copy, Save } from "lucide-react";
+import { FileText, Copy, Save, X } from "lucide-react";
 import CreationModal from "../CreationModal";
 
 const ConfigurationEditor: React.FC<{
@@ -23,128 +24,73 @@ const ConfigurationEditor: React.FC<{
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const focusEditorField = (field: string, serviceName?: string) => {
-    if (serviceName) {
-      const node = editorService.getNodeByServiceName(serviceName);
-      if (node) onFocusEditorIssue(node.id, field);
-    }
+  const focusEditorField = (field: string, nodeId?: string) => {
+    if (nodeId) onFocusEditorIssue(nodeId, field);
     window.setTimeout(() => {
       const element = document.querySelector<HTMLElement>(`[data-editor-field="${field}"]`);
       element?.focus();
-    }, 0);
+    }, 75);
   };
 
-  const prepareAndValidateApp = async (): Promise<any | null> => {
-  const payload = editorService.exportAppDto();
+  const prepareAndValidateApp = async (): Promise<(CreateAppDto & { __warnings: string[] }) | null> => {
+    const payload = editorService.exportAppDto();
+    const alerts = editorService.getAlerts();
+    const validation = validateAppConfiguration(payload, alerts);
 
-  if (!payload.name) {
-    showAlert("No se detectó un nombre de aplicación", "error", "Validación Requerida");
-    const appNode = editorService.getAppNode();
-    if (appNode) onFocusEditorIssue(appNode.id, "app-name");
-    focusEditorField("app-name");
-    return null;
-  }
-  
-  if (!payload.services || payload.services.length === 0) {
-    showAlert("No se detectaron servicios en el diagrama. Agrega al menos un servicio para crear la aplicación.", "error", "Validación Requerida");
-    return null;
-  }
+    if (!validation.valid) {
+      const { issue } = validation;
+      showAlert(issue.message, "error", issue.title);
 
-  if (payload.services.some((s) => !s.name || s.name.trim() === "")) {
-    showAlert("Todos los servicios deben tener un nombre definido.", "error", "Validación Requerida");
-    focusEditorField("service-name", payload.services.find((service) => !service.name?.trim())?.name);
-    return null;
-  }
+      const node = issue.serviceIndex !== undefined
+        ? editorService.getServiceNodeByIndex(issue.serviceIndex)
+        : issue.field?.startsWith("app-")
+          ? editorService.getAppNode()
+          : undefined;
 
-  if (payload.services.some((s) => !s.image)) {
-    showAlert("Todos los servicios deben tener una imagen definida.", "error", "Validación Requerida");
-    focusEditorField("service-image", payload.services.find((service) => !service.image)?.name);
-    return null;
-  }
+      if (issue.field) {
+        focusEditorField(issue.field, node?.id);
+      }
+      return null;
+    }
 
-  const imageDetails = await Promise.all(
-    payload.services.map(async (service, index) => ({
-      image: service.image,
-      index,
-      details: await getImageDetails(service.image),
-    }))
-  );
-
-  if (imageDetails.some(({ details }) => !details)) {
-    showAlert(
-      "Una o más imágenes no existen en Docker Hub. Selecciona una imagen válida.",
-      "error",
-      "Imagen Inválida"
+    const services = payload.services ?? [];
+    const imageDetails = await Promise.all(
+      services.map(async (service, index) => ({
+        index,
+        details: await getImageDetails(service.image),
+      }))
     );
     const invalidImage = imageDetails.find(({ details }) => !details);
-    const invalidImageNode = invalidImage
-      ? editorService.getServiceNodeByIndex(invalidImage.index)
-      : undefined;
-    if (invalidImageNode) onFocusEditorIssue(invalidImageNode.id, "service-image");
-    focusEditorField("service-image");
-    return null;
-  }
 
-  const warnings = payload.services.flatMap((service) => {
-    const serviceWarnings: string[] = [];
-    if (!service.startupScripts?.length) {
-      serviceWarnings.push(`${service.name}: no tiene scripts de arranque.`);
-    }
-    if (!service.networks?.length) {
-      serviceWarnings.push(`${service.name}: no tiene redes asociadas.`);
-    }
-    return serviceWarnings;
-  });
-
-  // Volúmenes
-  const allVolumes = payload.services.flatMap((s) => s.volumes || []);
-  for (const v of allVolumes) {
-    const errors = validateVolume(v);
-    if (errors.length > 0) {
-      showAlert(errors.join("\n"), "error", "Validación Requerida");
-      focusEditorField("service-volume");
-      return null;
-    }
-  }
-
-  // Redes
-  const allNetworks = payload.services.flatMap((s) => s.networks || []);
-  for (const net of allNetworks) {
-    const networkName = typeof net === "string" ? net : net.name;
-    if (typeof networkName !== "string" || networkName.trim() === "") {
-      showAlert("Todas las redes deben tener un nombre definido.", "error", "Validación Requerida");
-      focusEditorField("network-name");
-      return null;
-    }
-  }
-
-  const alerts = editorService.getAlerts();
-  if (alerts.length > 0) {
-    const invalidAlert = alerts.find(
-      (alert) =>
-        !alert.alert?.trim() ||
-        !alert.expr?.trim() ||
-        !alert.for_time?.toString().trim() ||
-        !alert.summary?.trim()
-    );
-
-    if (invalidAlert) {
+    if (invalidImage) {
       showAlert(
-        "Hay alertas incompletas. Revisa nombre, expresión, duración y resumen de cada alerta.",
+        "Una o más imágenes no existen en Docker Hub. Selecciona una imagen válida.",
         "error",
-        "Validación de Alertas"
+        "Imagen Inválida"
       );
+      const invalidImageNode = editorService.getServiceNodeByIndex(invalidImage.index);
+      focusEditorField("service-image", invalidImageNode?.id);
       return null;
     }
-    payload.alerts = alerts;
-  }
 
-  return { ...payload, __warnings: warnings };
-};
+    if (alerts.length > 0) payload.alerts = alerts;
+    return { ...payload, __warnings: validation.warnings };
+  };
   
   useEffect(() => {
     setIsTemplate(selectedApp?.is_template ?? false);
   }, [selectedApp]);
+
+  useEffect(() => {
+    if (!showMakefile) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowMakefile(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showMakefile]);
 
   const handleCreateApp = async () => {
     const prepared = await prepareAndValidateApp();
@@ -180,12 +126,20 @@ const ConfigurationEditor: React.FC<{
     const prepared = await prepareAndValidateApp();
     if (!prepared) return;
     const { __warnings, ...payload } = prepared;
+    const updateId = appId ?? selectedApp?.id;
+
+    if (updateId === undefined || updateId === null) {
+      showAlert("No se encontró la aplicación que se quiere actualizar.", "error", "Error en la Actualización");
+      return;
+    }
 
     setIsCreating(true);
     try {
-      payload["id"] = appId;
-      payload["is_template"] = isTemplate;
-      await AppService.update(payload); 
+      await AppService.update({
+        ...payload,
+        id: updateId,
+        is_template: isTemplate,
+      });
       showAlert(
         __warnings.length ? `La aplicación se actualizó, pero revisa: ${__warnings.join(" ")}` : "La aplicación se ha actualizado con éxito.",
         __warnings.length ? "warning" : "success",
@@ -201,18 +155,6 @@ const ConfigurationEditor: React.FC<{
       setIsCreating(false);
     }
   };
-
-  function validateVolume(v: any) {
-    const errors = [];
-    const pathRegex = /^\/:(\/[A-Za-z0-9._-]+)+$/;
-
-    if (typeof v.path !== "string" || !pathRegex.test(v.path)) {
-      errors.push(
-        `El path '${v.path}' no es válido. Debe tener forma '/:/folder/subfolder'.`
-      );
-    }
-    return errors;
-  }
 
   const handleSeeMakefile = () => {
     const payload = editorService.exportAppDto();
@@ -296,40 +238,80 @@ const ConfigurationEditor: React.FC<{
 
       {showMakefile && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 text-darkest"
+          className={styles.makefileOverlay}
           onClick={() => setShowMakefile(false)}
+          role="presentation"
         >
           <div
-            className="bg-white w-11/12 max-w-3xl p-5 rounded-xl shadow-lg"
+            className={styles.makefileModal}
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="makefile-title"
           >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-darkest">Makefile</h3>
-
-              <div className="flex gap-2">
-                <button
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-white bg-[var(--primary-blue)] border hover:bg-blue-700 transition"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(makefileContent);
-                    showAlert("Makefile copiado al portapapeles.", "success");
-                  }}
-                >
-                  <Copy size={18} />
-                  Copiar
-                </button>
-
-                <button
-                  className="px-4 py-2 rounded-lg text-darkest border hover:bg-gray-500 hover:text-white transition"
-                  onClick={() => setShowMakefile(false)}
-                >
-                  Cancelar
-                </button>
+            <header className={styles.makefileHeader}>
+              <div className={styles.makefileHeading}>
+                <span className={styles.makefileIcon}>
+                  <FileText size={20} aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 id="makefile-title" className={styles.makefileTitle}>Makefile</h3>
+                  <p className={styles.makefileSubtitle}>Configuración generada para tu aplicación</p>
+                </div>
               </div>
+              <button
+                type="button"
+                className={styles.makefileClose}
+                onClick={() => setShowMakefile(false)}
+                aria-label="Cerrar vista del Makefile"
+                title="Cerrar"
+              >
+                <X size={20} aria-hidden="true" />
+              </button>
+            </header>
+
+            <div className={styles.codeToolbar}>
+              <span className={styles.fileIndicator}>
+                <span className={styles.fileDot} />
+                Makefile
+              </span>
+              <span className={styles.lineCount}>
+                {makefileContent.split("\n").length} líneas
+              </span>
             </div>
 
-            <pre className="bg-darkest text-light-grey p-4 rounded-lg max-h-96 overflow-auto text-sm">
-              {makefileContent}
+            <pre className={styles.makefileCode}>
+              <code>{makefileContent}</code>
             </pre>
+
+            <footer className={styles.makefileFooter}>
+              <span className={styles.footerHint}>Podes verlo mas adelante.</span>
+              <div className={styles.makefileActions}>
+                <button
+                  type="button"
+                  className={styles.copyMakefileButton}
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(makefileContent);
+                      showAlert("Makefile copiado al portapapeles.", "success", "Copiado Exitoso");
+                    } catch (error) {
+                      console.error(error);
+                      showAlert("No se pudo copiar el Makefile. Inténtalo de nuevo.", "error", "Error al Copiar");
+                    }
+                  }}
+                >
+                  <Copy size={17} aria-hidden="true" />
+                  Copiar
+                </button>
+                <button
+                  type="button"
+                  className={styles.closeMakefileButton}
+                  onClick={() => setShowMakefile(false)}
+                >
+                  Cerrar
+                </button>
+              </div>
+            </footer>
           </div>
         </div>
       )}
