@@ -12,7 +12,9 @@ export default function LaboratoryPage() {
         selectedTemplate, 
         setSelectedTemplate, 
         selectedApp, 
-        setSelectedApp 
+        setSelectedApp,
+        selectedAppMode,
+        setSelectedAppMode,
     } = useLaboratory();
 
     return (
@@ -23,6 +25,7 @@ export default function LaboratoryPage() {
                         setPopUp={setPopUp} 
                         setSelectedTemplate={setSelectedTemplate}
                         setSelectedApp={setSelectedApp}
+                        setSelectedAppMode={setSelectedAppMode}
                         apps={apps}
                     />
                 )}
@@ -30,6 +33,7 @@ export default function LaboratoryPage() {
                 <FlowChart
                     selectedTemplate={selectedTemplate}
                     selectedApp={selectedApp}
+                    selectedAppMode={selectedAppMode}
                 />
             </main>
         </NavBar>

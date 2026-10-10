@@ -25,6 +25,7 @@ import Sidebar from "./editor/SideBar";
 import ContextMenu from "./ContextMenu";
 import { editorService } from "../../app/services/EditorService";
 import { AppDto } from "@/lib/dto/AppDto";
+import type { SelectedAppMode } from "@/hooks/useLaboratory";
 import { useAlert, AlertSnackbar } from '@/components/ui/AlertSnackbar'
 
 
@@ -32,11 +33,20 @@ const nodeTypes = { app: App, service: Service, network: Network, volume: Volume
 
 interface FlowChartInterface {
   selectedTemplate: string | null,
-  selectedApp?: AppDto | null
+  selectedApp?: AppDto | null,
+  selectedAppMode: SelectedAppMode,
 } 
 
-const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}) => {
+const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp, selectedAppMode}) => {
+  const [isTemplateMode, setIsTemplateMode] = useState(selectedApp?.is_template ?? false);
+
   useEffect(() => {
+    setIsTemplateMode(selectedApp?.is_template ?? false);
+  }, [selectedApp?.id, selectedApp?.is_template, selectedAppMode]);
+
+  useEffect(() => {
+    editorService.clearAlerts();
+
     if (selectedTemplate) {
       const { nodes, edges } = reactFlowService.getTemplateGraph(selectedTemplate as TemplateType);
       setNodes(nodes);
@@ -50,7 +60,7 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
       setEdges(edges);
       editorService.updateState(nodes, edges);
     }
-  }, [selectedTemplate, selectedApp]);
+  }, [selectedTemplate, selectedApp, selectedAppMode]);
 
   useEffect(() => {
     const onDocClick = (ev: MouseEvent) => {
@@ -187,8 +197,8 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
 
   editorService.setNodeData(id, newData);
 
-  let freshNodes = [...editorService.getNodes()];
-  let freshEdges = [...editorService.getEdges()];
+  const freshNodes = [...editorService.getNodes()];
+  const freshEdges = [...editorService.getEdges()];
 
   const updatedNode = freshNodes.find((n) => n.id === id);
   const shouldApplyImageDefaults =
@@ -291,11 +301,14 @@ const FlowChart: React.FC<FlowChartInterface> = ({selectedTemplate, selectedApp}
       </div>
 
     <Sidebar
-      appId={selectedApp?.id || null}
+      appId={selectedAppMode === "edit" ? selectedApp?.id || null : null}
       selectedNode={selectedNode} 
       nodes={nodes}
       edges={edges}
       selectedApp={selectedApp}
+      selectedAppMode={selectedAppMode}
+      isTemplateMode={isTemplateMode}
+      onTemplateModeChange={setIsTemplateMode}
       onUpdateNode={onUpdateNode} 
       onFocusEditorIssue={focusEditorIssue}
     />

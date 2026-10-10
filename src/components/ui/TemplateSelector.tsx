@@ -13,6 +13,7 @@ interface TemplateSelectorProps {
   setPopUp: (value: boolean) => void;
   setSelectedTemplate: (value: string | null) => void;
   setSelectedApp: (value: AppDto | null) => void;
+  setSelectedAppMode: (value: "edit" | "template" | null) => void;
   apps: AppDto[];
 }
 
@@ -20,6 +21,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   setPopUp,
   setSelectedTemplate,
   setSelectedApp,
+  setSelectedAppMode,
   apps,
 }) => {
   const [appsTab, setAppsTab] = useState(true);
@@ -43,10 +45,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     router.back();
   };
 
-  const handleTemplateSelect = (templateToLoad: string, app?: AppDto) => {
-    if (app) {
-      setSelectedApp(app);
-    }
+  const handleTemplateSelect = (
+    templateToLoad: string,
+    app?: AppDto,
+    mode: "edit" | "template" | null = null
+  ) => {
+    setSelectedApp(app ?? null);
+    setSelectedAppMode(mode);
     setSelectedTemplate(templateToLoad);
     setPopUp(false);
   };
@@ -97,7 +102,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                 rules={0}
                 icon={<Columns3Cog size={80} />}
                 isTemplate={false}
-                onClick={() => handleTemplateSelect("custom", app)}
+                onClick={() => handleTemplateSelect("custom", app, "edit")}
               />
             ))}
           </div>
@@ -132,7 +137,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                 rules={0}
                 icon={<Columns3Cog size={80} />}
                 isTemplate={true}
-                onClick={() => handleTemplateSelect("custom", templateApp)}
+                onClick={() => handleTemplateSelect("custom", templateApp, "template")}
               />
             ))}
           </div>

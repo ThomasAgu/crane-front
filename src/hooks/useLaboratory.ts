@@ -3,6 +3,8 @@ import { useSearchParams } from 'next/navigation';
 import { AppService } from '@/lib/api/appService';
 import { AppDto } from '@/lib/dto/AppDto';
 
+export type SelectedAppMode = 'edit' | 'template' | null;
+
 export function useLaboratory() {
     const searchParams = useSearchParams();
     const appId = searchParams.get('appId');
@@ -10,6 +12,7 @@ export function useLaboratory() {
     const [popUp, setPopUp] = useState(true);
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
     const [selectedApp, setSelectedApp] = useState<AppDto | null>(null);
+    const [selectedAppMode, setSelectedAppMode] = useState<SelectedAppMode>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,6 +24,7 @@ export function useLaboratory() {
                     const requestedApp = data.find((app) => String(app.id) === appId);
                     if (requestedApp) {
                         setSelectedApp(requestedApp);
+                        setSelectedAppMode('edit');
                         setPopUp(false);
                     }
                 }
@@ -44,6 +48,8 @@ export function useLaboratory() {
         setSelectedTemplate,
         selectedApp,
         setSelectedApp,
+        selectedAppMode,
+        setSelectedAppMode,
         closePopUp
     };
 }

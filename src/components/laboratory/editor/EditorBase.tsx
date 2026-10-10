@@ -8,6 +8,7 @@ import double_collapse from "../../../public/double_collapse.svg";
 
 import ConfigurationEditor from "./ConfigurationEditor";
 import AlertEditor from "./AlertEditor";
+import type { SelectedAppMode } from "@/hooks/useLaboratory";
 
 type EditorState = "Edicion" | "Alertas" | "Configuracion";
 
@@ -19,6 +20,9 @@ interface EditorBaseProps {
   nodes?: any[];
   edges?: any[];
   selectedApp?: any;
+  selectedAppMode: SelectedAppMode;
+  isTemplateMode: boolean;
+  onTemplateModeChange: (value: boolean) => void;
   onFocusEditorIssue: (nodeId: string, field: string) => void;
 }
 
@@ -30,15 +34,24 @@ const EditorBase: React.FC<EditorBaseProps> = ({
   nodes = [],
   edges = [],
   selectedApp,
+  selectedAppMode,
+  isTemplateMode,
+  onTemplateModeChange,
   onFocusEditorIssue,
 }) => {
   const [active, setActive] = useState(false);
   const [actualEditor, setActualEditor] = useState("Edicion");
   const editorStates: EditorState[] = [
     "Edicion",
-    "Alertas",
+    ...(!isTemplateMode ? ["Alertas" as const] : []),
     "Configuracion",
   ];
+
+  useEffect(() => {
+    if (isTemplateMode && actualEditor === "Alertas") {
+      setActualEditor("Configuracion");
+    }
+  }, [actualEditor, isTemplateMode]);
 
   useEffect(() => {
     if (selectedNode) {
@@ -125,6 +138,7 @@ const EditorBase: React.FC<EditorBaseProps> = ({
             nodes={nodes}
             edges={edges}
             selectedNode={selectedNode}
+            isTemplateMode={isTemplateMode}
             onChange={(newData: any) => onUpdateNode(selectedNode.id, newData)}
           />
         </div>
@@ -132,9 +146,14 @@ const EditorBase: React.FC<EditorBaseProps> = ({
 
       {/* Pestaña de Simulación */}
       {active && (
-        <div className={actualEditor === "Alertas" ? "block" : "hidden"}>
-          <AlertEditor appId={appId} selectedApp={selectedApp} />
-        </div>
+        !isTemplateMode && (
+          <div className={actualEditor === "Alertas" ? "block" : "hidden"}>
+            <AlertEditor
+              appId={selectedAppMode === "edit" ? appId : null}
+              selectedApp={selectedAppMode === "edit" ? selectedApp : null}
+            />
+          </div>
+        )
       )}
 
       {/* Pestaña de Configuración */}
@@ -142,8 +161,11 @@ const EditorBase: React.FC<EditorBaseProps> = ({
         <div className={actualEditor === "Configuracion" ? "block" : "hidden"}>
           <ConfigurationEditor 
             appId={appId} 
-            isSaved={!!selectedApp}
+            isSaved={selectedAppMode === "edit"}
             selectedApp={selectedApp}
+            selectedAppMode={selectedAppMode}
+            isTemplateMode={isTemplateMode}
+            onTemplateModeChange={onTemplateModeChange}
             onFocusEditorIssue={onFocusEditorIssue}
           />
         </div>
@@ -154,4 +176,3 @@ const EditorBase: React.FC<EditorBaseProps> = ({
 };
 
 export default EditorBase;
-

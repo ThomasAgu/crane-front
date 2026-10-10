@@ -4,6 +4,7 @@ import { editorService } from "@/app/services/EditorService";
 import { getImageDetails } from "@/app/services/DockerHubService";
 import { AppService } from "@/lib/api/appService";
 import type { AppDto, CreateAppDto } from "@/lib/dto/AppDto";
+import type { SelectedAppMode } from "@/hooks/useLaboratory";
 import { validateAppConfiguration } from "@/lib/validators/AppConfigurationValidator";
 import { useAlert, AlertSnackbar } from "../../ui/AlertSnackbar";
 import styles from "./ConfigurationEditor.module.css";
@@ -14,11 +15,31 @@ const ConfigurationEditor: React.FC<{
   appId?: number | null;
   isSaved: boolean;
   selectedApp?: AppDto | null;
+  selectedAppMode: SelectedAppMode;
+  isTemplateMode: boolean;
+  onTemplateModeChange: (value: boolean) => void;
   onFocusEditorIssue: (nodeId: string, field: string) => void;
-}> = ({ appId, isSaved, selectedApp, onFocusEditorIssue }) => {
+}> = ({
+  appId,
+  isSaved,
+  selectedApp,
+  selectedAppMode,
+  isTemplateMode,
+  onTemplateModeChange,
+  onFocusEditorIssue,
+}) => {
   const [showMakefile, setShowMakefile] = useState(false);
   const [makefileContent, setMakefileContent] = useState("");
-  const [isTemplate, setIsTemplate] = useState<boolean>(selectedApp?.is_template ?? false);
+  const [saveAsNewTemplate, setSaveAsNewTemplate] = useState(false);
+  const [templateConversionLocked, setTemplateConversionLocked] = useState(false);
+  const isTemplate =
+    isSaved && !selectedApp?.is_template ? false : isTemplateMode;
+  const isTemplateSource = Boolean(selectedApp?.is_template);
+  const updateSourceTemplate =
+    isTemplateSource && isTemplate && !saveAsNewTemplate;
+  const shouldCreateNew =
+    (!isSaved && !updateSourceTemplate) ||
+    (isTemplateSource && isTemplate && saveAsNewTemplate);
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
 
@@ -34,6 +55,25 @@ const ConfigurationEditor: React.FC<{
 
   const prepareAndValidateApp = async (): Promise<(CreateAppDto & { __warnings: string[] }) | null> => {
     const payload = editorService.exportAppDto();
+    const normalizedName = (name: string) => name.trim().replace(/\s/g, "").toLowerCase();
+
+    if (
+      isTemplateSource &&
+      isTemplate &&
+      saveAsNewTemplate &&
+      selectedApp?.name &&
+      normalizedName(payload.name) === normalizedName(selectedApp.name)
+    ) {
+      showAlert(
+        "Para guardar una plantilla nueva, el nombre de la aplicación debe ser distinto al de la plantilla original.",
+        "error",
+        "Nombre de plantilla duplicado"
+      );
+      const appNode = editorService.getAppNode();
+      if (appNode) focusEditorField("app-name", appNode.id);
+      return null;
+    }
+
     const alerts = editorService.getAlerts();
     const validation = validateAppConfiguration(payload, alerts);
 
@@ -78,8 +118,9 @@ const ConfigurationEditor: React.FC<{
   };
   
   useEffect(() => {
-    setIsTemplate(selectedApp?.is_template ?? false);
-  }, [selectedApp]);
+    setSaveAsNewTemplate(false);
+    setTemplateConversionLocked(false);
+  }, [selectedApp?.id, selectedAppMode]);
 
   useEffect(() => {
     if (!showMakefile) return;
@@ -119,6 +160,14 @@ const ConfigurationEditor: React.FC<{
       }
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleSave = () => {
+    if (shouldCreateNew) {
+      void handleCreateApp();
+    } else {
+      void handleUpdateApp();
     }
   };
 
@@ -193,18 +242,60 @@ const ConfigurationEditor: React.FC<{
             <input
               type="checkbox"
               checked={isTemplate}
-              onChange={(event) => setIsTemplate(event.target.checked)}
+              disabled={
+                isCreating ||
+                templateConversionLocked ||
+                isSaved
+              }
+              onChange={(event) => {
+                if (isSaved) return;
+                const checked = event.target.checked;
+                onTemplateModeChange(checked);
+                if (isTemplateSource && !checked) {
+                  setTemplateConversionLocked(true);
+                }
+              }}
             />
             Guardar como plantilla
           </label>
           <p className={styles.templateNote}>
-            Esta opción guarda el diseño como plantilla. Las plantillas guardan la estructura del proyecto, pero no pueden iniciarse, detenerse, reiniciarse ni escalarse. Las alertas definidas sobre la template no seran creadas
+            {isTemplateSource && !isTemplate
+              ? "Esta configuración se creará como una aplicación nueva basada en la plantilla."
+              : "Las plantillas guardan la estructura del proyecto, pero no pueden iniciarse, detenerse, reiniciarse ni escalarse. Las alertas no se incluyen en una plantilla."}
           </p>
 
-          <button className={styles.mainButton} onClick={isSaved ? handleUpdateApp : handleCreateApp}>
+          {isTemplateSource && isTemplate && (
+            <fieldset className={styles.templateSaveOptions} disabled={isCreating}>
+              <legend>Al guardar la plantilla</legend>
+              <label>
+                <input
+                  type="radio"
+                  name="template-save-mode"
+                  checked={!saveAsNewTemplate}
+                  onChange={() => setSaveAsNewTemplate(false)}
+                />
+                Actualizar esta plantilla
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="template-save-mode"
+                  checked={saveAsNewTemplate}
+                  onChange={() => setSaveAsNewTemplate(true)}
+                />
+                Guardar como una plantilla nueva
+              </label>
+            </fieldset>
+          )}
+
+          <button className={styles.mainButton} onClick={handleSave} disabled={isCreating}>
             <Save size={20} />
             <span>
-              {isCreating ? "Creando..." : isSaved ? "Guardar" : "Crear"}
+              {isCreating
+                ? "Guardando..."
+                : shouldCreateNew
+                  ? isTemplate ? "Crear plantilla" : "Crear aplicación"
+                  : isTemplateSource && isTemplate ? "Actualizar plantilla" : "Guardar"}
             </span>
           </button>
         </div>

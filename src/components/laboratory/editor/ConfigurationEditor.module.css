@@ -33,6 +33,43 @@
   width: 90%;
 }
 
+.mainButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.templateSaveOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: var(--darkest);
+  background: #f8fafc;
+}
+
+.templateSaveOptions legend {
+  padding: 0 5px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.templateSaveOptions label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #334155;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.templateSaveOptions input {
+  accent-color: var(--primary-blue);
+}
+
 .mainButton:hover {
   box-shadow: 1px 1px 2px var(--darker);
 }

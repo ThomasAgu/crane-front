@@ -4,6 +4,7 @@ import ServiceEditor from "../nodes/service/Editor";
 import NetworkEditor from "../nodes/network/Editor";
 import VolumeEditor from "../nodes/volume/Editor";
 import EditorBase from "./EditorBase";
+import type { SelectedAppMode } from "@/hooks/useLaboratory";
 
 const editorMap: Record<string, React.FC<any>> = {
   app: AppEditor,
@@ -19,6 +20,9 @@ export default function Sidebar({
   nodes = [],
   edges = [],
   selectedApp,
+  selectedAppMode,
+  isTemplateMode,
+  onTemplateModeChange,
   onFocusEditorIssue,
 }: {
   appId?: number | null;
@@ -27,6 +31,9 @@ export default function Sidebar({
   nodes?: any[];
   edges?: any[];
   selectedApp?: any;
+  selectedAppMode: SelectedAppMode;
+  isTemplateMode: boolean;
+  onTemplateModeChange: (value: boolean) => void;
   onFocusEditorIssue: (nodeId: string, field: string) => void;
 }) {
   const Editor = editorMap[selectedNode?.type || "app"];
@@ -41,6 +48,9 @@ export default function Sidebar({
         nodes={nodes}
         edges={edges}
         selectedApp={selectedApp}
+        selectedAppMode={selectedAppMode}
+        isTemplateMode={isTemplateMode}
+        onTemplateModeChange={onTemplateModeChange}
         onFocusEditorIssue={onFocusEditorIssue}
       />
     </div>

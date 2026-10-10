@@ -19,12 +19,14 @@ export default function AppEditorForm({
   nodes,
   edges,
   selectedNode,
+  isTemplateMode,
 }: {
   data: AppData;
   onChange: (d: AppData) => void;
   nodes: any[];
   edges: any[];
   selectedNode: any;
+  isTemplateMode: boolean;
 }) {
   const [connectedServices, setConnectedServices] = useState<any[]>([]);
   const [isNameValid, setIsNameValid] = useState(true);
@@ -128,29 +130,30 @@ export default function AppEditorForm({
         </div>
       </div>
 
-      {/* SECCIÓN INSTANCIAS */}
-      <div>
-        <h3 className="font-semibold text-base text-gray-800 mb-2">Instancias</h3>
-        <div className="grid grid-cols-1 bg-gray-50/50 p-1">
-          <InstanceControls
-            actuales={localState.actuales ?? 1}
-            minimas={localState.minimas ?? 0}
-            maximas={localState.maximas ?? 2}
-            onChange={(vals) => {
-              setLocalState((prev) => {
-                const updated = {
-                  ...prev,
-                  actuales: vals.actuales,
-                  minimas: vals.minimas,
-                  maximas: vals.maximas,
-                };
-                onChange(updated);
-                return updated;
-              });
-            }}
-          />
+      {!isTemplateMode && (
+        <div>
+          <h3 className="font-semibold text-base text-gray-800 mb-2">Instancias</h3>
+          <div className="grid grid-cols-1 bg-gray-50/50 p-1">
+            <InstanceControls
+              actuales={localState.actuales ?? 1}
+              minimas={localState.minimas ?? 0}
+              maximas={localState.maximas ?? 2}
+              onChange={(vals) => {
+                setLocalState((prev) => {
+                  const updated = {
+                    ...prev,
+                    actuales: vals.actuales,
+                    minimas: vals.minimas,
+                    maximas: vals.maximas,
+                  };
+                  onChange(updated);
+                  return updated;
+                });
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
     
       {/* SECCIÓN SERVICIOS CONECTADOS */}
       <div>
