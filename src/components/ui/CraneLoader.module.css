@@ -1,0 +1,38 @@
+@keyframes trolleyMove {
+  0%, 45% { transform: translateX(0px); }
+  50%, 95% { transform: translateX(80px); }
+  100% { transform: translateX(0px); }
+}
+
+@keyframes hookMove {
+  0%, 100% { transform: translateY(0px); }
+  /* Ida: baja a buscar caja 1 (ajustado para no pasar el piso), sube */
+  15%, 25% { transform: translateY(8px); }
+  35% { transform: translateY(0px); }
+  
+  /* Vuelta: baja a buscar caja 2, sube */
+  65%, 75% { transform: translateY(38px); }
+  85% { transform: translateY(0px); }
+}
+
+/* El contenedor 1 aparece al principio y desaparece a mitad del ciclo */
+@keyframes box1Animation {
+  0%, 40% { opacity: 1; }
+  45%, 100% { opacity: 0; }
+}
+
+.trolley {
+  animation: trolleyMove 6s ease-in-out infinite;
+}
+
+.hook {
+  animation: hookMove 6s ease-in-out infinite;
+}
+
+.box1 {
+  animation: box1Animation 6s ease-in-out infinite;
+}
+
+.box2 {
+  animation: box2Animation 6s ease-in-out infinite;
+}
