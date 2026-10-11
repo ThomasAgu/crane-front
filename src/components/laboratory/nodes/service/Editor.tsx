@@ -5,6 +5,7 @@ import { dockerDefaults } from "@/lib/helper/DockerDefaults";
 import DockerImageSelector from "./DockerHubSelector";
 import EnvironmentVariablesEditor from "./EnvironmentVariablesEditor";
 import { requiredValidator } from "@/lib/validators/RequiredValidator";
+import { portsValidator } from "@/lib/validators/PortsValidator";
 
 export type StartupScript = {
   name: string;
@@ -84,41 +85,35 @@ export default function ServiceEditor({
   }, [nodes, edges, selectedNode]);
 
   const updateField = <K extends keyof ServiceData>(key: K, value: ServiceData[K]) => {
-    setForm((prev) => {
-      const updated = {
-        ...prev,
-        [key]: value,
-      };
-
-      onChange(updated);
-      return updated;
-    });
+    const updated = {
+      ...form,
+      [key]: value,
+    };
+    setForm(updated);
+    onChange(updated);
   };
 
-   const handleImagePicked = (imageName: string) => {
-    setForm((prev) => {
-      let updated = { ...prev, image: imageName };
-      
-      const defaults = dockerDefaults[imageName];
-      if (defaults) {
-        updated = {
-          ...updated,
-          ports: defaults.ports || updated.ports,
-          volumes: defaults.volumes || updated.volumes,
-          networks: defaults.networks || updated.networks,
-          environment: defaults.environment || updated.environment,
-        };
-      }
+  const handleImagePicked = (imageName: string) => {
+    let updated = { ...form, image: imageName };
 
-      // Sincronizamos internamente con el Singleton inmutable del servicio
-      if (selectedNode?.id) {
-        const res = editorService.applyImageDefaultsToNode(selectedNode.id, imageName);
-        window.dispatchEvent(new CustomEvent("editorService:updated", { detail: res }));
-      }
+    const defaults = dockerDefaults[imageName];
+    if (defaults) {
+      updated = {
+        ...updated,
+        ports: defaults.ports?.join(", ") || updated.ports,
+        volumes: defaults.volumes || updated.volumes,
+        networks: defaults.networks || updated.networks,
+        environment: defaults.environment || updated.environment,
+      };
+    }
 
-      onChange(updated);
-      return updated;
-    });
+    setForm(updated);
+    onChange(updated);
+
+    if (selectedNode?.id) {
+      const res = editorService.applyImageDefaultsToNode(selectedNode.id, imageName);
+      window.dispatchEvent(new CustomEvent("editorService:updated", { detail: res }));
+    }
   };
 
   const handleStartupScriptUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,11 +222,15 @@ export default function ServiceEditor({
             {/* CAMPO PUERTOS */}
             <div>
               <InputText
+                inputId="service-ports"
                 label="Puertos Expuestos"
                 type="text"
                 placeholder="ej: 8080:80, 3306:3306"
-                value={form.ports || ""}
+                value={Array.isArray(form.ports) ? form.ports.join(", ") : form.ports || ""}
                 setValue={(val: string) => updateField("ports", val)}
+                liveValidators={[portsValidator]}
+                submitValidators={[portsValidator]}
+                showErrors={triggerErrors}
                 setShowError={setTriggerErrors}
               />
             </div>

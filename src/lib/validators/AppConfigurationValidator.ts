@@ -1,6 +1,7 @@
 import type { AlertCreateDto } from "@/lib/dto/AlertDto";
 import type { CreateAppDto } from "@/lib/dto/AppDto";
 import type { NetworkDto, ServiceDto, VolumeDto } from "@/lib/dto/ServiceDto";
+import { isValidPortList, portsValidator } from "./PortsValidator";
 
 export interface ConfigurationValidationIssue {
   message: string;
@@ -171,6 +172,18 @@ export const validateAppConfiguration = (
   }
 
   for (const [serviceIndex, service] of services.entries()) {
+    if (!isValidPortList((service.ports ?? []).join(","))) {
+      return {
+        valid: false,
+        issue: {
+          message: portsValidator.message,
+          title: "Puertos inválidos",
+          field: "service-ports",
+          serviceIndex,
+        },
+      };
+    }
+
     const environmentIssue = validateEnvironment(
       service.environment,
       "service-environment",

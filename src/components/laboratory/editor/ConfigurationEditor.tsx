@@ -54,6 +54,14 @@ const ConfigurationEditor: React.FC<{
   };
 
   const prepareAndValidateApp = async (): Promise<(CreateAppDto & { __warnings: string[] }) | null> => {
+    const portsIssue = editorService.validateServicePorts();
+    if (portsIssue) {
+      showAlert(portsIssue.message, "error", "Puertos inválidos");
+      const node = editorService.getServiceNodeByIndex(portsIssue.serviceIndex);
+      if (node) focusEditorField("service-ports", node.id);
+      return null;
+    }
+
     const payload = editorService.exportAppDto();
     const normalizedName = (name: string) => name.trim().replace(/\s/g, "").toLowerCase();
 

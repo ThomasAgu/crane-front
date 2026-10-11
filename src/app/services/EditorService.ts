@@ -4,6 +4,7 @@ import { dockerDefaults } from "../../lib/helper/DockerDefaults";
 import type { CreateAppDto } from "../../lib/dto/AppDto";
 import type { AlertCreateDto, AlertDto } from "../../lib/dto/AlertDto";
 import type { ServiceDto } from "../../lib/dto/ServiceDto";
+import { isValidPortList, portsValidator } from "../../lib/validators/PortsValidator";
 
 class EditorStateService {
   private nodes: Node[] = [];
@@ -65,6 +66,21 @@ class EditorStateService {
 
   getServiceNodeByIndex(index: number) {
     return this.nodes.filter((node) => node.type === "service")[index];
+  }
+
+  validateServicePorts(): { serviceIndex: number; message: string } | null {
+    const services = this.nodes.filter((node) => node.type === "service");
+    const serviceIndex = services.findIndex((service) => {
+      const ports = service.data?.ports;
+      const portList = Array.isArray(ports)
+        ? ports.join(",")
+        : String(ports ?? "");
+      return !isValidPortList(portList);
+    });
+
+    return serviceIndex === -1
+      ? null
+      : { serviceIndex, message: portsValidator.message };
   }
 
   getAppNode() {
