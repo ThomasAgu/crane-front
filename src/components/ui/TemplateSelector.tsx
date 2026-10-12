@@ -8,6 +8,7 @@ import Image from "next/image";
 import goback from "../../public/goback.svg";
 import { useRouter } from "next/navigation";
 import { DEFAULT_TEMPLATES } from "@/lib/helper/TemplateListDefault";
+import Loader from "./Loader";
 
 interface TemplateSelectorProps {
   setPopUp: (value: boolean) => void;
@@ -15,6 +16,8 @@ interface TemplateSelectorProps {
   setSelectedApp: (value: AppDto | null) => void;
   setSelectedAppMode: (value: "edit" | "template" | null) => void;
   apps: AppDto[];
+  loading: boolean;
+  error: string | null;
 }
 
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({
@@ -23,27 +26,18 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   setSelectedApp,
   setSelectedAppMode,
   apps,
+  loading,
+  error,
 }) => {
-  const [appsTab, setAppsTab] = useState(true);
+  const [appsTab, setAppsTab] = useState(false);
   const [appsList, setAppsList] = useState<AppDto[]>([]);
   const [templatesList, setTemplatesList] = useState<AppDto[]>([]);
-
   const router = useRouter();
 
   useEffect(() => {
-    if (apps.length === 0) {
-      setAppsTab(false);
-    } else {
-      const templates = apps.filter((app) => app.is_template);
-      const nonTemplates = apps.filter((app) => !app.is_template);
-      setTemplatesList(templates);
-      setAppsList(nonTemplates);
-    }
+    setTemplatesList(apps.filter((app) => app.is_template));
+    setAppsList(apps.filter((app) => !app.is_template));
   }, [apps]);
-
-  const handleClickGoBackButton = () => {
-    router.back();
-  };
 
   const handleTemplateSelect = (
     templateToLoad: string,
@@ -58,27 +52,37 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 
   return (
     <div className={styles.overlay}>
-      <div className={styles.popup}>
+      <div className={styles.popup} role="dialog" aria-modal="true" aria-labelledby="template-selector-title">
         <div className={styles.content}>
-          <div className={styles.header}> 
-            <button className={styles.GoBackButton} onClick={handleClickGoBackButton} aria-label="Volver a la página anterior"> 
-              <Image
-                src={goback}
-                alt="Salir de laboratorio"
-                width={30}
-                height={30}
-              />
+          <div className={styles.header}>
+            <button
+              type="button"
+              className={styles.GoBackButton}
+              onClick={() => router.back()}
+              aria-label="Volver a la página anterior"
+            >
+              <Image src={goback} alt="Salir de laboratorio" width={24} height={24} />
             </button>
-            <div className={styles.buttonGroup}>
-              {appsList.length > 0 && (
+            <div className={styles.heading}>
+              <h1 id="template-selector-title">¿Qué quieres crear?</h1>
+              <p>Elige un proyecto existente o empieza con una plantilla.</p>
+            </div>
+            <div className={styles.buttonGroup} role="tablist" aria-label="Opciones de proyecto">
+              {(appsList.length > 0 || loading) && (
                 <button
+                  type="button"
+                  role="tab"
+                  aria-selected={appsTab}
                   className={appsTab ? styles.buttonActive : styles.buttonInactive}
                   onClick={() => setAppsTab(true)}
                 >
-                  Aplicaciones
+                  Mis aplicaciones
                 </button>
               )}
               <button
+                type="button"
+                role="tab"
+                aria-selected={!appsTab}
                 className={!appsTab ? styles.buttonActive : styles.buttonInactive}
                 onClick={() => setAppsTab(false)}
               >
@@ -87,60 +91,67 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             </div>
           </div>
 
-          {/* Sección de Aplicaciones del Usuario */}
-          <div
-            className={`grid grid-cols-3 gap-4 ${
-              appsTab ? styles.appsShowed : styles.appsHidden
-            }`}
-          >
-            {appsList.map((app, index) => (
-              <TemplateItem
-                key={app.id || index}
-                title={app.name}
-                description="Todavia no hay"
-                services={app.services?.length || 0}
-                rules={0}
-                icon={<Columns3Cog size={80} />}
-                isTemplate={false}
-                onClick={() => handleTemplateSelect("custom", app, "edit")}
-              />
-            ))}
-          </div>
+          {loading && (
+            <div className={styles.loadingStatus} role="status" aria-live="polite">
+              <Loader loading width={24} height={24} />
+              <span>{apps.length ? "Actualizando tus proyectos..." : "Buscando tus proyectos..."}</span>
+            </div>
+          )}
+          {error && (
+            <div className={styles.errorStatus} role="alert">
+              No se pudieron cargar tus proyectos: {error}
+            </div>
+          )}
 
-          {/* Sección de Plantillas (Predeterminadas + Dinámicas) */}
-          <div
-            className={`grid grid-cols-3 gap-4 ${
-              !appsTab ? styles.templatesShowed : styles.templatesHidden
-            }`}
-          >
-            {/* 1. Plantillas Predeterminadas */}
-            {DEFAULT_TEMPLATES.map((item) => (
-              <TemplateItem
-                key={item.id}
-                title={item.title}
-                description={item.description}
-                services={item.services}
-                rules={item.rules}
-                icon={item.icon}
-                isTemplate={true}
-                onClick={() => handleTemplateSelect(item.id)}
-              />
-            ))}
+          {appsTab ? (
+            appsList.length > 0 ? (
+              <div className={styles.grid}>
+                {appsList.map((app) => (
+                  <TemplateItem
+                    key={app.id}
+                    title={app.name}
+                    description="Continúa trabajando en este proyecto."
+                    services={app.services?.length || 0}
+                    icon={<Columns3Cog size={36} />}
+                    onClick={() => handleTemplateSelect("custom", app, "edit")}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                <p>Aún no tienes proyectos guardados.</p>
+                <button type="button" onClick={() => setAppsTab(false)}>
+                  Explorar plantillas
+                </button>
+              </div>
+            )
+          ) : (
+            <div className={styles.grid}>
+              {DEFAULT_TEMPLATES.map((item) => (
+                <TemplateItem
+                  key={item.id}
+                  title={item.title}
+                  description={item.description}
+                  services={item.services}
+                  icon={item.icon}
+                  isTemplate={true}
+                  onClick={() => handleTemplateSelect(item.id)}
+                />
+              ))}
 
-            {/* 2. Plantillas dinámicas provenientes del backend (apps.is_template = true) */}
-            {templatesList.map((templateApp, index) => (
-              <TemplateItem
-                key={templateApp.id || `template-${index}`}
-                title={templateApp.name}
-                description="Plantilla personalizada"
-                services={templateApp.services?.length || 0}
-                rules={0}
-                icon={<Columns3Cog size={80} />}
-                isTemplate={true}
-                onClick={() => handleTemplateSelect("custom", templateApp, "template")}
-              />
-            ))}
-          </div>
+              {templatesList.map((templateApp) => (
+                <TemplateItem
+                  key={templateApp.id}
+                  title={templateApp.name}
+                  description="Plantilla personalizada"
+                  services={templateApp.services?.length || 0}
+                  icon={<Columns3Cog size={36} />}
+                  isTemplate={true}
+                  onClick={() => handleTemplateSelect("custom", templateApp, "template")}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

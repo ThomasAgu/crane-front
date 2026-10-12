@@ -1,32 +1,27 @@
-import { useState, useEffect, useCallback } from "react";
-import { AppDto } from "@/lib/dto/AppDto";
+import { useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppService } from "@/lib/api/appService";
 
+export const APPS_QUERY_KEY = ["apps"] as const;
+
 export function useApps() {
-  const [apps, setApps] = useState<AppDto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: apps = [],
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: APPS_QUERY_KEY,
+    queryFn: AppService.getAll,
+  });
+  const refreshApps = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
-  const fetchApps = useCallback(async () => {
-    try {
-      const data = await AppService.getAll();
-      setApps(data);
-    } catch (err) {
-      console.error("Error cargando las apps:", err);
-      setError("No se pudieron cargar las aplicaciones");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchApps();
-  }, [fetchApps]);
-
-  return { 
-    apps, 
-    loading, 
-    error, 
-    refreshApps: fetchApps 
+  return {
+    apps,
+    loading,
+    error: error ? "No se pudieron cargar las aplicaciones" : null,
+    refreshApps,
   };
 }

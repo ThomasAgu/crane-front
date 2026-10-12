@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { editorService } from "@/app/services/EditorService";
 import { getImageDetails } from "@/app/services/DockerHubService";
 import { AppService } from "@/lib/api/appService";
+import { APPS_QUERY_KEY } from "@/hooks/useApps";
 import type { AppDto, CreateAppDto } from "@/lib/dto/AppDto";
 import type { SelectedAppMode } from "@/hooks/useLaboratory";
 import { validateAppConfiguration } from "@/lib/validators/AppConfigurationValidator";
@@ -42,6 +44,7 @@ const ConfigurationEditor: React.FC<{
     (isTemplateSource && isTemplate && saveAsNewTemplate);
 
   const { alertState, showAlert, handleCloseAlert } = useAlert();
+  const queryClient = useQueryClient();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -151,6 +154,7 @@ const ConfigurationEditor: React.FC<{
       payload["is_template"] = isTemplate;
 
       await AppService.create(payload);
+      await queryClient.invalidateQueries({ queryKey: APPS_QUERY_KEY });
       showAlert(
         __warnings.length ? `La aplicación se creó, pero revisa: ${__warnings.join(" ")}` : "La aplicación se ha creado con éxito.",
         __warnings.length ? "warning" : "success",
@@ -197,6 +201,7 @@ const ConfigurationEditor: React.FC<{
         id: updateId,
         is_template: isTemplate,
       });
+      await queryClient.invalidateQueries({ queryKey: APPS_QUERY_KEY });
       showAlert(
         __warnings.length ? `La aplicación se actualizó, pero revisa: ${__warnings.join(" ")}` : "La aplicación se ha actualizado con éxito.",
         __warnings.length ? "warning" : "success",

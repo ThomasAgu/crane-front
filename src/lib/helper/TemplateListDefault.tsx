@@ -6,7 +6,6 @@ export interface DefaultTemplate {
   title: string;
   description: string;
   services: number;
-  rules: number;
   icon: React.ReactNode;
 }
 
@@ -14,33 +13,29 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   {
     id: "blank",
     title: "Aplicación en blanco",
-    description: "Un modelo que te desafía a arrancar desde cero",
+    description: "Diseña tu arquitectura desde cero, con total libertad.",
     services: 0,
-    rules: 0,
-    icon: <Square size={80} />,
+    icon: <Square size={36} />,
   },
   {
     id: "microservices",
     title: "Microservicios",
-    description: "API REST y Base de datos SQL",
+    description: "Una arquitectura distribuida lista para personalizar.",
     services: 2,
-    rules: 4,
-    icon: <Layers size={80} />,
+    icon: <Layers size={36} />,
   },
   {
     id: "database",
     title: "Base de datos",
-    description: "Arranca con un servicio de base de datos preseleccionado",
+    description: "Comienza con un servicio y almacenamiento persistente.",
     services: 1,
-    rules: 0,
-    icon: <Database size={80} />,
+    icon: <Database size={36} />,
   },
   {
     id: "simple-api",
     title: "API REST simple",
-    description: "Node.js y Express para guardar datos",
-    services: 2,
-    rules: 4,
-    icon: <Boxes size={80} />,
+    description: "Un punto de partida ligero para crear tu API.",
+    services: 1,
+    icon: <Boxes size={36} />,
   },
 ];

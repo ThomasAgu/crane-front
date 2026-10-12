@@ -7,6 +7,8 @@ import { useLaboratory } from '@/hooks/useLaboratory';
 export default function LaboratoryPage() {
     const { 
         apps, 
+        loading,
+        error,
         popUp, 
         setPopUp, 
         selectedTemplate, 
@@ -27,6 +29,8 @@ export default function LaboratoryPage() {
                         setSelectedApp={setSelectedApp}
                         setSelectedAppMode={setSelectedAppMode}
                         apps={apps}
+                        loading={loading}
+                        error={error}
                     />
                 )}
                 

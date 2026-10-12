@@ -2,8 +2,10 @@
 
 import React, { FC, useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import type { AppDto } from "@/lib/dto/AppDto";
 import { AppService } from "@/lib/api/appService";
+import { APPS_QUERY_KEY } from "@/hooks/useApps";
 import { useSearchParams } from "next/navigation";
 import NavBar from '../../../components/layout/NavBar'
 import AppBase from "./AppBase";
@@ -22,6 +24,7 @@ const AppDetailView: FC = () => {
   const status = searchParams.get("status") || "unknown";
   const appId = params?.id ?? "";
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [appStatus, setAppStatus] = useState<string>(status === 'Running' ? "Activo": "Inactivo");
   const [app, setApp] = useState<AppDto>({} as AppDto);
@@ -81,6 +84,7 @@ const AppDetailView: FC = () => {
     setDeleteModalOpen(false);
     try {
       await AppService.delete(appId);
+      await queryClient.invalidateQueries({ queryKey: APPS_QUERY_KEY });
       router.push("/home");
     } catch (error) {
       console.error(error);
