@@ -39,6 +39,8 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
   const [uploadModal, setUploadModal] = useState(false);
   const isTemplate = app.is_template ?? false;
   const repositoryPending = app.repository_state === 'pending';
+  const startupStatus = app.startup_status;
+  const startupSucceeded = startupStatus?.status.toLowerCase() === 'success';
 
   const REPOSITORY_STATUS_MAP = {
     pending: { label: 'Pendiente de aprobación', className: style.repositoryPending },
@@ -217,6 +219,22 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
           <dd className={currentStatus.className}>{currentStatus.label}</dd>
         </div>
       </dl>
+
+      {!isTemplate && app.startup_status?.message && (
+        <section
+          className={`${style.startupStatus} ${startupSucceeded ? style.startupStatusSuccess : style.startupStatusError}`}
+          aria-label="Estado de inicio o actualización"
+        >
+          <strong>
+            Compilacion: {startupSucceeded ? 'exitosa' : 'con errores'}
+          </strong>
+          <p>
+            {startupSucceeded
+              ? 'Validacion de compilacion exitosa'
+              : 'Hubo un problema con la configuracion.'}
+          </p>
+        </section>
+      )}
 
       <div className={style.actions}>
         {!isTemplate && (
