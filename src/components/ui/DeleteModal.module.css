@@ -1,63 +1,144 @@
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5); /* opacidad */
-  z-index: 1000;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(17, 24, 39, 0.58);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 160ms ease-out;
+}
+
+.itemOverlay {
+  position: absolute;
 }
 
 .modal {
-    background-color: white;
-    width: 40vw;
-    height: auto;
-    position: absolute;
-    left: 30%;
-    top: 30%;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: min(100%, 440px);
+  padding: 28px;
+  border: 1px solid rgba(52, 54, 59, 0.08);
+  border-radius: 16px;
+  background: var(--surface, var(--white));
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.24);
+  animation: riseIn 180ms ease-out;
+}
+
+.modalIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(230, 54, 46, 0.1);
+  color: var(--error);
+}
+
+.content {
+  display: grid;
+  gap: 8px;
 }
 
 .title {
+  margin: 0;
   color: var(--darker);
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.description {
+  margin: 0;
+  color: #626873;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .itemName {
-  color: var(--error);
-  font-weight: bold;
+  color: var(--darker);
+  font-weight: 700;
 }
 
 .buttons {
   display: flex;
-  font-size: 1rem;
-  justify-content: flex-start;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
 }
 
 .buttons button {
-  border-radius: 4px;
-  padding: 5px;
-}
-
-.buttons button:hover {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.deleteButton {
+.buttons button:focus-visible {
+  outline: 3px solid rgba(50, 89, 230, 0.3);
+  outline-offset: 2px;
+}
+
+.buttons .deleteButton {
   border-color: var(--error);
+  background: var(--error);
   color: var(--white);
-  background-color: var(--error);
 }
 
-.cancelButton {
-  background-color: var(--white);
+.buttons .deleteButton:hover {
+  background: #c92f29;
+  box-shadow: 0 4px 12px rgba(230, 54, 46, 0.22);
+}
+
+.buttons .cancelButton {
+  border-color: #d9dde5;
+  background: var(--surface, var(--white));
   color: var(--darker);
-  border: 1px solid var(--darker);
+}
+
+.buttons .cancelButton:hover {
+  border-color: #b8beca;
+  background: #f6f7f9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 16px;
+  }
+
+  .modal {
+    gap: 16px;
+    padding: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .modal {
+    animation: none;
+  }
+
+  .buttons button {
+    transition: none;
+  }
 }

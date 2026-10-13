@@ -7,7 +7,7 @@ import Loader from "@/components/ui/Loader";
 import styles from "./home.module.css";
 
 export default function HomePage() {
-  const { apps, loading, refreshApps } = useApps();
+  const { apps, loading, refreshApps, removeApp } = useApps();
 
   const render = () => {
     if (loading) {
@@ -29,7 +29,7 @@ export default function HomePage() {
     return (
       <div className={styles.appsContainer}>
         <h1 className="text-3xl font-bold mt-6 text-darkest">Aplicaciones</h1>
-        <Dashboard apps={apps} onUpdate={refreshApps} />
+        <Dashboard apps={apps} onUpdate={refreshApps} onDelete={removeApp} />
       </div>
     );
   };

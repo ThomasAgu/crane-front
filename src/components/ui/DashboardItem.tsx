@@ -24,10 +24,11 @@ import style from './DashboardItem.module.css'
 
 interface DashboardItemProps {
   app: AppDto
-  onUpdate: CallableFunction
+  onUpdate: () => void | Promise<void>
+  onDelete: (appId: AppDto['id']) => void
 }
 
-export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
+export default function DashboardItem({ app, onUpdate, onDelete }: DashboardItemProps) {
   const createdAtText = app?.created_at ? new Date(app.created_at).toLocaleDateString() : "—";
   const repositoryUpdatedAtText = app?.repository_updated_at
     ? new Date(app.repository_updated_at).toLocaleDateString()
@@ -164,16 +165,16 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
 
     try {
       await AppService.delete(String(app.id));
-      setLoading(false);
-      onUpdate();
+      onDelete(app.id);
       showAlert("La aplicación ha sido eliminada.", "success", "Aplicación Eliminada");
-    } catch (error: any) {
-      setLoading(false);
+    } catch {
       showAlert(
         "La aplicación no puede eliminarse porque esta subida al repositorio.",
         "error",
         "Operación no permitida"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -320,6 +321,7 @@ export default function DashboardItem({ app, onUpdate }: DashboardItemProps) {
           itemType="aplicación"
           deleteFunction={handleConfirmDelete}
           setActive={setDeleteModal}
+          placement="item"
         />
       )}
 

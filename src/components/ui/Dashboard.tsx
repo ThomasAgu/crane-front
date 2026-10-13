@@ -5,10 +5,11 @@ import type { AppDto } from '@/lib/dto/AppDto'
 
 interface DashboardProps {
   apps: AppDto[];
-  onUpdate: CallableFunction
+  onUpdate: () => void | Promise<void>
+  onDelete: (appId: AppDto['id']) => void
 }
 
-export default function Dashboard({ apps, onUpdate }: DashboardProps) {
+export default function Dashboard({ apps, onUpdate, onDelete }: DashboardProps) {
   if (!apps || apps.length === 0) {
     return <p className="text-gray-500">No hay aplicaciones disponibles</p>
   }
@@ -25,7 +26,7 @@ export default function Dashboard({ apps, onUpdate }: DashboardProps) {
       "
     >
       {apps.map(app => (
-        <DashboardItem key={app.id} app={app} onUpdate={onUpdate} />
+        <DashboardItem key={app.id} app={app} onUpdate={onUpdate} onDelete={onDelete} />
       ))}
     </div>
   )
