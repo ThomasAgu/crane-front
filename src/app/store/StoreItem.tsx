@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './store.module.css';
-import { ArrowUp, ArrowDown, Star, Download, LayoutTemplate, AppWindow, Calendar, RefreshCw, ArrowRight } from 'lucide-react';
-import { RepositoryDto } from '@/lib/dto/RepositoryDto';
+import { ArrowUp, ArrowDown, Star, Download, LayoutTemplate, AppWindow, Calendar, RefreshCw, ArrowRight, Trash2 } from 'lucide-react';
+import type { RepositoryDto } from '@/lib/dto/RepositoryDto';
+import { useUserId } from '@/hooks/useUserId';
+import { usePermissions } from '@/hooks/usePermissions';
+import DeleteModal from '@/components/ui/DeleteModal';
 
 interface AppItemProps {
   item: RepositoryDto;
@@ -9,12 +12,35 @@ interface AppItemProps {
   onToggleFavorite: (appId: number) => void;
   onDownload: (appId: number) => void;
   onViewDetails: (repositoryId: number) => void;
+  onDelete: (repositoryId: number) => Promise<void>;
 }
 
-export const AppItem: React.FC<AppItemProps> = ({ item, onVote, onToggleFavorite, onDownload, onViewDetails }) => {
+export const AppItem: React.FC<AppItemProps> = ({
+  item,
+  onVote,
+  onToggleFavorite,
+  onDownload,
+  onViewDetails,
+  onDelete,
+}) => {
+  const userId = useUserId();
+  const { roles, loading: rolesLoading } = usePermissions();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const isTemplate = item.is_template ?? false;
   const isUp = item.is_voted_positive;
   const isDown = item.is_voted_negative;
+  const isOwner = userId !== '' && String(item.user_id) === userId;
+  const isPrivileged = roles.some((role) => {
+    const roleName = role.name.trim().toUpperCase();
+    return roleName === 'OPERATOR' || roleName === 'ADMIN';
+  });
+  const canDelete = !rolesLoading && (isOwner || isPrivileged);
+
+  const handleConfirmDelete: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
+    event.stopPropagation();
+    setShowDeleteModal(false);
+    await onDelete(item.id);
+  };
 
   const formatDate = (d?: string | Date) => 
     d ? new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : '---';
@@ -92,8 +118,28 @@ export const AppItem: React.FC<AppItemProps> = ({ item, onVote, onToggleFavorite
               <ArrowDown size={15} strokeWidth={2.5} />
             </button>
           </div>
+          {canDelete && (
+            <button
+              type="button"
+              onClick={() => setShowDeleteModal(true)}
+              className={styles.repositoryDeleteBtn}
+              aria-label={`Eliminar ${item.name} del repositorio`}
+              title="Eliminar del repositorio"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
       </div>
+      {showDeleteModal && (
+        <DeleteModal
+          itemName={item.name}
+          itemType="repositorio"
+          deleteFunction={handleConfirmDelete}
+          setActive={setShowDeleteModal}
+          portal
+        />
+      )}
     </div>
   );
 };

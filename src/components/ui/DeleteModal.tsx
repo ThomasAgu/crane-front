@@ -1,4 +1,5 @@
 import type { MouseEventHandler } from 'react';
+import { createPortal } from 'react-dom';
 import { Trash2 } from 'lucide-react';
 import styles from './DeleteModal.module.css';
 
@@ -8,6 +9,7 @@ interface DeleteModalProps {
   deleteFunction: MouseEventHandler<HTMLButtonElement>;
   setActive: (active: boolean) => void;
   placement?: 'viewport' | 'item';
+  portal?: boolean;
 }
 
 export default function DeleteModal({
@@ -16,13 +18,14 @@ export default function DeleteModal({
   deleteFunction,
   setActive,
   placement = 'viewport',
+  portal = false,
 }: DeleteModalProps) {
   const deleteCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setActive(false);
   };
 
-  return (
+  const modal = (
     <div
       className={`${styles.overlay} ${placement === 'item' ? styles.itemOverlay : ''}`}
       onClick={(e) => e.stopPropagation()}
@@ -55,4 +58,10 @@ export default function DeleteModal({
       </section>
     </div>
   );
+
+  if (portal && typeof document !== 'undefined') {
+    return createPortal(modal, document.body);
+  }
+
+  return modal;
 }

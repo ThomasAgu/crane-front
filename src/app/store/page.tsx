@@ -11,6 +11,7 @@ import type { onHoldRepositoryDto, RepositoryDto } from "@/lib/dto/RepositoryDto
 import { useStore } from "@/hooks/useStore";
 import { RequirePermission } from "@/components/layout/RequirePermission";
 import { PendingItem } from "./PendingItem";
+import { AlertSnackbar, useAlert } from "@/components/ui/AlertSnackbar";
 
 const FilterBar: React.FC<{
   currentFilter: FilterType;
@@ -63,6 +64,7 @@ export default function Store() {
     filterType,
     handleApprove,
     handleDownload,
+    handleDeleteRepository,
     handleReject,
     handleToggleFavorite,
     handleViewDetails,
@@ -79,6 +81,20 @@ export default function Store() {
     setShowPending,
     showPending,
   } = useStore();
+  const { alertState, showAlert, handleCloseAlert } = useAlert();
+
+  const handleDelete = async (repositoryId: number) => {
+    try {
+      await handleDeleteRepository(repositoryId);
+      showAlert("El repositorio fue eliminado correctamente.", "success", "Repositorio eliminado");
+    } catch (error) {
+      showAlert(
+        error instanceof Error ? error.message : "No se pudo eliminar el repositorio.",
+        "error",
+        "Error al eliminar"
+      );
+    }
+  };
 
   return (
     <NavBar>
@@ -176,6 +192,7 @@ export default function Store() {
                     onToggleFavorite={handleToggleFavorite}
                     onDownload={handleDownload}
                     onViewDetails={handleViewDetails}
+                    onDelete={handleDelete}
                   />
                 );
               })
@@ -188,6 +205,11 @@ export default function Store() {
             )}
           </div>
         )}
+        <AlertSnackbar
+          alertState={alertState}
+          handleCloseAlert={handleCloseAlert}
+          global
+        />
       </main>
     </NavBar>
   );

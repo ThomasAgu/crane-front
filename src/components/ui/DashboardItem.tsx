@@ -181,7 +181,9 @@ export default function DashboardItem({ app, onUpdate, onDelete }: DashboardItem
   return (
     <div
       onClick={() => router.push(`/home/${app.id}/?status=${app.status}`)}
-      className={`${style.card} ${isTemplate ? style.templateCard : ''}`}
+      className={`${style.card} ${isTemplate ? style.templateCard : ''} ${
+        deleteModal || uploadModal ? style.modalOpen : ''
+      }`}
     >
       <div className={style.cardHeader}>
         <div className={style.projectIdentity}>
@@ -335,12 +337,14 @@ export default function DashboardItem({ app, onUpdate, onDelete }: DashboardItem
           onSubmit={handleUploadSubmit}
           onCancel={() => setUploadModal(false)}
           isLoading={loading}
+          placement="item"
         />
       )}
 
       <AlertSnackbar
         alertState={alertState}
         handleCloseAlert={handleCloseAlert}
+        global
       />
     </div>
   )

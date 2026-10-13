@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -55,6 +56,7 @@ interface AlertSnackbarProps {
   duration?: number;
   vertical?: 'top' | 'bottom';
   horizontal?: 'left' | 'center' | 'right';
+  global?: boolean;
 }
 
 export const AlertSnackbar: React.FC<AlertSnackbarProps> = ({
@@ -63,8 +65,9 @@ export const AlertSnackbar: React.FC<AlertSnackbarProps> = ({
   duration = 4000,
   vertical = 'top',
   horizontal = 'center',
+  global = false,
 }) => {
-  return (
+  const snackbar = (
     <Snackbar
       open={alertState.open}
       autoHideDuration={duration}
@@ -82,4 +85,10 @@ export const AlertSnackbar: React.FC<AlertSnackbarProps> = ({
       </Alert>
     </Snackbar>
   );
+
+  if (global && typeof document !== 'undefined') {
+    return createPortal(snackbar, document.body);
+  }
+
+  return snackbar;
 };

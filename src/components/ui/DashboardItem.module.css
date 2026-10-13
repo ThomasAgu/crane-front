@@ -32,6 +32,15 @@
   box-shadow: 0 14px 30px rgb(15 23 42 / 10%);
 }
 
+.modalOpen {
+  overflow: visible;
+  transform: none;
+}
+
+.modalOpen:hover {
+  transform: none;
+}
+
 .cardHeader {
   display: flex;
   align-items: flex-start;

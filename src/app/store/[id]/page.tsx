@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Check, X } from "lucide-react";
+import Loader from "@/components/ui/Loader";
 import NavBar from "../../../components/layout/NavBar";
 import { RequirePermission } from "../../../components/layout/RequirePermission";
 import { AppService } from "@/lib/api/appService";
@@ -69,7 +70,14 @@ export default function StoreItemDetail() {
     }
   };
 
-  if (loading) return <NavBar><main className={styles.detailPage}>Cargando detalle...</main></NavBar>;
+  if (loading) return 
+    <NavBar>
+      <main className={styles.detailPage}>
+        <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+          <Loader loading={loading} width={50} height={50} />
+        </div>
+      </main>
+    </NavBar>;
   if (error || !repository || !app) return <NavBar><main className={styles.detailPage}>{error || "Detalle no disponible."}</main></NavBar>;
 
   return (

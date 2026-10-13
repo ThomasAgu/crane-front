@@ -19,6 +19,7 @@ export function useStore() {
     setLoading(true);
     try {
       const repositories = await RepositoryService.getRepositories();
+      debugger
       setStoreItems(repositories.filter((repository) => repository.state === "approved"));
       setOnHoldStoreItems(repositories.filter((repository) => repository.state === "pending"));
     } catch (error) {
@@ -122,12 +123,19 @@ export function useStore() {
     }
   }, []);
 
+  const handleDeleteRepository = useCallback(async (repositoryId: number) => {
+    await RepositoryService.deleteRepository(repositoryId.toString());
+    setStoreItems((currentItems) => currentItems.filter((item) => item.id !== repositoryId));
+    setOnHoldStoreItems((currentItems) => currentItems.filter((item) => item.id !== repositoryId));
+  }, []);
+
   return {
     allDockerImages,
     displayedItems,
     filterType,
     handleApprove,
     handleDownload,
+    handleDeleteRepository,
     handleReject,
     handleToggleFavorite,
     handleViewDetails,

@@ -28,6 +28,26 @@
   animation: riseIn 180ms ease-out;
 }
 
+.itemOverlay .modal {
+  gap: 16px;
+  width: min(100%, 340px);
+  padding: 20px;
+}
+
+.itemOverlay .modalIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.itemOverlay .title {
+  font-size: 1.1rem;
+}
+
+.itemOverlay .description {
+  font-size: 0.875rem;
+}
+
 .modalIcon {
   display: grid;
   width: 48px;

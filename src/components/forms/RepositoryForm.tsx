@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import styles from '../groups/groups.module.css'; // Asegúrate de ajustar la ruta de tus estilos
+import styles from './RepositoryForm.module.css';
 
 export interface RepositoryFormData {
   name: string;
@@ -47,6 +47,7 @@ interface RepositoryFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   isEdit?: boolean;
+  placement?: 'viewport' | 'item';
 }
 
 export default function RepositoryForm({ 
@@ -54,7 +55,8 @@ export default function RepositoryForm({
   onSubmit, 
   onCancel, 
   isLoading = false,
-  isEdit = false 
+  isEdit = false,
+  placement = 'viewport',
 }: RepositoryFormProps) {
   
   const [formController] = useState(() => new RepositoryFormController(initialData));
@@ -92,7 +94,10 @@ export default function RepositoryForm({
   };
 
   return (
-    <div className={styles.formOverlay} onClick={handleBackdropClick}>
+    <div
+      className={`${styles.formOverlay} ${placement === 'item' ? styles.itemOverlay : ''}`}
+      onClick={handleBackdropClick}
+    >
       <div className={styles.formModal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.formHeader}>
           <h2>{isEdit ? 'Actualizar Repositorio' : 'Subir al Repositorio'}</h2>
