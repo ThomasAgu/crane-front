@@ -17,7 +17,9 @@ type Props = {
 const AppBase: FC<Props> = ({ app, appStatus, onAppAction, onOpenLaboratory, onDeleteRequest }) => {
   const [loadingAction, setLoadingAction] = useState<AppAction | null>(null);
   const { alertState, showAlert, handleCloseAlert } = useAlert();
-  const startupCheckSucceeded = app.startup_status?.status.toLowerCase() === "success";
+  const operationFeedback = app.operation_feedback ?? [];
+
+  debugger
 
   const handleAppAction = async (action: AppAction) => {
     if (loadingAction) return;
@@ -93,23 +95,33 @@ const AppBase: FC<Props> = ({ app, appStatus, onAppAction, onOpenLaboratory, onD
           </button>
         </div>
       </header>
-      {!app.is_template && app.startup_status?.message && (
-        <section
-          className={`mt-5 rounded-lg border p-4 ${
-            startupCheckSucceeded
-              ? "border-green-200 bg-green-50 text-green-900"
-              : "border-red-200 bg-red-50 text-red-900"
-          }`}
-          aria-label="Estado de inicio o actualización"
-        >
-          <h2 className="text-sm font-semibold">
-            Compilación: {app.startup_status.status}
-          </h2>
-          <p className="mt-1 whitespace-pre-wrap break-words text-sm">
-            {app.startup_status.message}
-          </p>
-        </section>
-      )}
+      {operationFeedback.map((feedback, index) => {
+        if (!feedback.message) return null;
+        const status = feedback.status.toLowerCase();
+        const isSuccess = status === "success";
+        const isRejected = status === "rejected";
+        if (app.is_template && !isRejected) return null;
+        return (
+          <section
+            key={`${status}-${feedback.checked_at ?? index}`}
+            className={`mt-5 rounded-lg border p-4 ${
+              isSuccess
+                ? "border-green-200 bg-green-50 text-green-900"
+                : "border-red-200 bg-red-50 text-red-900"
+            }`}
+            aria-label={isRejected ? "Estado del repositorio" : "Estado de inicio o actualización"}
+          >
+            <h2 className="text-sm font-semibold">
+              {isRejected
+                ? "Repositorio: solicitud rechazada"
+                : `Compilación: ${isSuccess ? "exitosa" : "con errores"}`}
+            </h2>
+            <p className="mt-1 whitespace-pre-wrap break-words text-sm">
+              {feedback.message}
+            </p>
+          </section>
+        );
+      })}
       <section className="mt-5 border-t border-slate-200 pt-4">
         <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Accesos a servicios</h2>
         <AppHostLinks hosts={app.hosts} />

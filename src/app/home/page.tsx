@@ -28,7 +28,13 @@ export default function HomePage() {
 
     return (
       <div className={styles.appsContainer}>
-        <h1 className="text-3xl font-bold mt-6 text-darkest">Aplicaciones</h1>
+        <header className={styles.homeHeader}>
+          <p className={styles.homeEyebrow}>CRANE · Aplicaciones</p>
+          <h1 className={styles.homeTitle}>Aplicaciones</h1>
+          <p className={styles.homeDescription}>
+            Administra tus aplicaciones y accede rápidamente a sus recursos.
+          </p>
+        </header>
         <Dashboard apps={apps} onUpdate={refreshApps} onDelete={removeApp} />
       </div>
     );

@@ -14,10 +14,10 @@ export interface TraefikDto {
   ports?: Record<string, Array<{ HostIp: string; HostPort: string }>> | null
 }
 
-export interface AppStartupStatusDto {
+export interface OperationFeedbackDto {
   status: string
   message: string
-  checked_at: string
+  checked_at?: string
 }
 
 export interface AppDto {
@@ -40,7 +40,7 @@ export interface AppDto {
   is_template: boolean
   repository_state?: 'pending' | 'approved' | 'rejected' | null
   repository_updated_at?: string | null
-  startup_status?: AppStartupStatusDto | null
+  operation_feedback?: OperationFeedbackDto[] | null
   alerts?: AlertDto[]
 }
 

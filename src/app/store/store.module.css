@@ -1,29 +1,62 @@
 .mainContent {
   width: 100%;
-  max-width: 90vw;
+  max-width: 1600px;
   margin: 0 auto;
-  margin-left: 5vw;
-  padding: 20px;
+  padding: 36px clamp(24px, 4vw, 64px);
   min-height: 100vh;
   background-color: var(--background);
 }
 
-/* --- Controles y Barra Superior --- */
+.storeHeader {
+  margin: 4px 0 28px;
+}
+
+.storeEyebrow {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.storeTitle {
+  margin: 0;
+  color: #172033;
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.storeDescription {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 10px;
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.storeTagline {
+  color: #334155;
+  font-weight: 600;
+}
+
 .controls {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin: 0 0 18px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
 }
 
 .searchInputContainer {
   position: relative; 
-  flex: 1;
-  min-width: 280px;
+  flex: 1 1 240px;
+  min-width: min(100%, 240px);
 }
 
 .searchIcon {
@@ -37,85 +70,158 @@
 .searchInput {
   padding-left: 40px; 
   padding-right: 16px;
-  height: 42px;
+  height: 44px;
   color: #1e293b;
   width: 100%;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+  font-size: 0.875rem;
   background-color: #fff;
-  transition: all 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: #6395e8;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 12%);
 }
 
 .filterBar {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 3px;
   flex-wrap: wrap;
+  padding: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #f8fafc;
 }
 
 .filterBar button, .dockerImagesButton {
-  padding: 8px 16px;
-  border: 1px solid #e2e8f0;
-  background-color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  background-color: transparent;
   color: #64748b;
   border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.9rem;
+  font-weight: 550;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  white-space: nowrap;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .filterBar button:hover, .dockerImagesButton:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
+  color: #1e293b;
+  background-color: #fff;
 }
 
 .filterBar .activeFilter {
-  background-color: #3b82f6;
-  color: #fff;
-  border-color: #3b82f6;
+  border-color: #dbe6f7;
+  color: #1d4ed8;
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 7%);
+}
+
+.activeFilter svg,
+.activeDockerFilter svg {
+  color: #2563eb;
+}
+
+.filterCount {
+  display: inline-grid;
+  min-width: 19px;
+  height: 19px;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #dbeafe;
+  font-size: 0.7rem;
+  font-weight: 700;
 }
 
 .pendingFilter {
-  background-color: #0f172a;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   position: relative;
-  transition: background-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
 }
 
 .pendingFilter:hover {
-  background-color: #1e293b;
+  border-color: #b8c8de;
+  background-color: #f8fafc;
+}
+
+.pendingFilter[aria-pressed="true"] {
+  border-color: #c7d7f0;
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.pendingCount {
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.dockerImagesButton {
+  color: #475569;
+}
+
+.activeDockerFilter {
+  border-color: #dbe6f7 !important;
+  color: #1d4ed8 !important;
+  background: #fff !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 7%);
+}
+
+.filterBar button:focus-visible,
+.pendingFilter:focus-visible,
+.searchInput:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 .dockerFilterWrapper {
   position: relative; 
   display: flex;
-  gap: 8px;
   align-items: center;
 }
 
 .divider {
-  margin: 16px 0 28px 0;
+  margin: 0 0 24px;
   border: 0;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #e5eaf1;
 }
 
 /* --- Grid de Items (Responsive Real) --- */
 .appList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
+  gap: 20px;
   width: 100%;
 }
 
@@ -127,15 +233,15 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 280px; /* Dinámico pero con base firme */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
+  min-height: 280px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%), 0 4px 12px rgb(0 0 0 / 2%);
   transition: transform 0.2s, box-shadow 0.2s;
   overflow: hidden;
 }
 
 .appItem:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%), 0 10px 20px rgb(0 0 0 / 4%);
 }
 
 .pendingItemBorder {
@@ -347,7 +453,82 @@
 
 /* Indicador sutil para elementos pendientes */
 .cardPendingBorder {
-  border-left: 3px solid #f59e0b;
+  border-left: 3px solid #d99a28;
+  border-radius: 14px;
+  box-shadow: 0 5px 18px rgb(15 23 42 / 4%);
+}
+
+.pendingCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.pendingCardHeading {
+  min-width: 0;
+}
+
+.pendingCardEyebrow {
+  margin: 0 0 4px;
+  color: #8a6a32;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.pendingStatusBadge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid #f2dfb7;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #94651a;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.pendingMetadata {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f1f4f8;
+}
+
+.pendingMetadata .metadataItem {
+  color: #718096;
+  font-size: 0.76rem;
+}
+
+.pendingTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid;
+  border-radius: 7px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.pendingTemplate {
+  border-color: #e8ddfa;
+  background: #faf7ff;
+  color: #7044a5;
+}
+
+.pendingApp {
+  border-color: #d8e6f8;
+  background: #f5f9ff;
+  color: #3568a9;
 }
 
 /* --- Cuerpo de la Card --- */
@@ -472,10 +653,21 @@
 
 .modernFooterPending {
   border-top: 1px solid #f1f5f9;
-  padding: 12px 16px;
+  padding: 12px 18px;
   display: flex;
-  gap: 10px;
-  background-color: #fafafa;
+  align-items: center;
+  gap: 14px;
+  background-color: #fcfdff;
+}
+
+.modernFooterPending .detailsButton {
+  margin-right: auto;
+}
+
+.pendingActions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
 }
 
 /* --- Botones del Footer --- */
@@ -595,32 +787,39 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  border-radius: 6px;
+  min-height: 36px;
+  padding: 7px 11px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .actionRejectBtn {
   background-color: transparent;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
+  border: 1px solid #e8caca;
+  color: #a34545;
 }
 
 .actionRejectBtn:hover {
-  background-color: #fef2f2;
+  border-color: #d8aaaa;
+  background-color: #fff7f7;
 }
 
 .actionApproveBtn {
-  background-color: #16a34a;
+  background-color: #247a50;
   border: none;
   color: #ffffff;
 }
 
 .actionApproveBtn:hover {
-  background-color: #15803d;
+  background-color: #1c6541;
+}
+
+.modernFooterPending button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 /* --- Detalle del repositorio --- */
@@ -887,6 +1086,65 @@
 }
 
 @media (max-width: 700px) {
+  .mainContent {
+    padding: 26px 16px 36px;
+  }
+
+  .storeHeader {
+    margin-bottom: 22px;
+  }
+
+  .controls {
+    align-items: stretch;
+  }
+
+  .searchInputContainer {
+    flex-basis: 100%;
+  }
+
+  .dockerFilterWrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .filterBar {
+    flex: 1;
+  }
+
+  .filterBar button,
+  .dockerImagesButton {
+    flex: 1 1 auto;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .pendingFilter {
+    flex: 0 0 auto;
+  }
+
+  .appList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .modernFooterPending {
+    align-items: stretch;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+  }
+
+  .modernFooterPending .detailsButton {
+    flex: 1 0 100%;
+  }
+
+  .pendingActions {
+    flex: 1;
+  }
+
+  .pendingActions button {
+    min-width: 0;
+  }
+
   .detailPage {
     padding: 22px 14px 40px;
   }

@@ -19,7 +19,6 @@ export function useStore() {
     setLoading(true);
     try {
       const repositories = await RepositoryService.getRepositories();
-      debugger
       setStoreItems(repositories.filter((repository) => repository.state === "approved"));
       setOnHoldStoreItems(repositories.filter((repository) => repository.state === "pending"));
     } catch (error) {
@@ -114,13 +113,9 @@ export function useStore() {
     }
   }, []);
 
-  const handleReject = useCallback(async (appId: number) => {
-    try {
-      await RepositoryService.rejectRepository(appId.toString());
-      setOnHoldStoreItems((currentItems) => currentItems.filter((item) => item.id !== appId));
-    } catch (error) {
-      console.error("Error rejecting repository:", error);
-    }
+  const handleReject = useCallback(async (appId: number, message: string) => {
+    await RepositoryService.rejectRepository(appId.toString(), message);
+    setOnHoldStoreItems((currentItems) => currentItems.filter((item) => item.id !== appId));
   }, []);
 
   const handleDeleteRepository = useCallback(async (repositoryId: number) => {

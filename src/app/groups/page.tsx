@@ -157,8 +157,19 @@ export default function GroupsPage() {
     <main className={styles.mainContent}>
       <NavBar>
         <div className={styles.headerActions}>
-          <h1 className="text-3xl font-bold mt-6 text-darkest">{activeTab === "groups" ? "Grupos" : "Tareas"}</h1>
+          <header className={styles.pageHeader}>
+            <p className={styles.pageEyebrow}>CRANE · COLABORACIÓN</p>
+            <h1 className={styles.pageTitle}>
+              {activeTab === "groups" ? "Grupos" : "Tareas"}
+            </h1>
+            <p className={styles.pageDescription}>
+              {activeTab === "groups"
+                ? "Organiza personas y administra el acceso a tus aplicaciones."
+                : "Coordina el trabajo y da seguimiento a las tareas de tus grupos."}
+            </p>
+          </header>
           <button
+            type="button"
             className={styles.createButton}
             onClick={activeTab === "groups" ? () => setShowCreateForm(true) : () => setShowCreateTask(true)}
           >
@@ -170,13 +181,17 @@ export default function GroupsPage() {
       
       <div className={styles.tabsContainer}>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === "groups" ? styles.active : ""}`}
+          aria-pressed={activeTab === "groups"}
           onClick={() => setActiveTab("groups")}
         >
           Grupos
         </button>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === "tasks" ? styles.active : ""}`}
+          aria-pressed={activeTab === "tasks"}
           onClick={() => setActiveTab("tasks")}
         >
           Tareas

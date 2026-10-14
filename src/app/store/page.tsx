@@ -6,7 +6,15 @@ import type { FilterType } from "@/lib/helper/FilterType";
 import DockerImageFilter from "@/components/ui/DockerImageFilter";
 import styles from "./store.module.css";
 import Loader from "@/components/ui/Loader";
-import { Search } from "lucide-react";
+import {
+  ArrowLeft,
+  Clock3,
+  Download,
+  Heart,
+  Search,
+  SlidersHorizontal,
+  Star,
+} from "lucide-react";
 import type { onHoldRepositoryDto, RepositoryDto } from "@/lib/dto/RepositoryDto";
 import { useStore } from "@/hooks/useStore";
 import { RequirePermission } from "@/components/layout/RequirePermission";
@@ -18,6 +26,7 @@ const FilterBar: React.FC<{
   onFilterChange: (f: FilterType) => void;
   onDockerFilterClick: () => void;
   isDockerFilterActive: boolean;
+  isDockerFilterOpen: boolean;
   activeFilterCount: number;
   isShowPending: boolean;
 }> = ({
@@ -25,33 +34,43 @@ const FilterBar: React.FC<{
   onFilterChange,
   onDockerFilterClick,
   isDockerFilterActive,
+  isDockerFilterOpen,
   activeFilterCount,
   isShowPending,
 }) => {
-
-  const filters: { label: string; value: FilterType; ascendand: boolean }[] = [
-    { label: "Mejor Valoradas", value: "best_rated", ascendand: true },
-    { label: "Favoritos", value: "favourites", ascendand: true },
-    { label: "Más Descargadas", value: "downloads", ascendand: true },
+  const filters: { label: string; value: FilterType; icon: React.ReactNode }[] = [
+    { label: "Mejor valoradas", value: "best_rated", icon: <Star size={15} /> },
+    { label: "Favoritos", value: "favourites", icon: <Heart size={15} /> },
+    { label: "Más descargadas", value: "downloads", icon: <Download size={15} /> },
   ];
+  if (isShowPending) return null;
+
   return (
-    isShowPending ? <div className={styles.filterBar}></div> :
-    <div className={styles.filterBar}>
+    <div className={styles.filterBar} role="group" aria-label="Ordenar repositorios">
       {filters.map((filter) => (
         <button
+          type="button"
           key={filter.value}
           onClick={() => onFilterChange(filter.value)}
           className={currentFilter === filter.value ? styles.activeFilter : ""}
+          aria-pressed={currentFilter === filter.value}
         >
+          {filter.icon}
           {filter.label}
         </button>
       ))}
       <button
+        type="button"
         onClick={onDockerFilterClick}
         className={`${styles.dockerImagesButton} ${isDockerFilterActive ? styles.activeDockerFilter : ""}`}
+        aria-pressed={isDockerFilterActive}
+        aria-expanded={isDockerFilterOpen}
       >
-        Filtrar por imagen de docker
-        {activeFilterCount > 0 && ` (${activeFilterCount})`}
+        <SlidersHorizontal size={15} />
+        Imágenes
+        {activeFilterCount > 0 && (
+          <span className={styles.filterCount}>{activeFilterCount}</span>
+        )}
       </button>
     </div>
   );
@@ -65,7 +84,7 @@ export default function Store() {
     handleApprove,
     handleDownload,
     handleDeleteRepository,
-    handleReject,
+    handleReject: rejectRepository,
     handleToggleFavorite,
     handleViewDetails,
     handleVote,
@@ -83,6 +102,11 @@ export default function Store() {
   } = useStore();
   const { alertState, showAlert, handleCloseAlert } = useAlert();
 
+  const handleReject = async (repositoryId: number, message: string) => {
+    await rejectRepository(repositoryId, message);
+    showAlert("El repositorio fue rechazado.", "success", "Rechazo enviado");
+  };
+
   const handleDelete = async (repositoryId: number) => {
     try {
       await handleDeleteRepository(repositoryId);
@@ -99,9 +123,16 @@ export default function Store() {
   return (
     <NavBar>
       <main className={styles.mainContent}>
-        <h1 className="text-3xl font-bold mt-6 text-darkest">Repositorio</h1>
-        <i> "No reinventes la rueda"</i>
-        <hr />
+        <header className={styles.storeHeader}>
+          <div>
+            <p className={styles.storeEyebrow}>CRANE · COMUNIDAD</p>
+            <h1 className={styles.storeTitle}>Repositorio</h1>
+            <p className={styles.storeDescription}>
+              Descubre y comparte aplicaciones y plantillas listas para usar.
+            </p>
+          </div>
+        </header>
+
         <div className={styles.controls}>
           <div className={styles.searchInputContainer}>
             <span className={styles.searchIcon} aria-hidden="true">
@@ -110,6 +141,7 @@ export default function Store() {
             <input
               type="text"
               placeholder="Buscar aplicación por nombre..."
+              aria-label="Buscar aplicación por nombre"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
@@ -122,11 +154,12 @@ export default function Store() {
               onFilterChange={setFilterType}
               onDockerFilterClick={() => setIsDockerFilterOpen((prev) => !prev)}
               isDockerFilterActive={selectedDockerImages.length > 0}
+              isDockerFilterOpen={isDockerFilterOpen}
               activeFilterCount={selectedDockerImages.length}
               isShowPending={showPending}
             />
 
-            {isDockerFilterOpen && (
+            {!showPending && isDockerFilterOpen && (
               <DockerImageFilter
                 allImages={allDockerImages}
                 selectedImages={selectedDockerImages}
@@ -138,25 +171,15 @@ export default function Store() {
 
           <RequirePermission object="REPOSITORYMODERATOR" action="GET">
             <button
+              type="button"
               className={styles.pendingFilter}
               onClick={() => setShowPending((prev) => !prev)}
+              aria-pressed={showPending}
             >
-              {showPending
-                ? "Volver"
-                : "Pendientes"}
+              {showPending ? <ArrowLeft size={16} /> : <Clock3 size={16} />}
+              {showPending ? "Volver al repositorio" : "Pendientes"}
               {pendingCount > 0 && !showPending && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-5px",
-                    right: "-5px",
-                    backgroundColor: "red",
-                    color: "white",
-                    borderRadius: "50%",
-                    padding: "2px 6px",
-                    fontSize: "12px",
-                  }}
-                >
+                <span className={styles.pendingCount}>
                   {pendingCount}
                 </span>
               )}

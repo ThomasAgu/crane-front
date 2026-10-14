@@ -25,7 +25,7 @@ export default function HomePage() {
     <NavBar>
       <main className={styles.page}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>Administración</p>
+          <p className={styles.eyebrow}>CRANE · ADMINISTRACIÓN</p>
           <h1 className={styles.title}>Usuarios y permisos</h1>
           <p className={styles.subtitle}>Administra usuarios, roles y accesos del sistema.</p>
         </header>

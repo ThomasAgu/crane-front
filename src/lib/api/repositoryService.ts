@@ -28,8 +28,8 @@ const downloadRepository = (id: string) =>
 const approveRepository = (id: string) =>
   apiRequest<RepositoryDto>(`/repository/${id}/approve`, "POST");
 
-const rejectRepository = (id: string) =>
-  apiRequest<RepositoryDto>(`/repository/${id}/reject`, "POST");
+const rejectRepository = (id: string, message: string) =>
+  apiRequest<RepositoryDto>(`/repository/${id}/reject`, "POST", { message });
 
 //DELETE
 const deleteRepository = (id: string) =>

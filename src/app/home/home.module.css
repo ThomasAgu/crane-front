@@ -21,9 +21,40 @@
 
 .appsContainer {
     background-color: var(--background);
-    text-align: center;
-    padding: 10px 90px;
-    width: 80vw;
+    text-align: left;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 36px clamp(24px, 4vw, 64px);
+    box-sizing: border-box;
+}
+
+.homeHeader {
+    margin: 4px 0 28px;
+}
+
+.homeEyebrow {
+    margin: 0 0 8px;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.homeTitle {
+    margin: 0;
+    color: #172033;
+    font-size: clamp(1.9rem, 3vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+}
+
+.homeDescription {
+    margin: 10px 0 0;
+    color: #64748b;
+    font-size: 0.92rem;
+    line-height: 1.6;
 }
 
 .homeDetailPage {
@@ -31,4 +62,14 @@
     min-height: 100vh;
     background-color: var(--background);
     padding: 32px clamp(20px, 6vw, 90px) 56px;
+}
+
+@media (max-width: 640px) {
+    .appsContainer {
+        padding: 28px 16px 36px;
+    }
+
+    .homeHeader {
+        margin-bottom: 22px;
+    }
 }

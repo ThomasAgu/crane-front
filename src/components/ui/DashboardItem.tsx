@@ -40,8 +40,7 @@ export default function DashboardItem({ app, onUpdate, onDelete }: DashboardItem
   const [uploadModal, setUploadModal] = useState(false);
   const isTemplate = app.is_template ?? false;
   const repositoryPending = app.repository_state === 'pending';
-  const startupStatus = app.startup_status;
-  const startupSucceeded = startupStatus?.status.toLowerCase() === 'success';
+  const operationFeedback = app.operation_feedback ?? [];
 
   const REPOSITORY_STATUS_MAP = {
     pending: { label: 'Pendiente de aprobación', className: style.repositoryPending },
@@ -223,21 +222,29 @@ export default function DashboardItem({ app, onUpdate, onDelete }: DashboardItem
         </div>
       </dl>
 
-      {!isTemplate && app.startup_status?.message && (
-        <section
-          className={`${style.startupStatus} ${startupSucceeded ? style.startupStatusSuccess : style.startupStatusError}`}
-          aria-label="Estado de inicio o actualización"
-        >
-          <strong>
-            Compilacion: {startupSucceeded ? 'exitosa' : 'con errores'}
-          </strong>
-          <p>
-            {startupSucceeded
-              ? 'Validacion de compilacion exitosa'
-              : 'Hubo un problema con la configuracion.'}
-          </p>
-        </section>
-      )}
+      <div className={style.startupStatusList}>
+        {operationFeedback.map((feedback, index) => {
+          if (!feedback.message) return null;
+          const status = feedback.status.toLowerCase();
+          const isSuccess = status === 'success';
+          const isRejected = status === 'rejected';
+          if (isTemplate && !isRejected) return null;
+          const label = isRejected
+            ? 'Repositorio rechazado'
+            : `Compilación ${isSuccess ? 'exitosa' : 'con errores'}`;
+          return (
+            <span
+              key={`${status}-${feedback.checked_at ?? index}`}
+              className={`${style.startupStatus} ${isSuccess ? style.startupStatusSuccess : style.startupStatusError}`}
+              title={feedback.message}
+              aria-label={`${label}: ${feedback.message}`}
+            >
+              <span className={style.startupStatusDot} aria-hidden="true" />
+              {label}
+            </span>
+          );
+        })}
+      </div>
 
       <div className={style.actions}>
         {!isTemplate && (

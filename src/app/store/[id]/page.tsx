@@ -15,6 +15,7 @@ import ServiceCard from "@/components/ui/ServiceCard";
 import NetworkList from "@/components/ui/NetworkList";
 import AlertCard from "@/components/ui/AlertCard";
 import EnvironmentVariables from "@/components/ui/EnvironmentVariables";
+import RepositoryRejectionForm from "@/components/forms/RepositoryRejectionForm";
 import styles from "../store.module.css";
 
 const formatDate = (value?: string | Date | null) =>
@@ -33,6 +34,7 @@ export default function StoreItemDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [showRejectionForm, setShowRejectionForm] = useState(false);
 
   const loadDetails = useCallback(async () => {
     if (!params?.id) return;
@@ -54,17 +56,24 @@ export default function StoreItemDetail() {
     loadDetails();
   }, [loadDetails]);
 
-  const moderate = async (action: "approve" | "reject") => {
+  const moderate = async (action: "approve" | "reject", rejectionMessage?: string) => {
     if (!repository) return;
     try {
       setActionLoading(true);
       const updatedRepository = action === "approve"
         ? await RepositoryService.approveRepository(repository.id.toString())
-        : await RepositoryService.rejectRepository(repository.id.toString());
+        : await RepositoryService.rejectRepository(repository.id.toString(), rejectionMessage ?? "");
       setRepository(updatedRepository);
+      if (action === "reject") {
+        setApp(await AppService.get(repository.app_id.toString()));
+        setShowRejectionForm(false);
+      }
     } catch (requestError) {
       console.error(`Error al ${action === "approve" ? "aprobar" : "rechazar"} el repositorio:`, requestError);
-      setError("No se pudo actualizar el estado del repositorio.");
+      if (action === "approve") {
+        setError("No se pudo actualizar el estado del repositorio.");
+      }
+      throw requestError;
     } finally {
       setActionLoading(false);
     }
@@ -103,7 +112,7 @@ export default function StoreItemDetail() {
             <div className={styles.moderationPanel}>
               <strong>Esta propuesta está pendiente de revisión.</strong>
               <div className={styles.moderationActions}>
-                <button disabled={actionLoading} className={styles.actionRejectBtn} onClick={() => moderate("reject")}><X size={16} /> Rechazar</button>
+                <button disabled={actionLoading} className={styles.actionRejectBtn} onClick={() => setShowRejectionForm(true)}><X size={16} /> Rechazar</button>
                 <button disabled={actionLoading} className={styles.actionApproveBtn} onClick={() => moderate("approve")}><Check size={16} /> Aprobar</button>
               </div>
             </div>
@@ -162,6 +171,15 @@ export default function StoreItemDetail() {
         </section>
 
         {app.alerts?.length ? <section className={styles.detailSection}><h2>Alertas ({app.alerts.length})</h2><div className={styles.alertDetailList}>{app.alerts.map((alert) => <AlertCard key={alert.id} alert={alert} />)}</div></section> : null}
+
+        {showRejectionForm && repository.state === "pending" && (
+          <RepositoryRejectionForm
+            repositoryName={repository.name}
+            onSubmit={(message) => moderate("reject", message)}
+            onCancel={() => setShowRejectionForm(false)}
+            isLoading={actionLoading}
+          />
+        )}
       </main>
     </NavBar>
   );
