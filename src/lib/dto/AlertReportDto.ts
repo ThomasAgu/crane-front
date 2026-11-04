@@ -2,27 +2,18 @@ export type AlertStatus = "firing" | "resolved";
 export type AlertSeverity = "critical" | "page" | string; 
 // string fallback por si aparecen nuevos niveles
 
-export interface AlertLabelsDto {
-  alertname: string;
-  code: string | null;
-  entrypoint: string | null;
-  instance: string;
-  job: string;
-  method: string | null;
-  monitor: string;
-  protocol: string | null;
-  severity: string;
-}
+export type AlertLabelsDto = Record<string, string | number | null>;
 
 export interface AlertDto {
   id: number;
-  alert_name: string;
+  alert_name: string | null;
   status: AlertStatus;
   severity: AlertSeverity;
-  summary: string;
-  description: string;
+  summary: string | null;
+  description: string | null;
   labels: AlertLabelsDto;
   timestamp: string; // ISO datetime
+  fingerprint?: string;
 }
 
 export interface AlertSummaryDto {

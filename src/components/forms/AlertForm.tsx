@@ -104,6 +104,9 @@ const ALERT_ACTION_OPTIONS = [
 ];
 
 const FOR_TIME_OPTIONS = [
+  { value: '5s', label: '5 segundos' },
+  { value: '20s', label: '20 segundos' },
+  { value: '40s', label: '40 segundos' },
   { value: '1m', label: '1 minuto' },
   { value: '5m', label: '5 minutos' },
   { value: '10m', label: '10 minutos' },
